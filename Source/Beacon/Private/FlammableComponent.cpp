@@ -24,10 +24,11 @@ UFlammableComponent::UFlammableComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	
-
 	m_ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Fire Particles"));
 	m_ParticleSystem->SetupAttachment(this);
+
+	//ignore parent's rotation
+	SetUsingAbsoluteRotation(true);
 }
 
 
@@ -35,6 +36,11 @@ UFlammableComponent::UFlammableComponent()
 void UFlammableComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsUsingAbsoluteRotation())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("reletive"));
+	}
 
 	const AActor* owner = GetOwner();
 
@@ -105,7 +111,6 @@ void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-
 #ifndef UE_BUILD_SHIPPING
 	UE_LOG(LogTemp, Warning, TEXT("%s"), *(OtherActor->GetFullName()));
 #endif

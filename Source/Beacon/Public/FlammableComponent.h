@@ -31,14 +31,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool m_InitializeWithFlame;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool b_IsBurning;
-
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* T_FireParticle;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-		UParticleSystemComponent* m_ParticleSystem;
 
 	UFUNCTION(BlueprintCallable)
 		void Ignited(UParticleSystem* particle);
@@ -50,6 +44,12 @@ public:
 			int32 OtherBodyIndex,
 			bool bFromSweep,
 			const FHitResult& SweepResult);
+
+private:
+		bool b_IsBurning;
+
+		UPROPERTY(VisibleAnywhere)
+			UParticleSystemComponent* m_ParticleSystem;
 
 public:
 	UFUNCTION()
