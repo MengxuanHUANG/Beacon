@@ -24,6 +24,18 @@ UFlammableComponent::UFlammableComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	
+
+	m_ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Fire Particles"));
+	m_ParticleSystem->SetupAttachment(this);
+}
+
+
+// Called when the game starts
+void UFlammableComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
 	const AActor* owner = GetOwner();
 
 	if (owner != nullptr)
@@ -51,16 +63,6 @@ UFlammableComponent::UFlammableComponent()
 			}
 		}
 	}
-
-	m_ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Fire Particles"));
-	m_ParticleSystem->SetupAttachment(this);
-}
-
-
-// Called when the game starts
-void UFlammableComponent::BeginPlay()
-{
-	Super::BeginPlay();
 
 	if (m_InitializeWithFlame)
 	{
