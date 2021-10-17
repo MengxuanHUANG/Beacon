@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FlammableUnit.h"
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
@@ -21,7 +22,6 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-protected:
 	virtual void DestroyComponent(bool bPromoteChildren) override;
 
 public:	
@@ -33,6 +33,12 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* T_FireParticle;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TArray<UFlammableUnit*> m_FlammableUnits;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FVector m_UnitExtent;
 
 	UFUNCTION(BlueprintCallable)
 		void Ignited(UParticleSystem* particle);
@@ -46,15 +52,18 @@ public:
 			const FHitResult& SweepResult);
 
 private:
-		bool b_IsBurning;
+	void CreateBoxFlammableUnits(const class UBoxComponent* box);
+	void CreateCapsuleFlammableUnits(const class UCapsuleComponent* capsule);
+	void CreateSphereFlammableUnits(const class USphereComponent* sphere);
 
-		UPROPERTY(VisibleAnywhere)
-			UParticleSystemComponent* m_ParticleSystem;
+private:
+		bool b_IsBurning;
 
 public:
 	UFUNCTION()
 		inline bool IsBurning() const { return b_IsBurning;	}
 
+	//return nullptr is not burning
 	UFUNCTION()
-		UParticleSystem* GetFireParticle() const; 
+		inline UParticleSystem* GetFireParticle() const { return T_FireParticle; }
 };

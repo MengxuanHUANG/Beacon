@@ -2,6 +2,8 @@
 
 
 #include "FlammableComponent.h"
+#include "BeaconCore.h"
+#include "FlammableUnit.h"
 
 #include "Components/PrimitiveComponent.h"
 #include "Components/SceneComponent.h"
@@ -19,13 +21,11 @@
 
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
+	:m_UnitExtent(30.f, 30.f, 30.f)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	m_ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Fire Particles"));
-	m_ParticleSystem->SetupAttachment(this);
 
 	//ignore parent's rotation
 	SetUsingAbsoluteRotation(true);
@@ -36,11 +36,6 @@ UFlammableComponent::UFlammableComponent()
 void UFlammableComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (IsUsingAbsoluteRotation())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("reletive"));
-	}
 
 	const AActor* owner = GetOwner();
 
@@ -57,7 +52,10 @@ void UFlammableComponent::BeginPlay()
 			//TODO: template or abstract class
 			if (name.Compare("BoxComponent") == 0)
 			{
-				Cast<UBoxComponent>(component)->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+				UBoxComponent* box = Cast<UBoxComponent>(component);
+				box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+				
+				CreateBoxFlammableUnits(box);
 			}
 			else if (name.Compare("CapsuleComponent") == 0)
 			{
@@ -72,17 +70,73 @@ void UFlammableComponent::BeginPlay()
 
 	if (m_InitializeWithFlame)
 	{
-		b_IsBurning = true;
-		m_ParticleSystem->SetTemplate(T_FireParticle);
+		//TODO: burn
 	}
+}
+
+void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
+{
+	//calculate number required to fit the box collider
+	FVector extent = box->GetScaledBoxExtent();
+
+	int count_x = extent.X / m_UnitExtent.X;
+	int count_y = extent.Y / m_UnitExtent.Y;
+	int count_z = extent.Z / m_UnitExtent.Z;
+
+	//add offset if count is even
+	FVector offset;
+	offset.X = (~count_x & 1) * m_UnitExtent.X;
+	offset.Y = (~count_y & 1) * m_UnitExtent.Y;
+	offset.Z = (~count_z & 1) * m_UnitExtent.Z;
+
+	//allocate memory once for better perfomance
+	m_FlammableUnits.Reserve(m_FlammableUnits.Num() + count_x * count_y * count_z);
+	
+	for (int x = 0; x < count_x; x++)
+	{
+		for (int y = 0; y < count_y; y++)
+		{
+			for (int z = 0; z < count_z; z++)
+			{
+				UFlammableUnit* unit = NewObject<UFlammableUnit>(this);
+
+				//register component for rendering
+				unit->RegisterComponent();
+				unit->Initialize(m_UnitExtent);
+
+				//setup attachment
+				unit->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+				unit->SetRelativeLocation(
+					FVector(
+						2 * (x - count_x / 2) * m_UnitExtent.X,
+						2 * (y - count_y / 2) * m_UnitExtent.Y,
+						2 * (z - count_z / 2) * m_UnitExtent.Z
+					) + offset
+				);
+				unit->Ignite(T_FireParticle);
+				m_FlammableUnits.Add(unit);
+			}
+		}
+	}
+}
+void UFlammableComponent::CreateCapsuleFlammableUnits(const UCapsuleComponent* capsule)
+{
+
+}
+void UFlammableComponent::CreateSphereFlammableUnits(const USphereComponent* sphere)
+{
+
 }
 
 //Called when component destroyed
 void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 {
-	if (m_ParticleSystem != nullptr)
+	for (UFlammableUnit* unit : m_FlammableUnits)
 	{
-		m_ParticleSystem->DestroyComponent(bPromoteChildren);
+		if (unit)
+		{
+			unit->DestroyComponent(bPromoteChildren);
+		}
 	}
 
 	Super::DestroyComponent(bPromoteChildren);
@@ -98,10 +152,7 @@ void UFlammableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void UFlammableComponent::Ignited(UParticleSystem* particle)
 {
-	if (m_ParticleSystem != nullptr)
-	{
-		m_ParticleSystem->SetTemplate(particle);
-	}
+	//TODO: burn
 }
 
 void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
@@ -111,26 +162,16 @@ void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-#ifndef UE_BUILD_SHIPPING
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *(OtherActor->GetFullName()));
-#endif
-
 	if (!b_IsBurning && OtherActor->ActorHasTag(FName("Flammable")))
 	{
+#ifdef BEACON_DEBUG
 		UE_LOG(LogTemp, Warning, TEXT("Ignite"));
+#endif
+
 		UFlammableComponent* otherflammable = Cast<UFlammableComponent>(OtherActor->GetComponentByClass(UFlammableComponent::StaticClass()));
 		if (otherflammable->IsBurning())
 		{
 			this->Ignited(otherflammable->GetFireParticle());
 		}
 	}
-}
-
-UParticleSystem* UFlammableComponent::GetFireParticle() const
-{
-	if (b_IsBurning)
-	{
-		return m_ParticleSystem->Template;
-	}
-	return nullptr;
 }
