@@ -16,6 +16,32 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/Actor.h"
 
+void Neighbors::SetNeighbor(int x, int y, int z, UFlammableUnit* unit)
+{
+	int index = GetIndex(x + 1, y + 1, z + 1);
+	if (index >= 0 && index < neighbors.Num())
+	{
+		if (neighbors[index] == nullptr)
+		{
+			neighbors[index] = unit;
+			unit->SetNeighbor(-x, -y, -z, self);
+		}
+	}
+}
+Neighbors::~Neighbors()
+{
+}
+
+int SixDirNeighbors::GetIndex(int x, int y, int z)
+{
+	return ((x & 2) >> 1)
+		+ ((y ^ 1) & 1) * 2 + ((y & 2) >> 1)
+		+ ((z ^ 1) & 1) * 4 + ((z & 2) >> 1);
+}
+int TwentySixDirNeighbors::GetIndex(int x, int y, int z)
+{
+	return x + y * 3 + z * 9;
+}
 // Sets default values for this component's properties
 UFlammableUnit::UFlammableUnit()
 {
@@ -23,7 +49,6 @@ UFlammableUnit::UFlammableUnit()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	
 #ifdef BEACON_DEBUG
 	m_DebugBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Debug Box"));
 	m_DebugBox->SetupAttachment(this);
@@ -36,17 +61,28 @@ UFlammableUnit::UFlammableUnit()
 	m_ParticleSystem->SetUsingAbsoluteRotation(true);
 }
 
-
 // Called when the game starts
 void UFlammableUnit::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void UFlammableUnit::Initialize(FVector extent)
+void UFlammableUnit::Initialize(FVector extent,ConnectType type)
 {
 	m_UnitExtent = extent;
+	m_ConnectType = type;
 	m_ParticleSystem->RegisterComponent();
+
+	switch (type)
+	{
+	case ConnectType::SixDirection:
+		m_Neighbors = Neighbors::CreateNeighbors<SixDirNeighbors>(this);
+		break;
+	case ConnectType::TwentySixDirection:
+		m_Neighbors = Neighbors::CreateNeighbors<TwentySixDirNeighbors>(this);
+		break;
+	}
+	
 
 #ifdef BEACON_DEBUG
 	m_DebugBox->RegisterComponent();
@@ -59,7 +95,7 @@ void UFlammableUnit::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	//TODO: update neighbors
 }
 
 //Called when component destroyed
@@ -73,6 +109,11 @@ void UFlammableUnit::DestroyComponent(bool bPromoteChildren)
 	if (m_ParticleSystem != nullptr)
 	{
 		m_ParticleSystem->DestroyComponent(bPromoteChildren);
+	}
+
+	if (m_Neighbors != nullptr)
+	{
+		delete m_Neighbors;
 	}
 
 	Super::DestroyComponent(bPromoteChildren);
@@ -90,4 +131,31 @@ void UFlammableUnit::Ignite(UParticleSystem* particle)
 	{
 		m_ParticleSystem->SetTemplate(particle);
 	}
+}
+
+void UFlammableUnit::SetNeighbor(int x, int y, int z, UFlammableUnit* unit)
+{
+	m_Neighbors->SetNeighbor(x, y, z, unit);
+}
+
+void UFlammableUnit::DisplayDebugInfo()
+{
+#ifdef BEACON_DEBUG
+	FString name;
+	GetName(name);
+	UE_LOG(LogTemp, Warning, TEXT("%s has neighbors"), *name);
+	for (int i = 0; i < int(m_ConnectType); i++)
+	{
+		if (m_Neighbors->neighbors[i] == nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("index %d: nullptr"), i);
+		}
+		else
+		{
+			UFlammableUnit* unit = m_Neighbors->neighbors[i];
+			unit->GetName(name);
+			UE_LOG(LogTemp, Warning, TEXT("index %d: %s"), i, *name);
+		}
+	}
+#endif
 }

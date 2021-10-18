@@ -3,7 +3,6 @@
 
 #include "FlammableComponent.h"
 #include "BeaconCore.h"
-#include "FlammableUnit.h"
 
 #include "Components/PrimitiveComponent.h"
 #include "Components/SceneComponent.h"
@@ -91,7 +90,7 @@ void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
 
 	//allocate memory once for better perfomance
 	m_FlammableUnits.Reserve(m_FlammableUnits.Num() + count_x * count_y * count_z);
-	
+
 	for (int x = 0; x < count_x; x++)
 	{
 		for (int y = 0; y < count_y; y++)
@@ -102,7 +101,7 @@ void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
 
 				//register component for rendering
 				unit->RegisterComponent();
-				unit->Initialize(m_UnitExtent);
+				unit->Initialize(m_UnitExtent, m_ConnectType);
 
 				//setup attachment
 				unit->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
@@ -113,11 +112,37 @@ void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
 						2 * (z - count_z / 2) * m_UnitExtent.Z
 					) + offset
 				);
+
+				//bind pointer
+				if (m_ConnectType == ConnectType::SixDirection)
+				{
+					if (x - 1 >= 0)
+					{
+						unit->SetNeighbor(-1, 0, 0, m_FlammableUnits[(x - 1) * count_y * count_z + y * count_z + z]);
+					}
+					if (y - 1 >= 0)
+					{
+						unit->SetNeighbor(0, -1, 0, m_FlammableUnits[x * count_y * count_z + (y - 1) * count_z + z]);
+					}
+					if (z - 1 >= 0)
+					{
+						unit->SetNeighbor(0, 0, -1, m_FlammableUnits[x * count_y * count_z + y * count_z + z - 1]);
+					}
+				}
 				unit->Ignite(T_FireParticle);
 				m_FlammableUnits.Add(unit);
 			}
 		}
 	}
+#ifdef BEACON_DEBUG
+	for (UFlammableUnit* unit : m_FlammableUnits)
+	{
+		if (unit)
+		{
+			unit->DisplayDebugInfo();
+		}
+	}
+#endif
 }
 void UFlammableComponent::CreateCapsuleFlammableUnits(const UCapsuleComponent* capsule)
 {

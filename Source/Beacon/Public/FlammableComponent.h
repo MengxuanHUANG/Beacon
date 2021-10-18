@@ -40,6 +40,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector m_UnitExtent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		ConnectType m_ConnectType = ConnectType::SixDirection;
+
+private:
+	void CreateBoxFlammableUnits(const class UBoxComponent* box);
+	void CreateCapsuleFlammableUnits(const class UCapsuleComponent* capsule);
+	void CreateSphereFlammableUnits(const class USphereComponent* sphere);
+
+private:
+		bool b_IsBurning;
+
+public:
 	UFUNCTION(BlueprintCallable)
 		void Ignited(UParticleSystem* particle);
 
@@ -51,15 +63,6 @@ public:
 			bool bFromSweep,
 			const FHitResult& SweepResult);
 
-private:
-	void CreateBoxFlammableUnits(const class UBoxComponent* box);
-	void CreateCapsuleFlammableUnits(const class UCapsuleComponent* capsule);
-	void CreateSphereFlammableUnits(const class USphereComponent* sphere);
-
-private:
-		bool b_IsBurning;
-
-public:
 	UFUNCTION()
 		inline bool IsBurning() const { return b_IsBurning;	}
 
