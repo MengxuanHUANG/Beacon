@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BeaconConnection.h"
 #include "Components/SceneComponent.h"
 #include "FlammableUnit.generated.h"
 
@@ -10,55 +11,13 @@ class UBoxComponent;
 class UParticleSystemComponent;
 class UFlammableUnit;
 
-UENUM()
-enum class ConnectType : uint8
-{
-	None = 1,
-	SixDirection = 6,
-	TwentySixDirection = 26
-};
-
-class Neighbors
-{
-public:
-	Neighbors(ConnectType type, UFlammableUnit* self)
-		:self(self), type(type)
-	{}
-	virtual ~Neighbors();
-	virtual void SetNeighbor(int x, int y, int z, UFlammableUnit* unit);
-	virtual int GetIndex(int x, int y, int z) = 0;
-
-	template<typename T>
-	static T* CreateNeighbors(UFlammableUnit* self)
-	{
-		return new T(self);
-	}
-
-public:
-	UFlammableUnit* self;
-	const ConnectType type;
-	TArray<UFlammableUnit*> neighbors;
-};
-class SixDirNeighbors : public Neighbors
-{
-public:
-	SixDirNeighbors(UFlammableUnit* self)
-		:Neighbors(ConnectType::SixDirection, self)
-	{
-		neighbors.Init(nullptr, uint8(ConnectType::SixDirection));
-	}
-	virtual int GetIndex(int x, int y, int z) override;
-};
-class TwentySixDirNeighbors : public Neighbors
-{
-public:
-	TwentySixDirNeighbors(UFlammableUnit* self)
-		:Neighbors(ConnectType::TwentySixDirection, self)
-	{
-		neighbors.Init(nullptr, uint8(ConnectType::TwentySixDirection));
-	}
-	virtual int GetIndex(int x, int y, int z) override;
-};
+//UENUM()
+//enum class ConnectType : uint8
+//{
+//	None = 1,
+//	SixDirection = 6,
+//	TwentySixDirection = 26
+//};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UFlammableUnit : public USceneComponent
@@ -105,12 +64,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetNeighbor(int x, int y, int z, UFlammableUnit* unit);
 
+	UFUNCTION(BlueprintCallable)
+		const TArray<UFlammableUnit*>& GetNeighbors() const;
+
+	//TODO: remove
+	UFUNCTION()
+		void IncreaseTemperature(float temperature);
+
+	inline  float GetTemperature() const { return m_Temperature; }
+	
 	void DisplayDebugInfo();
 
 private:
+	UPROPERTY(VisibleAnywhere)
+		float m_Temperature = 0;
+
 	bool b_IsBurning;
 
-	Neighbors* m_Neighbors;
+	Neighbors<UFlammableUnit>* m_Neighbors;
 
 public:
 	UFUNCTION(BlueprintCallable)

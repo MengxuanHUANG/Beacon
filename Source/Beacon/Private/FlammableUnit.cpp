@@ -16,32 +16,6 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/Actor.h"
 
-void Neighbors::SetNeighbor(int x, int y, int z, UFlammableUnit* unit)
-{
-	int index = GetIndex(x + 1, y + 1, z + 1);
-	if (index >= 0 && index < neighbors.Num())
-	{
-		if (neighbors[index] == nullptr)
-		{
-			neighbors[index] = unit;
-			unit->SetNeighbor(-x, -y, -z, self);
-		}
-	}
-}
-Neighbors::~Neighbors()
-{
-}
-
-int SixDirNeighbors::GetIndex(int x, int y, int z)
-{
-	return ((x & 2) >> 1)
-		+ ((y ^ 1) & 1) * 2 + ((y & 2) >> 1)
-		+ ((z ^ 1) & 1) * 4 + ((z & 2) >> 1);
-}
-int TwentySixDirNeighbors::GetIndex(int x, int y, int z)
-{
-	return x + y * 3 + z * 9;
-}
 // Sets default values for this component's properties
 UFlammableUnit::UFlammableUnit()
 {
@@ -76,10 +50,12 @@ void UFlammableUnit::Initialize(FVector extent,ConnectType type)
 	switch (type)
 	{
 	case ConnectType::SixDirection:
-		m_Neighbors = Neighbors::CreateNeighbors<SixDirNeighbors>(this);
+		m_Neighbors = Neighbors<UFlammableUnit>::CreateNeighbors<SixDirNeighbors<UFlammableUnit> >(this);
 		break;
 	case ConnectType::TwentySixDirection:
-		m_Neighbors = Neighbors::CreateNeighbors<TwentySixDirNeighbors>(this);
+		m_Neighbors = Neighbors<UFlammableUnit>::CreateNeighbors<TwentySixDirNeighbors<UFlammableUnit> >(this);
+		break;
+	case ConnectType::None:
 		break;
 	}
 	
@@ -130,12 +106,23 @@ void UFlammableUnit::Ignite(UParticleSystem* particle)
 	if (!b_IsBurning && m_ParticleSystem != nullptr)
 	{
 		m_ParticleSystem->SetTemplate(particle);
+		b_IsBurning = true;
 	}
 }
 
 void UFlammableUnit::SetNeighbor(int x, int y, int z, UFlammableUnit* unit)
 {
 	m_Neighbors->SetNeighbor(x, y, z, unit);
+}
+
+const TArray<UFlammableUnit*>& UFlammableUnit::GetNeighbors() const
+{
+	return m_Neighbors->neighbors;
+}
+
+void UFlammableUnit::IncreaseTemperature(float temperature)
+{
+	m_Temperature += temperature;
 }
 
 void UFlammableUnit::DisplayDebugInfo()

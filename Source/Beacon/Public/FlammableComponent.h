@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "FlammableUnit.h"
+#include "Containers/Queue.h"
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
@@ -37,6 +38,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 		TArray<UFlammableUnit*> m_FlammableUnits;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		TMap<FVector, UFlammableUnit*> m_FlammableUnitsMap;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector m_UnitExtent;
 
@@ -50,6 +54,7 @@ private:
 
 private:
 		bool b_IsBurning;
+		TQueue<UFlammableUnit*> m_BurningUnits;
 
 public:
 	UFUNCTION(BlueprintCallable)

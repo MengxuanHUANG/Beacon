@@ -25,9 +25,7 @@ UFlammableComponent::UFlammableComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	//ignore parent's rotation
-	SetUsingAbsoluteRotation(true);
+	SetUsingAbsoluteScale(true);
 }
 
 
@@ -58,11 +56,17 @@ void UFlammableComponent::BeginPlay()
 			}
 			else if (name.Compare("CapsuleComponent") == 0)
 			{
-				Cast<UCapsuleComponent>(component)->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+				UCapsuleComponent* capsule = Cast<UCapsuleComponent>(component);
+				capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+
+				CreateCapsuleFlammableUnits(capsule);
 			}
 			else if (name.Compare("SphereComponent") == 0)
 			{
-				Cast<USphereComponent>(component)->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+				USphereComponent* sphere = Cast<USphereComponent>(component);
+				sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+
+				CreateSphereFlammableUnits(sphere);
 			}
 		}
 	}
@@ -76,7 +80,7 @@ void UFlammableComponent::BeginPlay()
 void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
 {
 	//calculate number required to fit the box collider
-	FVector extent = box->GetScaledBoxExtent();
+	FVector extent = box->GetUnscaledBoxExtent();
 
 	int count_x = extent.X / m_UnitExtent.X;
 	int count_y = extent.Y / m_UnitExtent.Y;
@@ -129,11 +133,20 @@ void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
 						unit->SetNeighbor(0, 0, -1, m_FlammableUnits[x * count_y * count_z + y * count_z + z - 1]);
 					}
 				}
-				unit->Ignite(T_FireParticle);
+				//unit->Ignite(T_FireParticle);
 				m_FlammableUnits.Add(unit);
 			}
 		}
 	}
+
+	//TODO: remove
+	//Manually ignite a unit
+	if (m_InitializeWithFlame)
+	{
+		m_FlammableUnits[0]->Ignite(T_FireParticle);
+		m_BurningUnits.Enqueue(m_FlammableUnits[0]);
+	}
+
 #ifdef BEACON_DEBUG
 	for (UFlammableUnit* unit : m_FlammableUnits)
 	{
@@ -150,7 +163,71 @@ void UFlammableComponent::CreateCapsuleFlammableUnits(const UCapsuleComponent* c
 }
 void UFlammableComponent::CreateSphereFlammableUnits(const USphereComponent* sphere)
 {
+	float radius = sphere->GetUnscaledSphereRadius();
+	int count = radius / m_UnitExtent.X;
 
+#ifdef BEACON_DEBUG
+	UE_LOG(LogTemp, Warning, TEXT("Count: %d"), count);
+#endif
+
+	int limit = FMath::Square(count + m_UnitExtent.X / count);
+
+	for (int x = -(count >> 1); x <= (count >> 1); x++)
+	{
+		for (int y = -(count >> 1); y <= (count >> 1); y++)
+		{
+			for (int z = -(count >> 1); z <= (count >> 1); z++)
+			{
+				if (((x*x + y*y + z*z) << 2) <= FMath::Square(count))
+				{
+					UFlammableUnit* unit = NewObject<UFlammableUnit>(this);
+
+					//register component for rendering
+					unit->RegisterComponent();
+					unit->Initialize(m_UnitExtent, m_ConnectType);
+
+					//setup attachment
+					unit->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+					unit->SetRelativeLocation(
+						FVector(
+							2 * x * m_UnitExtent.X,
+							2 * y * m_UnitExtent.Y,
+							2 * z * m_UnitExtent.Z
+						)
+					);
+
+					//bind pointer
+					if (m_ConnectType == ConnectType::SixDirection)
+					{
+						UFlammableUnit** xp = m_FlammableUnitsMap.Find(FVector(x - 1, y, z));
+						UFlammableUnit** yp = m_FlammableUnitsMap.Find(FVector(x, y - 1, z));
+						UFlammableUnit** zp = m_FlammableUnitsMap.Find(FVector(x, y, z - 1));
+						if (xp != nullptr)
+						{
+							unit->SetNeighbor(-1, 0, 0, *xp);
+						}
+						if (yp != nullptr)
+						{
+							unit->SetNeighbor(0, -1, 0, *yp);
+						}
+						if (zp != nullptr)
+						{
+							unit->SetNeighbor(0, 0, -1, *zp);
+						}
+					}
+
+					m_FlammableUnitsMap.Add(FVector(x, y, z), unit);
+				}
+			}
+		}
+	}
+
+	if (m_InitializeWithFlame)
+	{
+		UFlammableUnit* unit = *(m_FlammableUnitsMap.Find(FVector(0, 0, 0)));
+		unit->Ignite(T_FireParticle);
+		m_BurningUnits.Enqueue(unit);
+	}
 }
 
 //Called when component destroyed
@@ -172,7 +249,36 @@ void UFlammableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	//TODO: move the "Unit manager"
+	TQueue<UFlammableUnit*> temp;
+
+	while (!m_BurningUnits.IsEmpty())
+	{
+		UFlammableUnit* unit;
+		m_BurningUnits.Dequeue(unit);
+		for (UFlammableUnit* neighbor : unit->GetNeighbors())
+		{
+			if (neighbor != nullptr && !(neighbor->IsBurning()))
+			{
+				neighbor->IncreaseTemperature(0.05f);
+				if (neighbor->GetTemperature() >= 3.f)
+				{
+					neighbor->Ignite(T_FireParticle);
+					temp.Enqueue(neighbor);
+				}
+				else
+				{
+					temp.Enqueue(unit);
+				}
+			}
+		}
+	}
+	while (!temp.IsEmpty())
+	{
+		UFlammableUnit* unit;
+		temp.Dequeue(unit);
+		m_BurningUnits.Enqueue(unit);
+	}
 }
 
 void UFlammableComponent::Ignited(UParticleSystem* particle)
