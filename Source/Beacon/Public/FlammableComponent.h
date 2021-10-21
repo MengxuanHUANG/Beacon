@@ -10,6 +10,24 @@
 class UParticleSystemComponent;
 class UStaticMeshComponent;
 
+USTRUCT(BlueprintType)
+struct FUnitCount
+{
+	GENERATED_BODY()
+public:
+	FUnitCount() {}
+	FUnitCount(uint32 x, uint32 y, uint32 z)
+		:X(x), Y(y), Z(z)
+	{
+	}
+	UPROPERTY(EditAnywhere)
+		uint32 X;
+	UPROPERTY(EditAnywhere)
+		uint32 Y;
+	UPROPERTY(EditAnywhere)
+		uint32 Z;
+};
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEACON_API UFlammableComponent : public USceneComponent
 {
@@ -43,6 +61,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FVector m_UnitExtent;
+
+	UPROPERTY(EditAnywhere)
+		FUnitCount m_UnitCount;
+
+	UPROPERTY(EditAnywhere)
+		uint32 m_Count = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		ConnectType m_ConnectType = ConnectType::SixDirection;

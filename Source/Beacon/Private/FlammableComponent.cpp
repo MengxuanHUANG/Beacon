@@ -20,7 +20,7 @@
 
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
-	:m_UnitExtent(30.f, 30.f, 30.f)
+	:m_UnitCount(1, 1, 1)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -82,55 +82,66 @@ void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
 	//calculate number required to fit the box collider
 	FVector extent = box->GetUnscaledBoxExtent();
 
-	int count_x = extent.X / m_UnitExtent.X;
-	int count_y = extent.Y / m_UnitExtent.Y;
-	int count_z = extent.Z / m_UnitExtent.Z;
+	FVector size;
+	size.X = extent.X / (float)m_UnitCount.X;
+	size.Y = extent.Y / (float)m_UnitCount.Y;
+	size.Z = extent.Z / (float)m_UnitCount.Z;
 
-	//add offset if count is even
-	FVector offset;
-	offset.X = (~count_x & 1) * m_UnitExtent.X;
-	offset.Y = (~count_y & 1) * m_UnitExtent.Y;
-	offset.Z = (~count_z & 1) * m_UnitExtent.Z;
+	//avoid cast data type in looping
+	FVector count;
+	count.X = (float)m_UnitCount.X;
+	count.Y = (float)m_UnitCount.Y;
+	count.Z = (float)m_UnitCount.Z;
+
+	float count_x = (float)count.X / 2.0f;
+	float count_y = (float)count.Y / 2.0f;
+	float count_z = (float)count.Z / 2.0f;
 
 	//allocate memory once for better perfomance
-	m_FlammableUnits.Reserve(m_FlammableUnits.Num() + count_x * count_y * count_z);
+	m_FlammableUnits.Reserve(m_FlammableUnits.Num() + m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
 
-	for (int x = 0; x < count_x; x++)
+	for (int x = 0; x < (int)m_UnitCount.X; x++)
 	{
-		for (int y = 0; y < count_y; y++)
+		for (int y = 0; y < (int)m_UnitCount.Y; y++)
 		{
-			for (int z = 0; z < count_z; z++)
+			for (int z = 0; z < (int)m_UnitCount.Z; z++)
 			{
 				UFlammableUnit* unit = NewObject<UFlammableUnit>(this);
 
 				//register component for rendering
 				unit->RegisterComponent();
-				unit->Initialize(m_UnitExtent, m_ConnectType);
+				unit->Initialize(size, m_ConnectType);
 
 				//setup attachment
 				unit->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 				unit->SetRelativeLocation(
 					FVector(
-						2 * (x - count_x / 2) * m_UnitExtent.X,
-						2 * (y - count_y / 2) * m_UnitExtent.Y,
-						2 * (z - count_z / 2) * m_UnitExtent.Z
-					) + offset
+						2.0f * size.X * (x - count_x),
+						2.0f * size.Y * (y - count_y),
+						2.0f * size.Z * (z - count_z)
+					) + size
 				);
 
 				//bind pointer
 				if (m_ConnectType == ConnectType::SixDirection)
 				{
-					if (x - 1 >= 0)
+					if (x >= 1)
 					{
-						unit->SetNeighbor(-1, 0, 0, m_FlammableUnits[(x - 1) * count_y * count_z + y * count_z + z]);
+						UFlammableUnit* neighbor = m_FlammableUnits[(x - 1) * m_UnitCount.Y * m_UnitCount.Z + y * m_UnitCount.Z + z];
+						unit->SetNeighbor(-1, 0, 0, neighbor);
+						neighbor->SetNeighbor(1, 0, 0, unit);
 					}
-					if (y - 1 >= 0)
+					if (y >= 1)
 					{
-						unit->SetNeighbor(0, -1, 0, m_FlammableUnits[x * count_y * count_z + (y - 1) * count_z + z]);
+						UFlammableUnit* neighbor = m_FlammableUnits[x * m_UnitCount.Y * m_UnitCount.Z + (y - 1) * m_UnitCount.Z + z];
+						unit->SetNeighbor(0, -1, 0, neighbor);
+						neighbor->SetNeighbor(0, 1, 0, unit);
 					}
-					if (z - 1 >= 0)
+					if (z >= 1)
 					{
-						unit->SetNeighbor(0, 0, -1, m_FlammableUnits[x * count_y * count_z + y * count_z + z - 1]);
+						UFlammableUnit* neighbor = m_FlammableUnits[x * m_UnitCount.Y * m_UnitCount.Z + y * m_UnitCount.Z + z - 1];
+						unit->SetNeighbor(0, 0, -1, neighbor);
+						neighbor->SetNeighbor(0, 0, 1, unit);
 					}
 				}
 				//unit->Ignite(T_FireParticle);
@@ -164,7 +175,11 @@ void UFlammableComponent::CreateCapsuleFlammableUnits(const UCapsuleComponent* c
 void UFlammableComponent::CreateSphereFlammableUnits(const USphereComponent* sphere)
 {
 	float radius = sphere->GetUnscaledSphereRadius();
-	int count = radius / m_UnitExtent.X;
+	float size = radius / ((float)m_Count - 0.5f) / FMath::Sqrt(3) / 2; // divided by sqrt(2)
+	int count = ((int)m_Count);
+	//int count = radius / m_UnitExtent.X;
+
+	TArray<UFlammableUnit*> unitsArray;
 
 #ifdef BEACON_DEBUG
 	UE_LOG(LogTemp, Warning, TEXT("Count: %d"), count);
@@ -172,55 +187,74 @@ void UFlammableComponent::CreateSphereFlammableUnits(const USphereComponent* sph
 
 	int limit = FMath::Square(count + m_UnitExtent.X / count);
 
-	for (int x = -(count >> 1); x <= (count >> 1); x++)
+	for (int x = -count; x <= count; x++)
 	{
-		for (int y = -(count >> 1); y <= (count >> 1); y++)
+		for (int y = -count; y <= count; y++)
 		{
-			for (int z = -(count >> 1); z <= (count >> 1); z++)
+			for (int z = -count; z <= count; z++)
 			{
-				if (((x*x + y*y + z*z) << 2) <= FMath::Square(count))
+				if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) <= 3 * (count - 1))
 				{
 					UFlammableUnit* unit = NewObject<UFlammableUnit>(this);
 
 					//register component for rendering
 					unit->RegisterComponent();
-					unit->Initialize(m_UnitExtent, m_ConnectType);
+					unit->Initialize(FVector(size), m_ConnectType);
 
 					//setup attachment
 					unit->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 					unit->SetRelativeLocation(
 						FVector(
-							2 * x * m_UnitExtent.X,
-							2 * y * m_UnitExtent.Y,
-							2 * z * m_UnitExtent.Z
+							2 * x * size,
+							2 * y * size,
+							2 * z * size
 						)
 					);
 
 					//bind pointer
 					if (m_ConnectType == ConnectType::SixDirection)
 					{
-						UFlammableUnit** xp = m_FlammableUnitsMap.Find(FVector(x - 1, y, z));
-						UFlammableUnit** yp = m_FlammableUnitsMap.Find(FVector(x, y - 1, z));
-						UFlammableUnit** zp = m_FlammableUnitsMap.Find(FVector(x, y, z - 1));
-						if (xp != nullptr)
+						if (x + count >= 1)
 						{
-							unit->SetNeighbor(-1, 0, 0, *xp);
+							UFlammableUnit* neighbor = unitsArray[(count + x - 1) * m_UnitCount.Y * m_UnitCount.Z + (count + y) * m_UnitCount.Z + (count + z)];
+							unit->SetNeighbor(-1, 0, 0, neighbor);
+							if (neighbor != nullptr)
+							{
+								neighbor->SetNeighbor(1, 0, 0, unit);
+							}
 						}
-						if (yp != nullptr)
+						if (y + count >= 1)
 						{
-							unit->SetNeighbor(0, -1, 0, *yp);
+							UFlammableUnit* neighbor = unitsArray[(count + x) * m_UnitCount.Y * m_UnitCount.Z + (count + y - 1) * m_UnitCount.Z + (count + z)];
+							unit->SetNeighbor(0, -1, 0, neighbor);
+							if (neighbor != nullptr)
+							{
+								neighbor->SetNeighbor(0, 1, 0, unit);
+							}
 						}
-						if (zp != nullptr)
+						if (z + count >= 1)
 						{
-							unit->SetNeighbor(0, 0, -1, *zp);
+							UFlammableUnit* neighbor = unitsArray[(count + x) * m_UnitCount.Y * m_UnitCount.Z + (count + y) * m_UnitCount.Z + count + z - 1];
+							unit->SetNeighbor(0, 0, -1, neighbor);
+							if (neighbor != nullptr)
+							{
+								neighbor->SetNeighbor(0, 0, 1, unit);
+							}
 						}
 					}
 
+					unitsArray.Add(unit);
 					m_FlammableUnitsMap.Add(FVector(x, y, z), unit);
+				}
+				else
+				{
+					unitsArray.Add(nullptr);
 				}
 			}
 		}
 	}
+	
+	unitsArray.Empty();
 
 	if (m_InitializeWithFlame)
 	{

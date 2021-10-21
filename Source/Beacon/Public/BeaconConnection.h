@@ -28,17 +28,7 @@ public:
 	virtual void SetNeighbor(int x, int y, int z, Unit* unit)
 	{
 		int index = GetIndex(x + 1, y + 1, z + 1);
-		if (index >= 0 && index < neighbors.Num())
-		{
-			if (neighbors[index] == nullptr)
-			{
-				neighbors[index] = unit;
-				if (unit != nullptr)
-				{
-					unit->SetNeighbor(-x, -y, -z, self);
-				}
-			}
-		}
+		neighbors[index] = unit;
 	}
 	virtual int GetIndex(int x, int y, int z) = 0;
 
