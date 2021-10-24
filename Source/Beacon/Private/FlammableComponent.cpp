@@ -3,6 +3,7 @@
 
 #include "FlammableComponent.h"
 #include "BeaconCore.h"
+#include "BeaconLog.h"
 
 #include "Components/PrimitiveComponent.h"
 #include "Components/SceneComponent.h"
@@ -33,7 +34,6 @@ UFlammableComponent::UFlammableComponent()
 void UFlammableComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
 	const AActor* owner = GetOwner();
 
 	if (owner != nullptr)
@@ -121,30 +121,7 @@ void UFlammableComponent::CreateBoxFlammableUnits(const UBoxComponent* box)
 						2.0f * size.Z * (z - count_z)
 					) + size
 				);
-
-				//bind pointer
-				if (m_ConnectType == ConnectType::SixDirection)
-				{
-					if (x >= 1)
-					{
-						UFlammableUnit* neighbor = m_FlammableUnits[(x - 1) * m_UnitCount.Y * m_UnitCount.Z + y * m_UnitCount.Z + z];
-						unit->SetNeighbor(-1, 0, 0, neighbor);
-						neighbor->SetNeighbor(1, 0, 0, unit);
-					}
-					if (y >= 1)
-					{
-						UFlammableUnit* neighbor = m_FlammableUnits[x * m_UnitCount.Y * m_UnitCount.Z + (y - 1) * m_UnitCount.Z + z];
-						unit->SetNeighbor(0, -1, 0, neighbor);
-						neighbor->SetNeighbor(0, 1, 0, unit);
-					}
-					if (z >= 1)
-					{
-						UFlammableUnit* neighbor = m_FlammableUnits[x * m_UnitCount.Y * m_UnitCount.Z + y * m_UnitCount.Z + z - 1];
-						unit->SetNeighbor(0, 0, -1, neighbor);
-						neighbor->SetNeighbor(0, 0, 1, unit);
-					}
-				}
-				//unit->Ignite(T_FireParticle);
+				unit->Ignite(T_FireParticle);
 				m_FlammableUnits.Add(unit);
 			}
 		}
@@ -210,39 +187,7 @@ void UFlammableComponent::CreateSphereFlammableUnits(const USphereComponent* sph
 							2 * z * size
 						)
 					);
-
-					//bind pointer
-					if (m_ConnectType == ConnectType::SixDirection)
-					{
-						if (x + count >= 1)
-						{
-							UFlammableUnit* neighbor = unitsArray[(count + x - 1) * m_UnitCount.Y * m_UnitCount.Z + (count + y) * m_UnitCount.Z + (count + z)];
-							unit->SetNeighbor(-1, 0, 0, neighbor);
-							if (neighbor != nullptr)
-							{
-								neighbor->SetNeighbor(1, 0, 0, unit);
-							}
-						}
-						if (y + count >= 1)
-						{
-							UFlammableUnit* neighbor = unitsArray[(count + x) * m_UnitCount.Y * m_UnitCount.Z + (count + y - 1) * m_UnitCount.Z + (count + z)];
-							unit->SetNeighbor(0, -1, 0, neighbor);
-							if (neighbor != nullptr)
-							{
-								neighbor->SetNeighbor(0, 1, 0, unit);
-							}
-						}
-						if (z + count >= 1)
-						{
-							UFlammableUnit* neighbor = unitsArray[(count + x) * m_UnitCount.Y * m_UnitCount.Z + (count + y) * m_UnitCount.Z + count + z - 1];
-							unit->SetNeighbor(0, 0, -1, neighbor);
-							if (neighbor != nullptr)
-							{
-								neighbor->SetNeighbor(0, 0, 1, unit);
-							}
-						}
-					}
-
+					unit->Ignite(T_FireParticle);
 					unitsArray.Add(unit);
 					m_FlammableUnitsMap.Add(FVector(x, y, z), unit);
 				}
