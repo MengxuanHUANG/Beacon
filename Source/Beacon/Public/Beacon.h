@@ -6,6 +6,8 @@
 #include "Modules/ModuleManager.h"
 
 class FToolBarBuilder;
+class UFlammableComponent;
+
 
 class FBeaconModule : public IModuleInterface
 {
@@ -17,6 +19,7 @@ public:
 
 	void BuildUnits();
 	void AddToolbarButton(FToolBarBuilder& Builder);
+
 private:
 	TSharedPtr<FUICommandList> m_BeaconCommands;
 };

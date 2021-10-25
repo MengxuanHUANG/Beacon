@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "FlammableUnit.h"
 #include "Containers/Queue.h"
+#include "UnitsManager.h"
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
@@ -28,12 +29,12 @@ public:
 		uint32 Z;
 };
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class BEACON_API UFlammableComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	// Sets default values for this component's properties
 	UFlammableComponent();
 
@@ -43,7 +44,7 @@ protected:
 
 	virtual void DestroyComponent(bool bPromoteChildren) override;
 
-public:	
+public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -53,35 +54,23 @@ public:
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* T_FireParticle;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TArray<UFlammableUnit*> m_FlammableUnits;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		TMap<FVector, UFlammableUnit*> m_FlammableUnitsMap;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector m_UnitExtent;
-
-	UPROPERTY(EditAnywhere)
-		FUnitCount m_UnitCount;
-
 	UPROPERTY(EditAnywhere)
 		uint32 m_Count = 1;
+
+	UPROPERTY(EditAnywhere)
+		FUnitCount m_UnitCounts = { 3, 3, 3 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		ConnectType m_ConnectType = ConnectType::SixDirection;
 
 private:
-	void CreateBoxFlammableUnits(const class UBoxComponent* box);
-	void CreateCapsuleFlammableUnits(const class UCapsuleComponent* capsule);
-	void CreateSphereFlammableUnits(const class USphereComponent* sphere);
-
-private:
-		bool b_IsBurning;
-		TQueue<UFlammableUnit*> m_BurningUnits;
-
+	bool b_IsBurning;
+	UnitsManager* m_UnitsManager;
 public:
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
+		void CreateUnits();
+
+	UFUNCTION()
 		void Ignited(UParticleSystem* particle);
 
 	UFUNCTION()
@@ -93,9 +82,12 @@ public:
 			const FHitResult& SweepResult);
 
 	UFUNCTION()
-		inline bool IsBurning() const { return b_IsBurning;	}
+		inline bool IsBurning() const { return b_IsBurning; }
 
 	//return nullptr is not burning
 	UFUNCTION()
 		inline UParticleSystem* GetFireParticle() const { return T_FireParticle; }
+
+public:
+	static TSet<UFlammableComponent*> Flammables;
 };

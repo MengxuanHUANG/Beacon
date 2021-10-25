@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Unit.h"
 #include "BeaconConnection.h"
 #include "Components/SceneComponent.h"
 #include "FlammableUnit.generated.h"
@@ -11,16 +12,8 @@ class UBoxComponent;
 class UParticleSystemComponent;
 class UFlammableUnit;
 
-//UENUM()
-//enum class ConnectType : uint8
-//{
-//	None = 1,
-//	SixDirection = 6,
-//	TwentySixDirection = 26
-//};
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UFlammableUnit : public USceneComponent
+class UFlammableUnit : public USceneComponent, public Unit
 {
 	GENERATED_BODY()
 
@@ -40,48 +33,40 @@ public:
 
 public:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
-		UBoxComponent* m_DebugBox;
-	
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
 		UParticleSystemComponent* m_ParticleSystem;
+
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
+		UBoxComponent* m_DebugBox;
 
 	UPROPERTY(EditAnyWhere)
 		FVector m_UnitExtent;
 
-	UPROPERTY(EditAnyWhere)
-		ConnectType m_ConnectType;
-
 public:
-	UFUNCTION(BlueprintCallable)
-		void Initialize(FVector extent, ConnectType type);
+	virtual void Initialize(FVector extent, ConnectType type) override;
 
-	UFUNCTION(BlueprintCallable)
-		void UpdateExtent(FVector extent);
+	virtual void OnDestroy(bool bPromoteChildren) override;
 
-	UFUNCTION(BlueprintCallable)
-		void Ignite(UParticleSystem* particle);
+	virtual void Ignite(UParticleSystem* particle) override;
 
-	UFUNCTION(BlueprintCallable)
-		void SetNeighbor(int x, int y, int z, UFlammableUnit* unit);
+	virtual void SetNeighbor(int x, int y, int z, Unit* unit) override;
 
-	UFUNCTION(BlueprintCallable)
-		const TArray<UFlammableUnit*>& GetNeighbors() const;
+	virtual const TArray<Unit*>& GetNeighbors() const override;
 
+	virtual void IGetName(FString& name) override;
+	
 	//TODO: remove
 	UFUNCTION()
 		void IncreaseTemperature(float temperature);
-
 	inline  float GetTemperature() const { return m_Temperature; }
 	
-	void DisplayDebugInfo();
-
+	virtual void DisplayDebugInfo() override;
 private:
 	UPROPERTY(VisibleAnywhere)
 		float m_Temperature = 0;
 
 	bool b_IsBurning;
 
-	Neighbors<UFlammableUnit>* m_Neighbors;
+	Neighbors<Unit>* m_Neighbors;
 
 public:
 	UFUNCTION(BlueprintCallable)

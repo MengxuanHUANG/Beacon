@@ -1,8 +1,14 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Beacon.h"
+
+#include "BeaconCore.h"
+#include "BeaconLog.h"
+
 #include "BeaconEditorCommands.h"
 #include "LevelEditor.h"
+#include "Kismet/GameplayStatics.h"
+#include "FlammableComponent.h"
 
 #define LOCTEXT_NAMESPACE "FBeaconModule"
 
@@ -40,7 +46,18 @@ void FBeaconModule::ShutdownModule()
 
 void FBeaconModule::BuildUnits()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Click"));
+#ifdef BEACON_DEBUG
+	BEACON_LOG(Display, "address %d", &(UFlammableComponent::Flammables));
+	BEACON_LOG(Display, "Build Units in %d componets", UFlammableComponent::Flammables.Num());
+#endif
+
+	/*for (auto flammable : UFlammableComponent::Flammables)
+	{
+		if (flammable)
+		{
+			flammable->CreateUnits();
+		}
+	}*/
 }
 
 void FBeaconModule::AddToolbarButton(FToolBarBuilder& Builder)

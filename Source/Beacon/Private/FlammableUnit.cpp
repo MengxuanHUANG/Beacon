@@ -43,17 +43,18 @@ void UFlammableUnit::BeginPlay()
 
 void UFlammableUnit::Initialize(FVector extent,ConnectType type)
 {
+	m_ParticleSystem->RegisterComponent();
+
 	m_UnitExtent = extent;
 	m_ConnectType = type;
-	m_ParticleSystem->RegisterComponent();
 
 	switch (type)
 	{
 	case ConnectType::SixDirection:
-		m_Neighbors = Neighbors<UFlammableUnit>::CreateNeighbors<SixDirNeighbors<UFlammableUnit> >(this);
+		m_Neighbors = Neighbors<UFlammableUnit>::CreateNeighbors<SixDirNeighbors<Unit> >(this);
 		break;
 	case ConnectType::TwentySixDirection:
-		m_Neighbors = Neighbors<UFlammableUnit>::CreateNeighbors<TwentySixDirNeighbors<UFlammableUnit> >(this);
+		m_Neighbors = Neighbors<UFlammableUnit>::CreateNeighbors<TwentySixDirNeighbors<Unit> >(this);
 		break;
 	case ConnectType::None:
 		break;
@@ -62,8 +63,13 @@ void UFlammableUnit::Initialize(FVector extent,ConnectType type)
 
 #ifdef BEACON_DEBUG
 	m_DebugBox->RegisterComponent();
-	m_DebugBox->SetBoxExtent(m_UnitExtent);
+	m_DebugBox->SetBoxExtent(extent);
 #endif
+}
+
+void UFlammableUnit::OnDestroy(bool bPromoteChildren)
+{
+	this->DestroyComponent(bPromoteChildren);
 }
 
 // Called every frame
@@ -95,12 +101,6 @@ void UFlammableUnit::DestroyComponent(bool bPromoteChildren)
 	Super::DestroyComponent(bPromoteChildren);
 }
 
-void UFlammableUnit::UpdateExtent(FVector extent)
-{
-	m_UnitExtent = extent;
-	m_DebugBox->SetBoxExtent(m_UnitExtent);
-}
-
 void UFlammableUnit::Ignite(UParticleSystem* particle)
 {
 	if (!b_IsBurning && m_ParticleSystem != nullptr)
@@ -110,14 +110,19 @@ void UFlammableUnit::Ignite(UParticleSystem* particle)
 	}
 }
 
-void UFlammableUnit::SetNeighbor(int x, int y, int z, UFlammableUnit* unit)
+void UFlammableUnit::SetNeighbor(int x, int y, int z, Unit* unit)
 {
 	m_Neighbors->SetNeighbor(x, y, z, unit);
 }
 
-const TArray<UFlammableUnit*>& UFlammableUnit::GetNeighbors() const
+const TArray<Unit*>& UFlammableUnit::GetNeighbors() const
 {
 	return m_Neighbors->neighbors;
+}
+
+void UFlammableUnit::IGetName(FString& name)
+{
+	GetName(name);
 }
 
 void UFlammableUnit::IncreaseTemperature(float temperature)
@@ -139,8 +144,8 @@ void UFlammableUnit::DisplayDebugInfo()
 		}
 		else
 		{
-			UFlammableUnit* unit = m_Neighbors->neighbors[i];
-			unit->GetName(name);
+			Unit* unit = m_Neighbors->neighbors[i];
+			unit->IGetName(name);
 			UE_LOG(LogTemp, Warning, TEXT("index %d: %s"), i, *name);
 		}
 	}
