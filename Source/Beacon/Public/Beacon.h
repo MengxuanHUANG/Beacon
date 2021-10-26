@@ -8,7 +8,6 @@
 class FToolBarBuilder;
 class UFlammableComponent;
 
-
 class FBeaconModule : public IModuleInterface
 {
 public:
@@ -22,4 +21,13 @@ public:
 
 private:
 	TSharedPtr<FUICommandList> m_BeaconCommands;
+
+public:
+
+	TSet<UFlammableComponent*> Flammables;
+
+	static inline FBeaconModule& Get()
+	{
+		return FModuleManager::LoadModuleChecked<FBeaconModule>("Beacon");
+	}
 };

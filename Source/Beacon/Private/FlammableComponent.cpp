@@ -4,7 +4,6 @@
 #include "FlammableComponent.h"
 
 #include "Beacon.h"
-#include "BeaconCore.h"
 #include "BeaconLog.h"
 
 #include "Components/PrimitiveComponent.h"
@@ -24,8 +23,6 @@
 #include "BoxUnitsManager.h"
 #include "SphereUnitsManager.h"
 
-TSet<UFlammableComponent*> UFlammableComponent::Flammables;
-
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
 {
@@ -33,14 +30,8 @@ UFlammableComponent::UFlammableComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	SetUsingAbsoluteScale(true);
-	BEACON_LOG(Display, "address %d", &Flammables);
-	AActor* owner = GetOwner();
-	if (owner != nullptr)
-	{
-		owner->Tags.Add(FName("flammable"));
-	}
-	
-	/*Flammables.Add(this);*/
+	BEACON_LOG(Display, "Address %d", &(FBeaconModule::Get().Flammables));
+	FBeaconModule::Get().Flammables.Add(this);
 }
 
 // Called when the game starts
@@ -54,7 +45,8 @@ void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 {
 	AActor* owner = GetOwner();
 	owner->Tags.Remove(FName("Flammable"));
-	//Flammables.Remove(this);
+
+	FBeaconModule::Get().Flammables.Remove(this);
 
 	if (m_UnitsManager != nullptr)
 	{
@@ -75,11 +67,20 @@ void UFlammableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	}
 }
 
+void UFlammableComponent::ClearUnits()
+{
+	if (m_UnitsManager != nullptr)
+	{
+		m_UnitsManager->Destroy(false);
+		delete m_UnitsManager;
+	}
+}
+
 void UFlammableComponent::CreateUnits()
 {
 	USceneComponent* parent = this->GetAttachParent();
 
-	if (parent != nullptr && m_UnitsManager != nullptr)
+	if (parent != nullptr && m_UnitsManager == nullptr)
 	{
 		UClass* uClass = parent->GetClass();
 		FString name = uClass->GetFullGroupName(false);
@@ -91,7 +92,6 @@ void UFlammableComponent::CreateUnits()
 			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
 
 			m_UnitsManager = UnitsManager::CreateUnitsManager<BoxUnitsManager<UFlammableUnit, UFlammableUnit> >(m_ConnectType, m_UnitCounts.X, m_UnitCounts.Y, m_UnitCounts.Z);
-			/*m_UnitsManager = new BoxUnitsManager<UFlammableUnit>*/
 			m_UnitsManager->CreateUnits(this, parent);
 		}
 		else if(name.Compare("SphereComponent") == 0)

@@ -68,6 +68,8 @@ private:
 	UnitsManager* m_UnitsManager;
 public:
 	UFUNCTION()
+		void ClearUnits();
+	UFUNCTION()
 		void CreateUnits();
 
 	UFUNCTION()
@@ -87,7 +89,4 @@ public:
 	//return nullptr is not burning
 	UFUNCTION()
 		inline UParticleSystem* GetFireParticle() const { return T_FireParticle; }
-
-public:
-	static TSet<UFlammableComponent*> Flammables;
 };

@@ -47,17 +47,18 @@ void FBeaconModule::ShutdownModule()
 void FBeaconModule::BuildUnits()
 {
 #ifdef BEACON_DEBUG
-	BEACON_LOG(Display, "address %d", &(UFlammableComponent::Flammables));
-	BEACON_LOG(Display, "Build Units in %d componets", UFlammableComponent::Flammables.Num());
+	BEACON_LOG(Display, "address %d", &(Flammables));
+	BEACON_LOG(Display, "Build Units in %d componets", Flammables.Num());
 #endif
 
-	/*for (auto flammable : UFlammableComponent::Flammables)
+	for (auto flammable : Flammables)
 	{
 		if (flammable)
 		{
+			flammable->ClearUnits();
 			flammable->CreateUnits();
 		}
-	}*/
+	}
 }
 
 void FBeaconModule::AddToolbarButton(FToolBarBuilder& Builder)
