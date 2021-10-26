@@ -34,6 +34,12 @@ UFlammableComponent::UFlammableComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetUsingAbsoluteScale(true);
 	BEACON_LOG(Display, "address %d", &Flammables);
+	AActor* owner = GetOwner();
+	if (owner != nullptr)
+	{
+		owner->Tags.Add(FName("flammable"));
+	}
+	
 	/*Flammables.Add(this);*/
 }
 
@@ -46,6 +52,8 @@ void UFlammableComponent::BeginPlay()
 //Called when component destroyed
 void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 {
+	AActor* owner = GetOwner();
+	owner->Tags.Remove(FName("Flammable"));
 	//Flammables.Remove(this);
 
 	if (m_UnitsManager != nullptr)
