@@ -3,9 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "Unit.h"
+#include "BeaconCore.h"
 #include "BeaconConnection.h"
 #include "Components/SceneComponent.h"
+
 #include "FlammableUnit.generated.h"
 
 class UBoxComponent;
@@ -35,8 +38,9 @@ public:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
 		UParticleSystemComponent* m_ParticleSystem;
 
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
+#ifdef BEACON_DEBUG
 		UBoxComponent* m_DebugBox;
+#endif
 
 	UPROPERTY(EditAnyWhere)
 		FVector m_UnitExtent;

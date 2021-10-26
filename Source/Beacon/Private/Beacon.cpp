@@ -2,7 +2,6 @@
 
 #include "Beacon.h"
 
-#include "BeaconCore.h"
 #include "BeaconLog.h"
 
 #include "BeaconEditorCommands.h"
@@ -47,11 +46,11 @@ void FBeaconModule::ShutdownModule()
 void FBeaconModule::BuildUnits()
 {
 #ifdef BEACON_DEBUG
-	BEACON_LOG(Display, "address %d", &(Flammables));
-	BEACON_LOG(Display, "Build Units in %d componets", Flammables.Num());
+	BEACON_LOG(Display, "address %d", &(FBeaconModule::Get().Flammables));
+	BEACON_LOG(Display, "Build Units in %d componets", FBeaconModule::Get().Flammables.Num());
 #endif
-
-	for (auto flammable : Flammables)
+	
+	for (auto flammable : FBeaconModule::Get().Flammables)
 	{
 		if (flammable)
 		{

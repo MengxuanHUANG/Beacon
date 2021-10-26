@@ -28,7 +28,10 @@ public:
 	BoxUnitsManager(ConnectType type, uint32 x, uint32 y, uint32 z)
 		:UnitsManager(type), m_UnitCount(x, y, z)
 	{}
-	~BoxUnitsManager() {}
+	~BoxUnitsManager() 
+	{
+
+	}
 
 	virtual void Destroy(bool bPromoteChildren) override
 	{
@@ -84,6 +87,31 @@ public:
 							2.0f * size.Z * (z - count_z)
 						) + size
 					);
+
+					//bind pointer
+					if (m_ConnectType == ConnectType::SixDirection)
+					{
+						Unit* neighbor;
+						if (x - 1 >= 0)
+						{
+							neighbor = m_Units[(x - 1) * count_y * count_z + y * count_z + z];
+							unit->SetNeighbor(-1, 0, 0, neighbor);
+							neighbor->SetNeighbor(1, 0, 0, unit);
+						}
+						if (y - 1 >= 0)
+						{
+							neighbor = m_Units[x * count_y * count_z + (y - 1) * count_z + z];
+							unit->SetNeighbor(0, -1, 0, neighbor);
+							neighbor->SetNeighbor(0, 1, 0, unit);
+						}
+						if (z - 1 >= 0)
+						{
+							neighbor = m_Units[x * count_y * count_z + y * count_z + z - 1];
+							unit->SetNeighbor(0, 0, -1, neighbor);
+							neighbor->SetNeighbor(0, 0, 1, unit);
+						}
+					}
+
 					m_Units.Add(unit);
 				}
 			}

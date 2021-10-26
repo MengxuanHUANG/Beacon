@@ -6,6 +6,8 @@
 #include "Beacon.h"
 #include "BeaconLog.h"
 
+#include "FlammableUnit.h"
+
 #include "Components/PrimitiveComponent.h"
 #include "Components/SceneComponent.h"
 
@@ -23,6 +25,8 @@
 #include "BoxUnitsManager.h"
 #include "SphereUnitsManager.h"
 
+#include "Modules/ModuleManager.h"
+
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
 {
@@ -30,8 +34,12 @@ UFlammableComponent::UFlammableComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	SetUsingAbsoluteScale(true);
-	BEACON_LOG(Display, "Address %d", &(FBeaconModule::Get().Flammables));
-	FBeaconModule::Get().Flammables.Add(this);
+
+	if (FModuleManager::Get().IsModuleLoaded("Beacon"))
+	{
+		BEACON_LOG(Display, "Address %d", &(FBeaconModule::Get().Flammables));
+		FBeaconModule::Get().Flammables.Add(this);
+	}
 }
 
 // Called when the game starts
@@ -46,12 +54,16 @@ void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 	AActor* owner = GetOwner();
 	owner->Tags.Remove(FName("Flammable"));
 
-	FBeaconModule::Get().Flammables.Remove(this);
+	if (FModuleManager::Get().IsModuleLoaded("Beacon"))
+	{
+		FBeaconModule::Get().Flammables.Remove(this);
+	}
 
 	if (m_UnitsManager != nullptr)
 	{
 		m_UnitsManager->Destroy(bPromoteChildren);
 		delete m_UnitsManager;
+		m_UnitsManager = nullptr;
 	}
 	Super::DestroyComponent(bPromoteChildren);
 }
@@ -73,6 +85,7 @@ void UFlammableComponent::ClearUnits()
 	{
 		m_UnitsManager->Destroy(false);
 		delete m_UnitsManager;
+		m_UnitsManager = nullptr;
 	}
 }
 
@@ -89,6 +102,8 @@ void UFlammableComponent::CreateUnits()
 		if (name.Compare("BoxComponent") == 0)
 		{
 			UBoxComponent* box = Cast<UBoxComponent>(parent);
+
+			box->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
 
 			m_UnitsManager = UnitsManager::CreateUnitsManager<BoxUnitsManager<UFlammableUnit, UFlammableUnit> >(m_ConnectType, m_UnitCounts.X, m_UnitCounts.Y, m_UnitCounts.Z);
@@ -97,7 +112,10 @@ void UFlammableComponent::CreateUnits()
 		else if(name.Compare("SphereComponent") == 0)
 		{
 			USphereComponent* sphere = Cast<USphereComponent>(parent);
+
+			sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			
 			m_UnitsManager = UnitsManager::CreateUnitsManager<SphereUnitsManager<UFlammableUnit, UFlammableUnit> >(m_ConnectType, m_Count);
 			m_UnitsManager->CreateUnits(this, parent);
 		}

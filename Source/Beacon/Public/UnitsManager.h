@@ -6,6 +6,7 @@
 #include "BeaconConnection.h"
 
 class USceneComponent;
+class Unit;
 
 class BEACON_API UnitsManager
 {

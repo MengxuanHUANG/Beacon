@@ -19,7 +19,10 @@ public:
 	SphereUnitsManager(ConnectType type, uint32 count)
 		:UnitsManager(type), m_Count(count)
 	{}
-	~SphereUnitsManager() {}
+	~SphereUnitsManager() 
+	{
+
+	}
 	virtual void Destroy(bool bPromoteChildren) override
 	{
 		for (auto& pair : m_Units)
@@ -61,6 +64,40 @@ public:
 								2 * z * size
 							)
 						);
+
+						//bind pointer
+						if (m_ConnectType == ConnectType::SixDirection)
+						{
+							Unit* neighbor;
+							if (x - 1 >= 0)
+							{
+								neighbor = unitsArray[(count + x - 1) * m_Count * m_Count + (count + y) * m_Count + (count + z)];
+								unit->SetNeighbor(-1, 0, 0, neighbor);
+								if (neighbor != nullptr)
+								{
+									neighbor->SetNeighbor(1, 0, 0, unit);
+								}
+							}
+							if (y - 1 >= 0)
+							{
+								neighbor = unitsArray[(count + x) * m_Count * m_Count + (count + y - 1) * m_Count + (count + z)];
+								unit->SetNeighbor(0, -1, 0, neighbor);
+								if (neighbor != nullptr)
+								{
+									neighbor->SetNeighbor(0, 1, 0, unit);
+								}
+							}
+							if (z - 1 >= 0)
+							{
+								neighbor = unitsArray[(count + x) * m_Count * m_Count + (count + y) * m_Count + count + z - 1];
+								unit->SetNeighbor(0, 0, -1, neighbor);
+								if (neighbor != nullptr)
+								{
+									neighbor->SetNeighbor(0, 0, 1, unit);
+								}
+							}
+						}
+
 						unitsArray.Add(unit);
 						m_Units.Add(FVector(x, y, z), unit);
 					}

@@ -28,6 +28,6 @@ public:
 
 	static inline FBeaconModule& Get()
 	{
-		return FModuleManager::LoadModuleChecked<FBeaconModule>("Beacon");
+		return FModuleManager::GetModuleChecked<FBeaconModule>("Beacon");
 	}
 };

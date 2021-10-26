@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FlammableUnit.h"
-#include "Containers/Queue.h"
+#include "BeaconConnection.h"
 #include "UnitsManager.h"
 #include "FlammableComponent.generated.h"
 
