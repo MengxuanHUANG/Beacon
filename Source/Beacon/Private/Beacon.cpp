@@ -45,13 +45,11 @@ void FBeaconModule::ShutdownModule()
 
 void FBeaconModule::BuildUnits()
 {
-	BEACON_LOG(Display, "Build Units in %d componets", FBeaconModule::Get().Flammables.Num());
-
 	TArray<AActor*> actors;
 
-	/*if (GEngine)
+	if (GEngine)
 	{
-		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName("Flammable"), actors);
+		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_FLAMMABLE_TAG), actors);
 		
 		BEACON_LOG(Display, "Fund %d Actor", actors.Num());
 		
@@ -60,15 +58,14 @@ void FBeaconModule::BuildUnits()
 			FString name;
 			actor->GetName(name);
 			BEACON_LOG(Display, "address %s", *name);
-		}
-	}*/
-	
 
-	for (auto flammable : FBeaconModule::Get().Flammables)
-	{
-		BEACON_LOG(Display, "address %d", flammable);
-		flammable->ClearUnits();
-		flammable->CreateUnits();
+			for (auto component : actor->GetComponentsByClass(UFlammableComponent::StaticClass()))
+			{
+				UFlammableComponent* flammable = Cast<UFlammableComponent>(component);
+				flammable->ClearUnits();
+				flammable->CreateUnits();
+			}
+		}
 	}
 }
 

@@ -118,13 +118,23 @@ public:
 		}
 
 #ifdef BEACON_DEBUG
-		for (Unit* unit : m_Units)
+		for (int x = 0; x < (int)m_UnitCount.X; x++)
+		{
+			for (int y = 0; y < (int)m_UnitCount.Y; y++)
+			{
+				for (int z = 0; z < (int)m_UnitCount.Z; z++)
+				{
+					BEACON_LOG(Display, "Index %f", x * count_y * count_z + y * count_z + z);
+				}
+			}
+		}
+		/*for (Unit* unit : m_Units)
 		{
 			if (unit)
 			{
 				unit->DisplayDebugInfo();
 			}
-		}
+		}*/
 #endif
 	}
 	virtual void UpdateUnits() override

@@ -137,6 +137,7 @@ void UFlammableUnit::DisplayDebugInfo()
 	FString name;
 	GetName(name);
 	UE_LOG(LogTemp, Warning, TEXT("%s has neighbors"), *name);
+
 	for (int i = 0; i < int(m_ConnectType); i++)
 	{
 		if (m_Neighbors->neighbors[i] == nullptr)

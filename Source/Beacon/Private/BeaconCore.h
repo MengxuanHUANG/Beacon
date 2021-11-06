@@ -7,3 +7,5 @@
 #define BEACON_DEBUG
 #endif
 #endif
+
+#define BEACON_FLAMMABLE_TAG "Beacon_Flammable"
