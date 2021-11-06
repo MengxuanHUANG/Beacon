@@ -8,7 +8,7 @@
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
-class UStaticMeshComponent;
+class UFlammableUnit;
 
 USTRUCT(BlueprintType)
 struct FUnitCount
@@ -36,12 +36,16 @@ class BEACON_API UFlammableComponent : public USceneComponent
 public:
 	// Sets default values for this component's properties
 	UFlammableComponent();
+	~UFlammableComponent();
 
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	virtual void DestroyComponent(bool bPromoteChildren) override;
+
+	void OnActorDeleted(class AActor* DeletedActor);
+	void OnActorAttached(class AActor* AddedActor, const class AActor* otherActor);
 
 public:
 	// Called every frame

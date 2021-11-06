@@ -23,7 +23,6 @@ private:
 	TSharedPtr<FUICommandList> m_BeaconCommands;
 
 public:
-
 	TSet<UFlammableComponent*> Flammables;
 
 	static inline FBeaconModule& Get()

@@ -1,13 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "Beacon.h"
-
 #include "BeaconLog.h"
+
+#include "FlammableComponent.h"
 
 #include "BeaconEditorCommands.h"
 #include "LevelEditor.h"
 #include "Kismet/GameplayStatics.h"
-#include "FlammableComponent.h"
 
 #define LOCTEXT_NAMESPACE "FBeaconModule"
 
@@ -45,18 +45,30 @@ void FBeaconModule::ShutdownModule()
 
 void FBeaconModule::BuildUnits()
 {
-#ifdef BEACON_DEBUG
-	BEACON_LOG(Display, "address %d", &(FBeaconModule::Get().Flammables));
 	BEACON_LOG(Display, "Build Units in %d componets", FBeaconModule::Get().Flammables.Num());
-#endif
+
+	TArray<AActor*> actors;
+
+	/*if (GEngine)
+	{
+		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName("Flammable"), actors);
+		
+		BEACON_LOG(Display, "Fund %d Actor", actors.Num());
+		
+		for (AActor* actor : actors)
+		{
+			FString name;
+			actor->GetName(name);
+			BEACON_LOG(Display, "address %s", *name);
+		}
+	}*/
 	
+
 	for (auto flammable : FBeaconModule::Get().Flammables)
 	{
-		if (flammable)
-		{
-			flammable->ClearUnits();
-			flammable->CreateUnits();
-		}
+		BEACON_LOG(Display, "address %d", flammable);
+		flammable->ClearUnits();
+		flammable->CreateUnits();
 	}
 }
 

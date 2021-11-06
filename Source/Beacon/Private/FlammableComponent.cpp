@@ -8,6 +8,8 @@
 
 #include "FlammableUnit.h"
 
+#include "Engine/Engine.h"
+
 #include "Components/PrimitiveComponent.h"
 #include "Components/SceneComponent.h"
 
@@ -35,10 +37,32 @@ UFlammableComponent::UFlammableComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetUsingAbsoluteScale(true);
 
+	AActor* owner = GetOwner();
+	if (owner != nullptr)
+	{
+		owner->Tags.Add(FName("Flammable"));
+	}
+
 	if (FModuleManager::Get().IsModuleLoaded("Beacon"))
 	{
-		BEACON_LOG(Display, "Address %d", &(FBeaconModule::Get().Flammables));
+		BEACON_LOG(Display, "Added %d", this);
 		FBeaconModule::Get().Flammables.Add(this);
+	}
+
+	if (GEngine)
+	{
+		GEngine->OnLevelActorDeleted().AddUObject(this, &UFlammableComponent::OnActorDeleted);
+		GEngine->OnLevelActorAttached().AddUObject(this, &UFlammableComponent::OnActorAttached);
+	}
+}
+
+UFlammableComponent::~UFlammableComponent()
+{
+	BEACON_LOG(Display, "Deconstruct %d", this);
+	if (FModuleManager::Get().IsModuleLoaded("Beacon"))
+	{
+		BEACON_LOG(Display, "Removed %d", this);
+		FBeaconModule::Get().Flammables.Remove(this);
 	}
 }
 
@@ -52,10 +76,14 @@ void UFlammableComponent::BeginPlay()
 void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 {
 	AActor* owner = GetOwner();
-	owner->Tags.Remove(FName("Flammable"));
+	if (owner != nullptr)
+	{
+		owner->Tags.Remove(FName("Flammable"));
+	}
 
 	if (FModuleManager::Get().IsModuleLoaded("Beacon"))
 	{
+		BEACON_LOG(Display, "Removed %d", this);
 		FBeaconModule::Get().Flammables.Remove(this);
 	}
 
@@ -66,6 +94,39 @@ void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 		m_UnitsManager = nullptr;
 	}
 	Super::DestroyComponent(bPromoteChildren);
+}
+
+void UFlammableComponent::OnActorDeleted(AActor* DeletedActor)
+{
+	if (DeletedActor == this->GetAttachmentRootActor())
+	{
+
+#ifdef BEACON_DEBUG
+		FString name;
+		DeletedActor->GetName(name);
+		BEACON_LOG(Display, "Delete %s from level", *name);
+#endif
+
+		this->DestroyComponent(false);
+	}
+}
+
+void UFlammableComponent::OnActorAttached(AActor* AddedActor, const AActor* otherActor)
+{
+#ifdef BEACON_DEBUG
+	FString name;
+	AddedActor->GetName(name);
+	BEACON_LOG(Display, "Added %s to level", *name);
+#endif
+
+	if (AddedActor == this->GetAttachmentRootActor())
+	{
+		if (FModuleManager::Get().IsModuleLoaded("Beacon"))
+		{
+			BEACON_LOG(Display, "Added %d", this);
+			FBeaconModule::Get().Flammables.Add(this);
+		}
+	}
 }
 
 // Called every frame
