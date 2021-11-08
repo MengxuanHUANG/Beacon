@@ -36,6 +36,7 @@ class BEACON_API UFlammableComponent : public USceneComponent
 public:
 	// Sets default values for this component's properties
 	UFlammableComponent();
+	~UFlammableComponent();
 
 protected:
 	// Called when the game starts
@@ -48,7 +49,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		bool m_InitializeWithFlame;
+		bool InitializeWithFlame;
 
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* T_FireParticle;

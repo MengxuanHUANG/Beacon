@@ -14,22 +14,42 @@ class BEACON_API Unit
 {
 public:
 	Unit() {}
+	Unit(float value)
+		:m_Value(value)
+	{}
 	virtual ~Unit() {};
 
 	virtual void Initialize(FVector extent, ConnectType type) = 0;
-	virtual void Ignite(UParticleSystem* particle) = 0;
+	virtual void Trigger(UParticleSystem* particle) = 0;
 	virtual void SetNeighbor(int x, int y, int z, Unit* unit) = 0;
 	virtual const TArray<Unit*>& GetNeighbors() const = 0;
 
-	/*
-	* Functions for debugging
-	*/
-	virtual void IGetName(FString& name) = 0;
-	virtual void DisplayDebugInfo() {}
-	virtual void OnDestroy(bool bPromoteChildren) = 0;
-public:
-	
+	virtual inline bool IsTriggered() const { return false; }
 
-	UPROPERTY(EditAnyWhere)
+	virtual void OnDestroy(bool bPromoteChildren) = 0;
+
+	inline float GetValue() const { return m_Value; }
+	
+	//override operators for value
+	Unit& operator = (const Unit& otherUnit);
+	Unit& operator = (float value);
+	Unit& operator + (float value);
+	Unit& operator += (float value);
+	Unit& operator - (float value);
+	Unit& operator -= (float value);
+	Unit& operator * (float value);
+	Unit& operator *= (float value);
+	Unit& operator / (float value);
+	Unit& operator /= (float value);
+
+	virtual void IGetName(FString& name) {}
+
+	virtual void DisplayDebugInfo() {}
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		ConnectType m_ConnectType;
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+		float m_Value;
 };

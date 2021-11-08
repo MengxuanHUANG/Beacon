@@ -5,15 +5,12 @@
 #include "CoreMinimal.h"
 
 #include "Unit.h"
-#include "BeaconCore.h"
 #include "BeaconConnection.h"
-#include "Components/SceneComponent.h"
 
 #include "FlammableUnit.generated.h"
 
 class UBoxComponent;
 class UParticleSystemComponent;
-class UFlammableUnit;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UFlammableUnit : public USceneComponent, public Unit
@@ -50,29 +47,21 @@ public:
 
 	virtual void OnDestroy(bool bPromoteChildren) override;
 
-	virtual void Ignite(UParticleSystem* particle) override;
+	virtual void Trigger(UParticleSystem* particle) override;
 
 	virtual void SetNeighbor(int x, int y, int z, Unit* unit) override;
 
 	virtual const TArray<Unit*>& GetNeighbors() const override;
 
 	virtual void IGetName(FString& name) override;
-	
-	//TODO: remove
-	UFUNCTION()
-		void IncreaseTemperature(float temperature);
-	inline  float GetTemperature() const { return m_Temperature; }
-	
-	virtual void DisplayDebugInfo() override;
-private:
-	UPROPERTY(VisibleAnywhere)
-		float m_Temperature = 0;
 
+	virtual void DisplayDebugInfo() override;
+
+private:
 	bool b_IsBurning;
 
 	Neighbors<Unit>* m_Neighbors;
 
 public:
-	UFUNCTION(BlueprintCallable)
-		inline bool IsBurning() const { return b_IsBurning; }
+	inline bool IsTriggered() const { return b_IsBurning; }
 };

@@ -132,20 +132,69 @@ public:
 	{
 		if (m_ConnectType != ConnectType::None)
 		{
+			TQueue<Unit*> tempQueue;
 			Unit* unit;
-			while (m_BuringUnits.Dequeue(unit))
+
+			//update all triggered unit
+			while (m_TriggeredUnits.Dequeue(unit))
 			{
+				unit->DisplayDebugInfo();
+				for (Unit* neighbor : unit->GetNeighbors())
+				{
+					if (neighbor != nullptr && !(neighbor->IsTriggered()))
+					{
+						//TODO: use object template for update value
+						(*neighbor) += 0.5f;
+						if (neighbor->GetValue() >= 3.f)
+						{
+							neighbor->Trigger(m_Particle);
+							tempQueue.Enqueue(neighbor);
+						}
+						else
+						{
+							tempQueue.Enqueue(unit);
+						}
+					}
+				}
+			}
+
+			//put units whose value > 0 and who have at least one neighber not trigger
+			//into queue
+			while (tempQueue.Dequeue(unit))
+			{
+				m_TriggeredUnits.Enqueue(unit);
 			}
 		}
 	}
-	virtual Unit* GetUnit(FVector index) override
+	virtual inline Unit* GetUnit(FVector index) override
 	{
-		//TODO: implement the search function
-		return nullptr;
+		if (index.X * m_UnitCount.Y * m_UnitCount.Z + index.Y * m_UnitCount.Z + index.Z >= m_Units.Num())
+		{
+			return nullptr;
+		}
+		else
+		{
+			return m_Units[index.X * m_UnitCount.Y * m_UnitCount.Z + index.Y * m_UnitCount.Z + index.Z];
+		}
+	}
+	virtual void TriggerUnit(FVector index) override
+	{ 
+		Unit* unit;
+		if ((unit = GetUnit(index)) != nullptr)
+		{
+			unit->Trigger(m_Particle);
+			m_TriggeredUnits.Enqueue(unit);
+		}
+	}
+	
+	virtual inline void SetParticle(UParticleSystem* particle) override
+	{
+		m_Particle = particle;
 	}
 private:
 	TArray<Unit*> m_Units;
 	UnitsCount m_UnitCount;
 
-	TQueue<Unit*> m_BuringUnits;
+	TQueue<Unit*> m_TriggeredUnits;
+	UParticleSystem* m_Particle;
 };

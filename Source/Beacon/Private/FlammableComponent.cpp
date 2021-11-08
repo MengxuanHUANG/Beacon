@@ -44,10 +44,21 @@ UFlammableComponent::UFlammableComponent()
 	}
 }
 
+UFlammableComponent::~UFlammableComponent()
+{
+	ClearUnits();
+}
+
 // Called when the game starts
 void UFlammableComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//trigger one unit
+	if (InitializeWithFlame)
+	{
+		m_UnitsManager->TriggerUnit(FVector(0, 0, 0));
+	}
 }
 
 //Called when component destroyed
@@ -107,6 +118,7 @@ void UFlammableComponent::CreateUnits()
 			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
 
 			m_UnitsManager = UnitsManager::CreateUnitsManager<BoxUnitsManager<UFlammableUnit, UFlammableUnit> >(m_ConnectType, m_UnitCounts.X, m_UnitCounts.Y, m_UnitCounts.Z);
+			m_UnitsManager->SetParticle(T_FireParticle);
 			m_UnitsManager->CreateUnits(this, parent);
 		}
 		else if(name.Compare("SphereComponent") == 0)
@@ -123,10 +135,6 @@ void UFlammableComponent::CreateUnits()
 		{
 
 		}
-	}
-	if (m_InitializeWithFlame)
-	{
-		//TODO: burn
 	}
 }
 

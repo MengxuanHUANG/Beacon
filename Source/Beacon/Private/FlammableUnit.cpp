@@ -2,7 +2,7 @@
 
 
 #include "FlammableUnit.h"
-#include "BeaconCore.h"
+#include "BeaconLog.h"
 
 #include "Components/PrimitiveComponent.h"
 #include "Components/SceneComponent.h"
@@ -102,7 +102,7 @@ void UFlammableUnit::DestroyComponent(bool bPromoteChildren)
 	Super::DestroyComponent(bPromoteChildren);
 }
 
-void UFlammableUnit::Ignite(UParticleSystem* particle)
+void UFlammableUnit::Trigger(UParticleSystem* particle)
 {
 	if (!b_IsBurning && m_ParticleSystem != nullptr)
 	{
@@ -126,30 +126,25 @@ void UFlammableUnit::IGetName(FString& name)
 	GetName(name);
 }
 
-void UFlammableUnit::IncreaseTemperature(float temperature)
-{
-	m_Temperature += temperature;
-}
-
+#ifdef BEACON_DEBUG
 void UFlammableUnit::DisplayDebugInfo()
 {
-#ifdef BEACON_DEBUG
 	FString name;
 	GetName(name);
-	UE_LOG(LogTemp, Warning, TEXT("%s has neighbors"), *name);
+	BEACON_LOG(Warning, "neighbors of %s", *name);
 
 	for (int i = 0; i < int(m_ConnectType); i++)
 	{
 		if (m_Neighbors->neighbors[i] == nullptr)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("index %d: nullptr"), i);
+			BEACON_LOG(Warning, "index %d: nullptr", i);
 		}
 		else
 		{
 			Unit* unit = m_Neighbors->neighbors[i];
 			unit->IGetName(name);
-			UE_LOG(LogTemp, Warning, TEXT("index %d: %s"), i, *name);
+			BEACON_LOG(Warning, "index %d: %s", i, *name);
 		}
 	}
-#endif
 }
+#endif

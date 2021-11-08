@@ -17,9 +17,13 @@ public:
 	virtual ~UnitsManager() {}
 
 	virtual void CreateUnits(USceneComponent* self, const USceneComponent* parent) = 0;
+	virtual void TriggerUnit(FVector index) {}
 	virtual Unit* GetUnit(FVector index) = 0;
 	virtual void UpdateUnits() = 0;
 	virtual void Destroy(bool bPromoteChildren) = 0;
+
+	virtual void SetParticle(UParticleSystem* particle) {}
+
 public:
 	ConnectType m_ConnectType;
 
