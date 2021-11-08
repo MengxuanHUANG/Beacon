@@ -59,9 +59,9 @@ public:
 		count.Y = (float)m_UnitCount.Y;
 		count.Z = (float)m_UnitCount.Z;
 
-		float count_x = (float)count.X / 2.0f;
-		float count_y = (float)count.Y / 2.0f;
-		float count_z = (float)count.Z / 2.0f;
+		float count_x = (float)count.X / 2.0;
+		float count_y = (float)count.Y / 2.0;
+		float count_z = (float)count.Z / 2.0;
 
 		//allocate memory once for better perfomance
 		m_Units.Reserve(m_Units.Num() + m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
@@ -88,25 +88,26 @@ public:
 						) + size
 					);
 
+					//TODO: move to a function
 					//bind pointer
 					if (m_ConnectType == ConnectType::SixDirection)
 					{
 						Unit* neighbor;
 						if (x - 1 >= 0)
 						{
-							neighbor = m_Units[(x - 1) * count_y * count_z + y * count_z + z];
+							neighbor = m_Units[(x - 1) * count.Y * count.Z + y * count.Z + z];
 							unit->SetNeighbor(-1, 0, 0, neighbor);
 							neighbor->SetNeighbor(1, 0, 0, unit);
 						}
 						if (y - 1 >= 0)
 						{
-							neighbor = m_Units[x * count_y * count_z + (y - 1) * count_z + z];
+							neighbor = m_Units[x * count.Y * count.Z + (y - 1) * count.Z + z];
 							unit->SetNeighbor(0, -1, 0, neighbor);
 							neighbor->SetNeighbor(0, 1, 0, unit);
 						}
 						if (z - 1 >= 0)
 						{
-							neighbor = m_Units[x * count_y * count_z + y * count_z + z - 1];
+							neighbor = m_Units[x * count.Y * count.Z + y * count.Z + z - 1];
 							unit->SetNeighbor(0, 0, -1, neighbor);
 							neighbor->SetNeighbor(0, 0, 1, unit);
 						}
@@ -118,30 +119,23 @@ public:
 		}
 
 #ifdef BEACON_DEBUG
-		for (int x = 0; x < (int)m_UnitCount.X; x++)
-		{
-			for (int y = 0; y < (int)m_UnitCount.Y; y++)
-			{
-				for (int z = 0; z < (int)m_UnitCount.Z; z++)
-				{
-					BEACON_LOG(Display, "Index %f", x * count_y * count_z + y * count_z + z);
-				}
-			}
-		}
-		/*for (Unit* unit : m_Units)
+		for (Unit* unit : m_Units)
 		{
 			if (unit)
 			{
 				unit->DisplayDebugInfo();
 			}
-		}*/
+		}
 #endif
 	}
 	virtual void UpdateUnits() override
 	{
 		if (m_ConnectType != ConnectType::None)
 		{
-
+			Unit* unit;
+			while (m_BuringUnits.Dequeue(unit))
+			{
+			}
 		}
 	}
 	virtual Unit* GetUnit(FVector index) override
@@ -152,4 +146,6 @@ public:
 private:
 	TArray<Unit*> m_Units;
 	UnitsCount m_UnitCount;
+
+	TQueue<Unit*> m_BuringUnits;
 };
