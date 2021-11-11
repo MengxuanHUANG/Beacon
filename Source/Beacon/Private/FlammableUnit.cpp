@@ -68,11 +68,6 @@ void UFlammableUnit::Initialize(FVector extent,ConnectType type)
 #endif
 }
 
-void UFlammableUnit::OnDestroy(bool bPromoteChildren)
-{
-	this->DestroyComponent(bPromoteChildren);
-}
-
 // Called every frame
 void UFlammableUnit::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {

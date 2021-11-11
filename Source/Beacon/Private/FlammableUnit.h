@@ -45,8 +45,6 @@ public:
 public:
 	virtual void Initialize(FVector extent, ConnectType type) override;
 
-	virtual void OnDestroy(bool bPromoteChildren) override;
-
 	virtual void Trigger(UParticleSystem* particle) override;
 
 	virtual void SetNeighbor(int x, int y, int z, Unit* unit) override;
@@ -59,7 +57,7 @@ public:
 
 private:
 	bool b_IsBurning;
-
+	
 	Neighbors<Unit>* m_Neighbors;
 
 public:

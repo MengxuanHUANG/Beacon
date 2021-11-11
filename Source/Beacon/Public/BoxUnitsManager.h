@@ -7,39 +7,36 @@
 
 #include "Unit.h"
 #include "UnitsManager.h"
+#include "UnitManager.h"
 
 #include "Components/BoxComponent.h"
 
-struct UnitsCount
-{
-	UnitsCount(uint32 x, uint32 y, uint32 z)
-		:X(x), Y(y), Z(z)
-	{}
-
-	uint32 X;
-	uint32 Y;
-	uint32 Z;
-};
+//struct UnitCount
+//{
+//	UnitCount(uint32 x, uint32 y, uint32 z)
+//		:X(x), Y(y), Z(z)
+//	{}
+//
+//	uint32 X;
+//	uint32 Y;
+//	uint32 Z;
+//};
 
 template<typename InnerUnitType, typename OuterUnitType>
-class BEACON_API BoxUnitsManager : public UnitsManager
+class BEACON_API BoxUnitManager : public UUnitManager
 {
 public:
-	BoxUnitsManager(ConnectType type, uint32 x, uint32 y, uint32 z)
-		:UnitsManager(type), m_UnitCount(x, y, z)
+	BoxUnitManager()
 	{}
-	~BoxUnitsManager() 
+	~BoxUnitManager()
 	{
-
 	}
-
-	virtual void Destroy(bool bPromoteChildren) override
+	
+	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override
 	{
-		for (Unit* unit : m_Units)
-		{
-			unit->OnDestroy(bPromoteChildren);
-		}
-		m_Units.Empty();
+		m_UnitCount.X = x;
+		m_UnitCount.Y = y;
+		m_UnitCount.Z = z;
 	}
 
 	virtual void CreateUnits(USceneComponent* self, const USceneComponent* parent) override
@@ -178,7 +175,7 @@ public:
 		}
 	}
 	virtual void TriggerUnit(FVector index) override
-	{ 
+	{
 		Unit* unit;
 		if ((unit = GetUnit(index)) != nullptr)
 		{
@@ -186,14 +183,14 @@ public:
 			m_TriggeredUnits.Enqueue(unit);
 		}
 	}
-	
+
 	virtual inline void SetParticle(UParticleSystem* particle) override
 	{
 		m_Particle = particle;
 	}
 private:
 	TArray<Unit*> m_Units;
-	UnitsCount m_UnitCount;
+	UnitCount m_UnitCount;
 
 	TQueue<Unit*> m_TriggeredUnits;
 	UParticleSystem* m_Particle;

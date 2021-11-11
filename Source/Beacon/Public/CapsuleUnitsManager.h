@@ -122,10 +122,6 @@ public:
 	{
 
 	}
-	virtual void Destroy(bool bPromoteChildren) override
-	{
-
-	}
 
 public:
 	uint32 m_Count;

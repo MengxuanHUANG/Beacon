@@ -26,8 +26,6 @@ public:
 
 	virtual inline bool IsTriggered() const { return false; }
 
-	virtual void OnDestroy(bool bPromoteChildren) = 0;
-
 	inline float GetValue() const { return m_Value; }
 	
 	//override operators for value

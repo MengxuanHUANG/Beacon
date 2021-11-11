@@ -20,7 +20,6 @@ public:
 	virtual void TriggerUnit(FVector index) {}
 	virtual Unit* GetUnit(FVector index) = 0;
 	virtual void UpdateUnits() = 0;
-	virtual void Destroy(bool bPromoteChildren) = 0;
 
 	virtual void SetParticle(UParticleSystem* particle) {}
 

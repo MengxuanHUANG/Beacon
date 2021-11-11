@@ -4,14 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
-
-UENUM()
-enum class ConnectType : uint8
-{
-	None = 0,
-	SixDirection = 6,
-	TwentySixDirection = 26
-};
+#include "Neighbor.h"
 
 /**
  *

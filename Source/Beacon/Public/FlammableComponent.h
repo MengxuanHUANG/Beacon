@@ -3,12 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BeaconConnection.h"
+#include "Neighbor.h"
 #include "UnitsManager.h"
+#include "UnitManager.h"
+#include "UnitManagerComponent.h"
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
 class UFlammableUnit;
+class UBoxComponent;
+class UFlammableUnitComponent;
 
 USTRUCT(BlueprintType)
 struct FUnitCount
@@ -58,14 +62,25 @@ public:
 		uint32 m_Count = 1;
 
 	UPROPERTY(EditAnywhere)
-		FUnitCount m_UnitCounts = { 3, 3, 3 };
+		FUnitCount m_UnitCount = { 3, 3, 3 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		ConnectType m_ConnectType = ConnectType::SixDirection;
 
+	UPROPERTY(VisibleAnywhere)
+		TArray<UBoxComponent*> BOXs;
+
+	UPROPERTY(VisibleAnywhere)
+		UUnitManagerComponent* m_UnitManager;
+
+	UPROPERTY(VisibleAnywhere)
+		UFlammableUnitComponent* flammable;
+
 private:
 	bool b_IsBurning;
-	UnitsManager* m_UnitsManager;
+	
+	TSharedPtr<UnitsManager> m_UnitsManager;
+
 public:
 	UFUNCTION()
 		void ClearUnits();

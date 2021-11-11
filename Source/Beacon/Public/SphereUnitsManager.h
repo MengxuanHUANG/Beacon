@@ -21,15 +21,6 @@ public:
 	{}
 	~SphereUnitsManager() 
 	{
-
-	}
-	virtual void Destroy(bool bPromoteChildren) override
-	{
-		for (auto& pair : m_Units)
-		{
-			pair.Value->OnDestroy(bPromoteChildren);
-		}
-		m_Units.Empty();
 	}
 	virtual void CreateUnits(USceneComponent* self, const USceneComponent* parent) override
 	{
