@@ -26,6 +26,7 @@
 
 #include "BoxUnitsManager.h"
 #include "SphereUnitsManager.h"
+#include "CapsuleUnitsManager.h"
 
 #include "Modules/ModuleManager.h"
 
@@ -133,7 +134,13 @@ void UFlammableComponent::CreateUnits()
 		}
 		else if (name.Compare("CapsuleComponent") == 0)
 		{
+			UCapsuleComponent* capsule = Cast<UCapsuleComponent>(parent);
 
+			capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+
+			m_UnitsManager = UnitsManager::CreateUnitsManager<CapsuleUnitsManager<UFlammableUnit, UFlammableUnit> >(m_ConnectType, m_Count);
+			m_UnitsManager->CreateUnits(this, parent);
 		}
 	}
 }
