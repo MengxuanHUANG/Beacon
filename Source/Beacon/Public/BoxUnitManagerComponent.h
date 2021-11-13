@@ -7,6 +7,17 @@
 #include "Components/BoxComponent.h"
 #include "BoxUnitManagerComponent.generated.h"
 
+struct UnitCount
+{
+	UnitCount(uint32 x = 1, uint32 y = 1, uint32 z = 1)
+		:X(x), Y(y), Z(z)
+	{}
+
+	uint32 X;
+	uint32 Y;
+	uint32 Z;
+};
+
 /**
  * 
  */
@@ -15,41 +26,14 @@ class BEACON_API UBoxUnitManagerComponent : public UUnitManagerComponent
 {
 	GENERATED_BODY()
 public:
-	UBoxUnitManagerComponent()
-	{}
-	~UBoxUnitManagerComponent()
-	{
-	}
+	UBoxUnitManagerComponent();
+	~UBoxUnitManagerComponent();
 
-	virtual void UpdateUnits() override
-	{
-	}
-	virtual inline UUnitComponent* GetUnit(FVector index) override
-	{
-		if (index.X * m_UnitCount.Y * m_UnitCount.Z + index.Y * m_UnitCount.Z + index.Z >= m_Units.Num())
-		{
-			return nullptr;
-		}
-		else
-		{
-			return m_Units[index.X * m_UnitCount.Y * m_UnitCount.Z + index.Y * m_UnitCount.Z + index.Z];
-		}
-	}
-	virtual void TriggerUnit(FVector index) override
-	{
-		UUnitComponent* unit;
-		if ((unit = GetUnit(index)) != nullptr)
-		{
-			unit->Trigger(m_Particle);
-			m_TriggeredUnits.Enqueue(unit);
-		}
-	}
-
+	virtual void UpdateUnits() override;
+	virtual UUnitComponent* GetUnit(FVector index) override;
+	virtual void TriggerUnit(FVector index) override;
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
-	virtual inline void SetParticle(UParticleSystem* particle) override
-	{
-		m_Particle = particle;
-	}
+	virtual void SetParticle(UParticleSystem* particle) override;
 
 public:
 	UPROPERTY(VisibleAnywhere)

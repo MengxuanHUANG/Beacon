@@ -4,14 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Neighbor.h"
-#include "UnitsManager.h"
-#include "UnitManager.h"
 #include "UnitManagerComponent.h"
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
-class UFlammableUnit;
-class UBoxComponent;
 class UFlammableUnitComponent;
 
 USTRUCT(BlueprintType)
@@ -68,18 +64,10 @@ public:
 		ConnectType m_ConnectType = ConnectType::SixDirection;
 
 	UPROPERTY(VisibleAnywhere)
-		TArray<UBoxComponent*> BOXs;
-
-	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_UnitManager;
-
-	UPROPERTY(VisibleAnywhere)
-		UFlammableUnitComponent* flammable;
 
 private:
 	bool b_IsBurning;
-	
-	TSharedPtr<UnitsManager> m_UnitsManager;
 
 public:
 	UFUNCTION()

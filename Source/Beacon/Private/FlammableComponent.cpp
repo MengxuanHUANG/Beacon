@@ -3,36 +3,18 @@
 
 #include "FlammableComponent.h"
 
-#include "Beacon.h"
-#include "BeaconLog.h"
-
-#include "FlammableUnit.h"
-#include "FlammableUnitComponent.h"
-
-#include "Engine/Engine.h"
-
-#include "Components/PrimitiveComponent.h"
+//UE Header files
 #include "Components/SceneComponent.h"
-
-#include "Components/StaticMeshComponent.h"
-
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 
-#include "GameplayTagContainer.h"
-
-#include "Particles/ParticleSystemComponent.h"
 #include "GameFramework/Actor.h"
 
-#include "BoxUnitsManager.h"
-#include "BoxUnitManager.h"
+//Beacon Header files
+#include "BeaconLog.h"
+#include "FlammableUnitComponent.h"
 #include "BoxUnitManagerComponent.h"
-
-#include "SphereUnitsManager.h"
-#include "CapsuleUnitsManager.h"
-
-#include "Modules/ModuleManager.h"
 
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
@@ -61,7 +43,7 @@ void UFlammableComponent::BeginPlay()
 	//trigger one unit
 	if (InitializeWithFlame)
 	{
-		m_UnitsManager->TriggerUnit(FVector(0, 0, 0));
+		//TODO: StartBurning
 	}
 }
 
@@ -80,26 +62,20 @@ void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 void UFlammableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (m_UnitsManager != nullptr)
-	{
-		m_UnitsManager->UpdateUnits();
-	}
 }
 
 void UFlammableComponent::ClearUnits()
 {
-	if (m_UnitsManager.IsValid())
-	{
-		m_UnitsManager.Reset();
-	}
+	// Unregister component
+	//m_UnitManager->DestroyComponent();
+	m_UnitManager = nullptr;
 }
 
 void UFlammableComponent::CreateUnits()
 {
 	USceneComponent* parent = this->GetAttachParent();
 
-	if (parent != nullptr && m_UnitsManager == nullptr)
+	if (parent != nullptr && m_UnitManager == nullptr)
 	{
 		UClass* uClass = parent->GetClass();
 		FString name = uClass->GetFullGroupName(false);
@@ -131,13 +107,7 @@ void UFlammableComponent::CreateUnits()
 
 			sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
-			
-			m_UnitsManager = MakeShareable<UnitsManager>(
-				UnitsManager::CreateUnitsManager<SphereUnitsManager<UFlammableUnit, UFlammableUnit> >(
-					m_ConnectType,
-					m_Count
-					));
-			m_UnitsManager->CreateUnits(this, parent);
+
 		}
 		else if (name.Compare("CapsuleComponent") == 0)
 		{
@@ -146,12 +116,6 @@ void UFlammableComponent::CreateUnits()
 			capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
 
-			m_UnitsManager = MakeShareable<UnitsManager>(
-				UnitsManager::CreateUnitsManager<CapsuleUnitsManager<UFlammableUnit, UFlammableUnit> >(
-					m_ConnectType,
-					m_Count
-					));
-			m_UnitsManager->CreateUnits(this, parent);
 		}
 	}
 }
