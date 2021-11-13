@@ -19,6 +19,8 @@ public:
 	USphereUnitManagerComponent();
 	~USphereUnitManagerComponent();
 
+	virtual void OnUnregister() override;
+
 	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void TriggerUnit(FVector index) override;
@@ -40,6 +42,91 @@ public:
 	template<typename InnerUnitType, typename OuterUnitType>
 	static void CreateUnit(USphereUnitManagerComponent* sphereUnitManager, USceneComponent* self, const USceneComponent* parent)
 	{
+		const USphereComponent* sphere = Cast<USphereComponent>(parent);
+		float radius = sphere->GetUnscaledSphereRadius();
+		float size = radius / ((float)(sphereUnitManager->m_Count) - 0.5f) / FMath::Sqrt(3) / 2; // divided by sqrt(2)
+		int count = (int)(sphereUnitManager->m_Count);
+		//int count = radius / m_UnitExtent.X;
 
+		TArray<UUnitComponent*> unitsArray;
+
+		for (int x = -count; x <= count; x++)
+		{
+			for (int y = -count; y <= count; y++)
+			{
+				for (int z = -count; z <= count; z++)
+				{
+					if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) <= 3 * (count - 1))
+					{
+						InnerUnitType* unit = NewObject<InnerUnitType>(self);
+
+						//register component for rendering
+						unit->RegisterComponent();
+						unit->Initialize(FVector(size), sphereUnitManager->m_ConnectType);
+
+						//setup attachment
+						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
+						unit->SetRelativeLocation(
+							FVector(
+								2 * x * size,
+								2 * y * size,
+								2 * z * size
+							)
+						);
+
+						//bind pointer
+						if (sphereUnitManager->m_ConnectType == ConnectType::SixDirection)
+						{
+							UUnitComponent* neighbor;
+							if (x - 1 >= 0)
+							{
+								neighbor = unitsArray[
+									(count + x - 1) * sphereUnitManager->m_Count * sphereUnitManager->m_Count 
+										+ (count + y) * sphereUnitManager->m_Count
+										+ (count + z)];
+								unit->SetNeighbor(-1, 0, 0, neighbor);
+								if (neighbor != nullptr)
+								{
+									neighbor->SetNeighbor(1, 0, 0, unit);
+								}
+							}
+							if (y - 1 >= 0)
+							{
+								neighbor = unitsArray[
+									(count + x) * sphereUnitManager->m_Count * sphereUnitManager->m_Count 
+										+ (count + y - 1) * sphereUnitManager->m_Count
+										+ (count + z)];
+								unit->SetNeighbor(0, -1, 0, neighbor);
+								if (neighbor != nullptr)
+								{
+									neighbor->SetNeighbor(0, 1, 0, unit);
+								}
+							}
+							if (z - 1 >= 0)
+							{
+								neighbor = unitsArray[
+									(count + x) * sphereUnitManager->m_Count * sphereUnitManager->m_Count 
+										+ (count + y) * sphereUnitManager->m_Count 
+										+ count + z - 1];
+								unit->SetNeighbor(0, 0, -1, neighbor);
+								if (neighbor != nullptr)
+								{
+									neighbor->SetNeighbor(0, 0, 1, unit);
+								}
+							}
+						}
+
+						unitsArray.Add(unit);
+						sphereUnitManager->m_Units.Add(FVector(x, y, z), unit);
+					}
+					else
+					{
+						unitsArray.Add(nullptr);
+					}
+				}
+			}
+		}
+
+		unitsArray.Empty();
 	}
 };

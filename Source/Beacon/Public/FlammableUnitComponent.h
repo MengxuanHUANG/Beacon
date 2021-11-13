@@ -16,15 +16,8 @@ class BEACON_API UFlammableUnitComponent : public UUnitComponent
 	GENERATED_BODY()
 public:
 	UFlammableUnitComponent();
-public:
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
-		UParticleSystemComponent* m_ParticleSystem;
 
-	UPROPERTY(VisibleAnyWhere)
-		UBoxComponent* m_DebugBox;
-
-	UPROPERTY(VisibleAnyWhere)
-		FVector m_UnitExtent;
+	virtual void OnUnregister() override;
 
 public:
 	virtual void Initialize(FVector extent, ConnectType type);
@@ -36,6 +29,16 @@ public:
 
 public:
 	virtual inline bool IsTriggered() const { return b_IsBurning; }
+
+public:
+	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
+		UParticleSystemComponent* m_ParticleSystem;
+
+	UPROPERTY(VisibleAnyWhere)
+		UBoxComponent* m_DebugBox;
+
+	UPROPERTY(VisibleAnyWhere)
+		FVector m_UnitExtent;
 
 private:
 	bool b_IsBurning;

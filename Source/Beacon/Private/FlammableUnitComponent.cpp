@@ -30,6 +30,23 @@ UFlammableUnitComponent::UFlammableUnitComponent()
 	m_ParticleSystem->SetUsingAbsoluteRotation(true);
 }
 
+void UFlammableUnitComponent::OnUnregister()
+{
+	if (m_DebugBox != nullptr)
+	{
+		m_DebugBox->UnregisterComponent();
+	}
+	if (m_ParticleSystem != nullptr)
+	{
+		m_ParticleSystem->UnregisterComponent();
+	}
+	if (m_Neighbors != nullptr)
+	{
+		m_Neighbors->UnregisterComponent();
+	}
+	Super::OnUnregister();
+}
+
 void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
 {
 	m_ParticleSystem->RegisterComponent();

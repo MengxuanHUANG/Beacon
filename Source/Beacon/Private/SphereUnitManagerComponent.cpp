@@ -2,6 +2,7 @@
 
 
 #include "SphereUnitManagerComponent.h"
+#include "UnitComponent.h"
 
 USphereUnitManagerComponent::USphereUnitManagerComponent()
 {}
@@ -10,12 +11,25 @@ USphereUnitManagerComponent::~USphereUnitManagerComponent()
 {
 }
 
+void USphereUnitManagerComponent::OnUnregister()
+{
+	for (auto unit : m_Units)
+	{
+		unit.Value->UnregisterComponent();
+	}
+	m_TriggeredUnits.Empty();
+	m_Units.Empty();
+
+	Super::OnUnregister();
+}
+
 void USphereUnitManagerComponent::UpdateUnits()
 {
 }
 
 void USphereUnitManagerComponent::SetParameter(uint32 x)
 {
+	m_Count = x;
 }
 
 UUnitComponent* USphereUnitManagerComponent::GetUnit(FVector index)

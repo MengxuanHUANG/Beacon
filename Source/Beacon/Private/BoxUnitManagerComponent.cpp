@@ -9,6 +9,18 @@ UBoxUnitManagerComponent::UBoxUnitManagerComponent()
 {
 }
 
+void UBoxUnitManagerComponent::OnUnregister()
+{
+	for (auto unit : m_Units)
+	{
+		unit->UnregisterComponent();
+	}
+	m_TriggeredUnits.Empty();
+	m_Units.Empty();
+
+	Super::OnUnregister();
+}
+
 UBoxUnitManagerComponent::~UBoxUnitManagerComponent()
 {
 }

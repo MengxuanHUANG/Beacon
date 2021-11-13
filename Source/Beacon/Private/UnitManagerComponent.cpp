@@ -2,6 +2,7 @@
 
 
 #include "UnitManagerComponent.h"
+#include "BeaconLog.h"
 
 // Sets default values for this component's properties
 UUnitManagerComponent::UUnitManagerComponent()
@@ -22,7 +23,6 @@ void UUnitManagerComponent::BeginPlay()
 	// ...
 	
 }
-
 
 // Called every frame
 void UUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)

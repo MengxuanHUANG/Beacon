@@ -15,6 +15,8 @@
 #include "BeaconLog.h"
 #include "FlammableUnitComponent.h"
 #include "BoxUnitManagerComponent.h"
+#include "SphereUnitManagerComponent.h"
+#include "CapsuleUnitManagerComponent.h"
 
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
@@ -67,8 +69,11 @@ void UFlammableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 void UFlammableComponent::ClearUnits()
 {
 	// Unregister component
-	//m_UnitManager->DestroyComponent();
-	m_UnitManager = nullptr;
+	if (m_UnitManager != nullptr)
+	{
+		m_UnitManager->UnregisterComponent();
+		m_UnitManager = nullptr;
+	}
 }
 
 void UFlammableComponent::CreateUnits()
@@ -108,6 +113,18 @@ void UFlammableComponent::CreateUnits()
 			sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
 
+			m_UnitManager = NewObject<USphereUnitManagerComponent>(this);
+			m_UnitManager->RegisterComponent();
+			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+			m_UnitManager->SetConnectType(m_ConnectType);
+			m_UnitManager->SetParameter(m_Count);
+			m_UnitManager->SetParticle(T_FireParticle);
+			USphereUnitManagerComponent::CreateUnit<UFlammableUnitComponent, UFlammableUnitComponent>(
+				Cast<USphereUnitManagerComponent>(m_UnitManager),
+				this,
+				parent
+				);
 		}
 		else if (name.Compare("CapsuleComponent") == 0)
 		{
@@ -116,6 +133,18 @@ void UFlammableComponent::CreateUnits()
 			capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
 
+			m_UnitManager = NewObject<UCapsuleUnitManagerComponent>(this);
+			m_UnitManager->RegisterComponent();
+			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+			m_UnitManager->SetConnectType(m_ConnectType);
+			m_UnitManager->SetParameter(m_Count);
+			m_UnitManager->SetParticle(T_FireParticle);
+			UCapsuleUnitManagerComponent::CreateUnit<UFlammableUnitComponent, UFlammableUnitComponent>(
+				Cast<UCapsuleUnitManagerComponent>(m_UnitManager),
+				this,
+				parent
+				);
 		}
 	}
 }

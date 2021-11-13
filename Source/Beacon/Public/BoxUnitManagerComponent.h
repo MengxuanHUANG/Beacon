@@ -29,6 +29,8 @@ public:
 	UBoxUnitManagerComponent();
 	~UBoxUnitManagerComponent();
 
+	virtual void OnUnregister() override;
+
 	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void TriggerUnit(FVector index) override;
