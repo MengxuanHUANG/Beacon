@@ -29,7 +29,7 @@ public:
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) {}
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 
-	virtual inline bool IsTriggered() const { return false; }
+	virtual bool IsTriggered() const { return false; }
 
 	inline float GetValue() const { return m_Value; }
 
@@ -44,6 +44,21 @@ public:
 	UUnitComponent& operator / (float value);
 	UUnitComponent& operator /= (float value);
 
+
+	bool operator < (const UUnitComponent& unit);
+	bool operator <= (const UUnitComponent& unit);
+	bool operator > (const UUnitComponent& unit);
+	bool operator >= (const UUnitComponent& unit);
+	bool operator == (const UUnitComponent& unit);
+	bool operator != (const UUnitComponent& unit);
+
+	bool operator < (float value);
+	bool operator <= (float value);
+	bool operator > (float value);
+	bool operator >= (float value);
+	bool operator == (float value);
+	bool operator != (float value);
+
 	virtual void IGetName(FString& name) {}
 
 	virtual void DisplayDebugInfo() {}
@@ -54,7 +69,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UNeighbor* m_Neighbors;
 
-private:
+protected:
 	UPROPERTY(VisibleAnywhere)
 		float m_Value;
 };

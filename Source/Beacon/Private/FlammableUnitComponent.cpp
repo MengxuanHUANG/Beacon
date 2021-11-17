@@ -6,36 +6,34 @@
 
 #include "BeaconLog.h"
 
-#include "Components/PrimitiveComponent.h"
 #include "Components/SceneComponent.h"
 
-#include "Components/StaticMeshComponent.h"
-
-#include "Components/BoxComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
-
 #include "Particles/ParticleSystemComponent.h"
-#include "GameFramework/Actor.h"
+
+#include "DrawDebugHelpers.h"
+#include "Misc/App.h"
 
 UFlammableUnitComponent::UFlammableUnitComponent()
 {
-	m_DebugBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Debug Box"));
-	m_DebugBox->SetupAttachment(this);
-	m_DebugBox->SetGenerateOverlapEvents(false);
-	m_DebugBox->bHiddenInGame = false;
-
 	m_ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
 	m_ParticleSystem->SetupAttachment(this);
 	m_ParticleSystem->SetUsingAbsoluteRotation(true);
 }
 
+void UFlammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	DrawDebugBox(
+		GetWorld(),
+		GetComponentLocation(),
+		m_UnitExtent - 1,
+		FColor::Red,
+		false, DeltaTime, 0, 1);
+}
+
 void UFlammableUnitComponent::OnUnregister()
 {
-	if (m_DebugBox != nullptr)
-	{
-		m_DebugBox->UnregisterComponent();
-	}
 	if (m_ParticleSystem != nullptr)
 	{
 		m_ParticleSystem->UnregisterComponent();
@@ -44,6 +42,7 @@ void UFlammableUnitComponent::OnUnregister()
 	{
 		m_Neighbors->UnregisterComponent();
 	}
+
 	Super::OnUnregister();
 }
 
@@ -66,15 +65,20 @@ void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
 		break;
 	}
 
-
-	m_DebugBox->RegisterComponent();
-	m_DebugBox->SetBoxExtent(extent);
+	DrawDebugBox(
+		GetWorld(),
+		GetComponentLocation(),
+		m_UnitExtent - 1,
+		FColor::Red,
+		true, -1, 0, 1);
 }
 
 void UFlammableUnitComponent::Trigger(UParticleSystem* particle)
 {
 	if (!b_IsBurning && m_ParticleSystem != nullptr)
 	{
+		BEACON_LOG(Display, "Trigger");
+		m_Value = 1000.f;
 		m_ParticleSystem->SetTemplate(particle);
 		b_IsBurning = true;
 	}

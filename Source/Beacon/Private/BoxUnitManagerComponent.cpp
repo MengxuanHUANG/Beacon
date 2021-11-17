@@ -9,6 +9,52 @@ UBoxUnitManagerComponent::UBoxUnitManagerComponent()
 {
 }
 
+// Called every frame
+void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	TQueue<UUnitComponent*> temp;
+
+	UUnitComponent* unit;
+	
+	while(m_TriggeredUnits.Dequeue(unit))
+	{
+		bool flag = false;
+		if (unit->IsTriggered())
+		{
+			*unit += 10.f;
+		}
+		for (auto neighbor : unit->GetNeighbors()->neighbors)
+		{
+			if (neighbor != nullptr && !neighbor->IsTriggered())
+			{
+				if (*unit > *neighbor)
+				{
+					//TODO: use simulation function
+					*unit -= 0.01;
+					*neighbor += 0.01;
+					if (*neighbor > 5.f)
+					{
+						neighbor->Trigger(m_Particle);
+						temp.Enqueue(unit);
+					}
+				}
+				if (!flag && *neighbor < 5.f)
+				{
+					temp.Enqueue(unit);
+					flag = true;
+				}
+			}
+		}
+	}
+
+	while (temp.Dequeue(unit))
+	{
+		m_TriggeredUnits.Enqueue(unit);
+	}
+}
+
 void UBoxUnitManagerComponent::OnUnregister()
 {
 	for (auto unit : m_Units)

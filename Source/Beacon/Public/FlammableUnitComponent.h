@@ -20,6 +20,9 @@ public:
 	virtual void OnUnregister() override;
 
 public:
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	virtual void Initialize(FVector extent, ConnectType type);
 	virtual void Trigger(UParticleSystem* particle);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit);
@@ -28,14 +31,11 @@ public:
 	virtual void DisplayDebugInfo();
 
 public:
-	virtual inline bool IsTriggered() const { return b_IsBurning; }
+	virtual bool IsTriggered() const override { return b_IsBurning; }
 
 public:
 	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
 		UParticleSystemComponent* m_ParticleSystem;
-
-	UPROPERTY(VisibleAnyWhere)
-		UBoxComponent* m_DebugBox;
 
 	UPROPERTY(VisibleAnyWhere)
 		FVector m_UnitExtent;

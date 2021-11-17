@@ -14,6 +14,7 @@
 //Beacon Header files
 #include "BeaconLog.h"
 #include "FlammableUnitComponent.h"
+#include "NonFlammableUnitComponent.h"
 #include "BoxUnitManagerComponent.h"
 #include "SphereUnitManagerComponent.h"
 #include "CapsuleUnitManagerComponent.h"
@@ -43,9 +44,10 @@ void UFlammableComponent::BeginPlay()
 	Super::BeginPlay();
 
 	//trigger one unit
-	if (InitializeWithFlame)
+	if (InitializeWithFlame && m_UnitManager != nullptr)
 	{
 		//TODO: StartBurning
+		m_UnitManager->TriggerUnit(FVector(0));
 	}
 }
 
@@ -100,7 +102,7 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter3(m_UnitCount.X, m_UnitCount.Y, m_UnitCount.Z);
 			m_UnitManager->SetParticle(T_FireParticle);
-			UBoxUnitManagerComponent::CreateUnit<UFlammableUnitComponent, UFlammableUnitComponent>(
+			UBoxUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<UBoxUnitManagerComponent>(m_UnitManager), 
 				this, 
 				parent
@@ -120,7 +122,7 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter(m_Count);
 			m_UnitManager->SetParticle(T_FireParticle);
-			USphereUnitManagerComponent::CreateUnit<UFlammableUnitComponent, UFlammableUnitComponent>(
+			USphereUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<USphereUnitManagerComponent>(m_UnitManager),
 				this,
 				parent
@@ -140,7 +142,7 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter(m_Count);
 			m_UnitManager->SetParticle(T_FireParticle);
-			UCapsuleUnitManagerComponent::CreateUnit<UFlammableUnitComponent, UFlammableUnitComponent>(
+			UCapsuleUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<UCapsuleUnitManagerComponent>(m_UnitManager),
 				this,
 				parent

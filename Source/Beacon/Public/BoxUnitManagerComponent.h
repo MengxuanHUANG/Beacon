@@ -29,6 +29,8 @@ public:
 	UBoxUnitManagerComponent();
 	~UBoxUnitManagerComponent();
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	virtual void OnUnregister() override;
 
 	virtual void UpdateUnits() override;
@@ -44,7 +46,9 @@ public:
 	UnitCount m_UnitCount;
 
 	TQueue<UUnitComponent*> m_TriggeredUnits;
-	UParticleSystem* m_Particle;
+	
+	UPROPERTY(VisibleAnywhere)
+		UParticleSystem* m_Particle;
 
 public:
 	template<typename InnerUnitType, typename OuterUnitType>
@@ -82,11 +86,20 @@ public:
 			{
 				for (int z = 0; z < (int)(boxUnitManager->m_UnitCount.Z); z++)
 				{
-					InnerUnitType* unit = NewObject<InnerUnitType>(self);
-
+					UUnitComponent* unit;
+					if (x == 0 || y == 0 || z == 0 
+						|| x == boxUnitManager->m_UnitCount.X - 1
+						|| y == boxUnitManager->m_UnitCount.Y - 1
+						|| z == boxUnitManager->m_UnitCount.Z - 1)
+					{
+						unit = NewObject<OuterUnitType>(self);
+					}
+					else
+					{
+						unit = NewObject<InnerUnitType>(self);
+					}
 					//register component for rendering
 					unit->RegisterComponent();
-					unit->Initialize(size, boxUnitManager->m_ConnectType);
 
 					//setup attachment
 					unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
@@ -97,6 +110,8 @@ public:
 							2.0f * size.Z * (z - count_z)
 						) + size
 					);
+
+					unit->Initialize(size, boxUnitManager->m_ConnectType);
 
 					//TODO: move to a function
 					//bind pointer

@@ -79,3 +79,63 @@ UUnitComponent& UUnitComponent::operator /= (float value)
 {
 	return (*this) / value;
 }
+
+bool UUnitComponent::operator < (const UUnitComponent& unit)
+{
+	return this->m_Value < unit.GetValue();
+}
+
+bool UUnitComponent::operator <= (const UUnitComponent& unit) 
+{
+	return this->m_Value <= unit.GetValue();
+}
+
+bool UUnitComponent::operator > (const UUnitComponent& unit) 
+{
+	return this->m_Value > unit.GetValue();
+}
+
+bool UUnitComponent::operator >= (const UUnitComponent& unit) 
+{
+	return this->m_Value >= unit.GetValue();
+}
+
+bool UUnitComponent::operator == (const UUnitComponent& unit) 
+{
+	return this->m_Value == unit.GetValue();
+}
+
+bool UUnitComponent::operator != (const UUnitComponent& unit)
+{
+	return !(*this == unit);
+}
+
+bool UUnitComponent::operator < (float value)
+{
+	return m_Value < value;
+}
+
+bool UUnitComponent::operator <= (float value)
+{
+	return m_Value <= value;
+}
+
+bool UUnitComponent::operator > (float value)
+{
+	return m_Value > value;
+}
+
+bool UUnitComponent::operator >= (float value)
+{
+	return m_Value >= value;
+}
+
+bool UUnitComponent::operator == (float value)
+{
+	return m_Value == value;
+}
+
+bool UUnitComponent::operator != (float value)
+{
+	return !(m_Value == value);
+}
