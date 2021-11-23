@@ -7,17 +7,6 @@
 #include "Components/BoxComponent.h"
 #include "BoxUnitManagerComponent.generated.h"
 
-struct UnitCount
-{
-	UnitCount(uint32 x = 1, uint32 y = 1, uint32 z = 1)
-		:X(x), Y(y), Z(z)
-	{}
-
-	uint32 X;
-	uint32 Y;
-	uint32 Z;
-};
-
 /**
  * 
  */
@@ -42,8 +31,9 @@ public:
 public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<UUnitComponent*> m_Units;
-
-	UnitCount m_UnitCount;
+	
+	UPROPERTY(VisibleAnywhere)
+		FVector m_UnitCount;
 
 	TQueue<UUnitComponent*> m_TriggeredUnits;
 	

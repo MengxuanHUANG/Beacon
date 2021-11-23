@@ -24,12 +24,12 @@ void UFlammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	DrawDebugBox(
+	/*DrawDebugBox(
 		GetWorld(),
 		GetComponentLocation(),
 		m_UnitExtent - 1,
 		FColor::Red,
-		false, DeltaTime, 0, 1);
+		false, DeltaTime, 0, 1);*/
 }
 
 void UFlammableUnitComponent::OnUnregister()
@@ -77,7 +77,8 @@ void UFlammableUnitComponent::Trigger(UParticleSystem* particle)
 {
 	if (!b_IsBurning && m_ParticleSystem != nullptr)
 	{
-		BEACON_LOG(Display, "Trigger");
+		FString name;
+		GetName(name);
 		m_Value = 1000.f;
 		m_ParticleSystem->SetTemplate(particle);
 		b_IsBurning = true;

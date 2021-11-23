@@ -49,16 +49,13 @@ void FBeaconModule::BuildUnits()
 
 	if (GEngine)
 	{
+		//obtain actors with tag
 		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_FLAMMABLE_TAG), actors);
 		
-		BEACON_LOG(Display, "Fund %d Actor", actors.Num());
+		BEACON_LOG(Display, "Fund %d Actor with FlammableComponent", actors.Num());
 		
 		for (AActor* actor : actors)
 		{
-			FString name;
-			actor->GetName(name);
-			BEACON_LOG(Display, "address %s", *name);
-
 			for (auto component : actor->GetComponentsByClass(UFlammableComponent::StaticClass()))
 			{
 				UFlammableComponent* flammable = Cast<UFlammableComponent>(component);

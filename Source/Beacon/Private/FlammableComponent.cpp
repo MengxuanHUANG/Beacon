@@ -46,7 +46,19 @@ void UFlammableComponent::BeginPlay()
 	//trigger one unit
 	if (InitializeWithFlame && m_UnitManager != nullptr)
 	{
+		m_UnitManager->SetParticle(T_FireParticle);
+
 		//TODO: StartBurning
+		/*for (float i = 0; i < 4; i++)
+		{
+			for (float j = 0; j < 4; j++)
+			{
+				for (float k = 0; k < 4; k++)
+				{
+					m_UnitManager->TriggerUnit(FVector(i, j, k));
+				}
+			}
+		}*/
 		m_UnitManager->TriggerUnit(FVector(0));
 	}
 }
@@ -101,7 +113,6 @@ void UFlammableComponent::CreateUnits()
 
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter3(m_UnitCount.X, m_UnitCount.Y, m_UnitCount.Z);
-			m_UnitManager->SetParticle(T_FireParticle);
 			UBoxUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<UBoxUnitManagerComponent>(m_UnitManager), 
 				this, 
@@ -121,7 +132,7 @@ void UFlammableComponent::CreateUnits()
 
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter(m_Count);
-			m_UnitManager->SetParticle(T_FireParticle);
+			
 			USphereUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<USphereUnitManagerComponent>(m_UnitManager),
 				this,
@@ -141,7 +152,7 @@ void UFlammableComponent::CreateUnits()
 
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter(m_Count);
-			m_UnitManager->SetParticle(T_FireParticle);
+
 			UCapsuleUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<UCapsuleUnitManagerComponent>(m_UnitManager),
 				this,
