@@ -18,12 +18,15 @@ void UNonflammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	//TODO: wrapped in BEACON_DEBUG
-	DrawDebugBox(
-		GetWorld(),
-		GetComponentLocation(),
-		m_UnitExtent - 1,
-		FColor::Blue,
-		false, DeltaTime, 0, 1);
+	if (b_NeedUpdate)
+	{
+		DrawDebugBox(
+			GetWorld(),
+			GetComponentLocation(),
+			m_UnitExtent - 1,
+			FColor::Blue,
+			false, DeltaTime, 0, 1);
+	}
 }
 
 void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
@@ -54,6 +57,11 @@ void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
 void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* unit)
 {
 	m_Neighbors->SetNeighbor(x, y, z, unit);
+}
+
+void UNonflammableUnitComponent::Trigger(UParticleSystem* particle)
+{
+	b_NeedUpdate = true;
 }
 
 bool UNonflammableUnitComponent::IsTriggered() const

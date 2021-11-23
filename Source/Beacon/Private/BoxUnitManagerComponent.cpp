@@ -15,7 +15,7 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	TQueue<UUnitComponent*> temp;
-
+	bool* arr = new bool[m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z] {false};
 	int32 count = 0;
 
 	UUnitComponent* unit;
@@ -26,7 +26,7 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		bool flag = false;
 		if (unit->IsTriggered())
 		{
-			*unit += 10.f;
+			*unit += 5.f;
 		}
 		for (auto neighbor : unit->GetNeighbors()->neighbors)
 		{
@@ -35,12 +35,17 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 				if (*unit > *neighbor)
 				{
 					//TODO: use simulation function
-					//*unit -= 0.01;
-					*neighbor += 0.01;
+					*unit -= 0.01;
+					*neighbor += 0.02;
 					if (*neighbor > 2.f)
 					{
-						neighbor->Trigger(m_Particle);
-						temp.Enqueue(neighbor);
+						if (!arr[neighbor->GetIndex()])
+						{
+							neighbor->Trigger(m_Particle);
+							temp.Enqueue(neighbor);
+							arr[neighbor->GetIndex()] = true;
+						}
+						
 					}
 				}
 				if (!flag && *neighbor < 2.f)
@@ -51,6 +56,9 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 			}
 		}
 	}
+	
+	delete[] arr;
+
 	BEACON_LOG(Warning, "%d units need to be updated", count);
 	while (temp.Dequeue(unit))
 	{

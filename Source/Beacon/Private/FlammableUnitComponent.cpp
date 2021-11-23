@@ -24,12 +24,15 @@ void UFlammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	/*DrawDebugBox(
-		GetWorld(),
-		GetComponentLocation(),
-		m_UnitExtent - 1,
-		FColor::Red,
-		false, DeltaTime, 0, 1);*/
+	if (b_IsBurning)
+	{
+		DrawDebugBox(
+			GetWorld(),
+			GetComponentLocation(),
+			m_UnitExtent - 1,
+			FColor::Red,
+			false, DeltaTime, 0, 1);
+	}
 }
 
 void UFlammableUnitComponent::OnUnregister()

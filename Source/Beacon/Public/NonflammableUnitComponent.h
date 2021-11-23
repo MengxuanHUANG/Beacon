@@ -20,7 +20,7 @@ public:
 
 	virtual void Initialize(FVector extent, ConnectType type) override;
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) override;
-
+	virtual void Trigger(UParticleSystem* particle) override;
 	virtual bool IsTriggered() const override;
 
 public:

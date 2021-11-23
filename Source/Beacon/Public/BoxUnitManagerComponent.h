@@ -90,6 +90,7 @@ public:
 					}
 					//register component for rendering
 					unit->RegisterComponent();
+					unit->SetIndex(x * count.Y * count.Z + y * count.Z + z);
 
 					//setup attachment
 					unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);

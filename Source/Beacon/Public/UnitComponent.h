@@ -22,7 +22,6 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void Initialize(FVector extent, ConnectType type) {}
 	virtual void Trigger(UParticleSystem* particle) {}
@@ -31,8 +30,9 @@ public:
 
 	virtual bool IsTriggered() const { return false; }
 
+	inline uint32 GetIndex() const { return m_Index; }
+	inline void SetIndex(uint32 index) { m_Index = index; }
 	inline float GetValue() const { return m_Value; }
-
 	//override operators for value
 	UUnitComponent& operator = (float value);
 	UUnitComponent& operator + (float value);
@@ -70,6 +70,9 @@ public:
 		UNeighbor* m_Neighbors;
 
 protected:
+	UPROPERTY(VisibleAnywhere)
+		uint32 m_Index;
+
 	UPROPERTY(VisibleAnywhere)
 		float m_Value;
 };

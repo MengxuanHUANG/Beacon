@@ -22,14 +22,6 @@ void UUnitComponent::BeginPlay()
 	
 }
 
-// Called every frame
-void UUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
 UUnitComponent& UUnitComponent::operator = (float value)
 {
 	this->m_Value = value;
