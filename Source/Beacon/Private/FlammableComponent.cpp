@@ -49,17 +49,20 @@ void UFlammableComponent::BeginPlay()
 		m_UnitManager->SetParticle(T_FireParticle);
 
 		//TODO: StartBurning
-		/*for (float i = 0; i < 4; i++)
+		for (float i = -10; i < 10; i++)
 		{
-			for (float j = 0; j < 4; j++)
+			for (float j = -10; j < 10; j++)
 			{
-				for (float k = 0; k < 4; k++)
+				for (float k = -10; k < 10; k++)
 				{
 					m_UnitManager->TriggerUnit(FVector(i, j, k));
 				}
 			}
-		}*/
+		}
+		/*
 		m_UnitManager->TriggerUnit(FVector(0));
+		*/
+		
 	}
 }
 

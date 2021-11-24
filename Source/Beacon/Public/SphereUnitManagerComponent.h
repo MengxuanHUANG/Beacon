@@ -19,6 +19,8 @@ public:
 	USphereUnitManagerComponent();
 	~USphereUnitManagerComponent();
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 	virtual void OnUnregister() override;
 
 	virtual void UpdateUnits() override;
@@ -31,6 +33,8 @@ public:
 public:
 	uint32 m_Count;
 	
+	UPROPERTY(VisibleAnywhere)
+		FVector m_UnitCount;
 
 	UPROPERTY(VisibleAnywhere)
 		TMap<FVector, UUnitComponent*> m_Units;
@@ -49,7 +53,7 @@ public:
 		//int count = radius / m_UnitExtent.X;
 
 		TArray<UUnitComponent*> unitsArray;
-
+		UUnitComponent* unit;
 		for (int x = -count; x <= count; x++)
 		{
 			for (int y = -count; y <= count; y++)
@@ -58,7 +62,15 @@ public:
 				{
 					if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) <= 3 * (count - 1))
 					{
-						InnerUnitType* unit = NewObject<InnerUnitType>(self);
+						if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) == 3 * (count - 1))
+						{
+							unit = NewObject<OuterUnitType>(self);
+						}
+						else
+						{
+							unit = NewObject<InnerUnitType>(self);
+						}
+						
 
 						//register component for rendering
 						unit->RegisterComponent();
