@@ -24,6 +24,7 @@ public:
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void TriggerUnit(FVector index) override;
 	virtual void SetParameter(uint32 x) override;
+	virtual void SetParameter2(uint32 x, uint32 y) override;
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 
 	virtual void SetParticle(UParticleSystem* particle) override;

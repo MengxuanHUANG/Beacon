@@ -154,7 +154,7 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 
 			m_UnitManager->SetConnectType(m_ConnectType);
-			m_UnitManager->SetParameter(m_Count);
+			m_UnitManager->SetParameter2(m_UnitCount.X, m_UnitCount.Y);
 
 			UCapsuleUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<UCapsuleUnitManagerComponent>(m_UnitManager),

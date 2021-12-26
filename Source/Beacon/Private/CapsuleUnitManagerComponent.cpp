@@ -41,6 +41,10 @@ void UCapsuleUnitManagerComponent::SetParameter(uint32 x)
 	m_Count = x;
 }
 
+void UCapsuleUnitManagerComponent::SetParameter2(uint32 x, uint32 y)
+{
+}
+
 void UCapsuleUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 {
 }
