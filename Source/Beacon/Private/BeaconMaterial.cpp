@@ -13,3 +13,8 @@ ObjectTemplate UBeaconMaterial::GetObjectTemplate() const
 {
 	return Template;
 }
+
+float UBeaconMaterial::GetTemperature(uint32 thermal) const
+{
+	return Temperature_Curve->GetFloatValue(thermal);
+}

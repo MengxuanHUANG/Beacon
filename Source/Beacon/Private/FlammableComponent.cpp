@@ -51,7 +51,7 @@ void UFlammableComponent::BeginPlay()
 		m_UnitManager->SetParticle(T_FireParticle);
 
 		//TODO: StartBurning
-		for (float i = -10; i < 10; i++)
+		/*for (float i = -10; i < 10; i++)
 		{
 			for (float j = -10; j < 10; j++)
 			{
@@ -60,10 +60,8 @@ void UFlammableComponent::BeginPlay()
 					m_UnitManager->TriggerUnit(FVector(i, j, k));
 				}
 			}
-		}
-		/*
+		}*/
 		m_UnitManager->TriggerUnit(FVector(0));
-		*/
 		
 	}
 }
@@ -186,6 +184,11 @@ void UFlammableComponent::CreateUnits()
 	//Generate template Effect
 	if (m_Material)
 	{
+		if (m_UnitManager)
+		{
+			m_UnitManager->SetMaterial(m_Material);
+		}
+
 		ObjectTemplate Template = m_Material->GetObjectTemplate();
 		switch (Template)
 		{

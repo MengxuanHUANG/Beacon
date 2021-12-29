@@ -48,4 +48,7 @@ public:
 public:
 	UFUNCTION()
 		ObjectTemplate GetObjectTemplate() const;
+
+	UFUNCTION()
+		FORCEINLINE float GetTemperature(uint32 thermal) const;
 };

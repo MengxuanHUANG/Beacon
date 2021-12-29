@@ -3,6 +3,9 @@
 
 #include "BoxUnitManagerComponent.h"
 #include "UnitComponent.h"
+#include "BeaconMaterial.h"
+#include "Curves/CurveFloat.h"
+
 #include "BeaconLog.h"
 
 UBoxUnitManagerComponent::UBoxUnitManagerComponent()
@@ -26,18 +29,20 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		bool flag = false;
 		if (unit->IsTriggered())
 		{
-			*unit += 5.f;
+			//TODO: reduce fuel and add thermal
+			*unit += 10.f;
 		}
 		for (auto neighbor : unit->GetNeighbors()->neighbors)
 		{
 			if (neighbor != nullptr && !neighbor->IsTriggered())
 			{
-				if (*unit > *neighbor)
+				if (m_Material->GetTemperature(unit->GetValue()) > m_Material->GetTemperature(neighbor->GetValue()))
 				{
 					//TODO: use simulation function
-					*unit -= 0.01;
-					*neighbor += 0.02;
-					if (*neighbor > 2.f)
+					*unit -= 1;
+					*neighbor += 1;
+					float neighborTemperature = m_Material->GetTemperature(neighbor->GetValue());
+					if (neighborTemperature > m_Material->Flash_Point)
 					{
 						if (!arr[neighbor->GetIndex()])
 						{
@@ -45,10 +50,9 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 							temp.Enqueue(neighbor);
 							arr[neighbor->GetIndex()] = true;
 						}
-						
 					}
 				}
-				if (!flag && *neighbor < 2.f)
+				if (!flag && m_Material->GetTemperature(neighbor->GetValue()) < m_Material->Flash_Point)
 				{
 					temp.Enqueue(unit);
 					flag = true;
