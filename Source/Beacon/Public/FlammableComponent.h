@@ -9,6 +9,7 @@
 
 class UParticleSystemComponent;
 class UFlammableUnitComponent;
+class UBeaconMaterial;
 
 USTRUCT(BlueprintType)
 struct FUnitCount
@@ -53,6 +54,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		UParticleSystem* T_FireParticle;
+
+	UPROPERTY(EditAnywhere)
+		UBeaconMaterial* m_Material;
 
 	UPROPERTY(EditAnywhere)
 		uint32 m_Count = 1;

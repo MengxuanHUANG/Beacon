@@ -18,6 +18,7 @@
 #include "BoxUnitManagerComponent.h"
 #include "SphereUnitManagerComponent.h"
 #include "CapsuleUnitManagerComponent.h"
+#include "BeaconMaterial.h"
 
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
@@ -27,6 +28,7 @@ UFlammableComponent::UFlammableComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	SetUsingAbsoluteScale(true);
 
+	//Set tag to actor
 	AActor* owner = GetOwner();
 	if (owner != nullptr)
 	{
@@ -69,6 +71,7 @@ void UFlammableComponent::BeginPlay()
 //Called when component destroyed
 void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 {
+	//Remove tag from actor
 	AActor* owner = GetOwner();
 	if (owner != nullptr)
 	{
@@ -96,7 +99,8 @@ void UFlammableComponent::ClearUnits()
 void UFlammableComponent::CreateUnits()
 {
 	USceneComponent* parent = this->GetAttachParent();
-
+	
+	//TODO: move to a function
 	if (parent != nullptr && m_UnitManager == nullptr)
 	{
 		UClass* uClass = parent->GetClass();
@@ -107,15 +111,20 @@ void UFlammableComponent::CreateUnits()
 		{
 			UBoxComponent* box = Cast<UBoxComponent>(parent);
 
+			//Bind callback function to collider
 			box->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
 
+			//create UnitsManager
 			m_UnitManager = NewObject<UBoxUnitManagerComponent>(this);
 			m_UnitManager->RegisterComponent();
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 
+			//set necessary parameters
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter3(m_UnitCount.X, m_UnitCount.Y, m_UnitCount.Z);
+			
+			//create units
 			UBoxUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<UBoxUnitManagerComponent>(m_UnitManager), 
 				this, 
@@ -126,16 +135,20 @@ void UFlammableComponent::CreateUnits()
 		{
 			USphereComponent* sphere = Cast<USphereComponent>(parent);
 
+			//Bind callback function to collider
 			sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
-
+			
+			//create UnitsManager
 			m_UnitManager = NewObject<USphereUnitManagerComponent>(this);
 			m_UnitManager->RegisterComponent();
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
-
+			
+			//set necessary parameters
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter(m_Count);
 			
+			//create units
 			USphereUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<USphereUnitManagerComponent>(m_UnitManager),
 				this,
@@ -146,21 +159,48 @@ void UFlammableComponent::CreateUnits()
 		{
 			UCapsuleComponent* capsule = Cast<UCapsuleComponent>(parent);
 
+			//Bind callback function to collider
 			capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
 			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
-
+			
+			//create UnitsManager
 			m_UnitManager = NewObject<UCapsuleUnitManagerComponent>(this);
 			m_UnitManager->RegisterComponent();
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
-
+			
+			//set necessary parameters
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter2(m_UnitCount.X, m_UnitCount.Y);
-
+			
+			//create units
 			UCapsuleUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
 				Cast<UCapsuleUnitManagerComponent>(m_UnitManager),
 				this,
 				parent
 				);
+		}
+	}
+
+	//TODO: move to a function
+	
+	//Generate template Effect
+	if (m_Material)
+	{
+		ObjectTemplate Template = m_Material->GetObjectTemplate();
+		switch (Template)
+		{
+		case ObjectTemplate::None:
+			break;
+		case ObjectTemplate::AlwaysBurn:
+			break;
+		case ObjectTemplate::Break:
+			break;
+		case ObjectTemplate::Melt:
+			break;
+		default:
+			BEACON_LOG(Warning, "Undefine Template Type!");
+			BEACON_ASSERT(false);
+			break;
 		}
 	}
 }
