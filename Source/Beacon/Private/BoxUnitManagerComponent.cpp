@@ -5,11 +5,13 @@
 #include "UnitComponent.h"
 #include "BeaconMaterial.h"
 #include "Curves/CurveFloat.h"
+#include "UnitUpdater.h"
 
 #include "BeaconLog.h"
 
 UBoxUnitManagerComponent::UBoxUnitManagerComponent()
 {
+	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
 }
 
 // Called every frame
@@ -17,56 +19,9 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	TQueue<UUnitComponent*> temp;
-	bool* arr = new bool[m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z] {false};
-	int32 count = 0;
-
-	UUnitComponent* unit;
-	while(m_TriggeredUnits.Dequeue(unit))
+	if (m_UnitUpdater.IsValid())
 	{
-		count++;
-
-		bool flag = false;
-		if (unit->IsTriggered())
-		{
-			//TODO: reduce fuel and add thermal
-			*unit += 10.f;
-		}
-		for (auto neighbor : unit->GetNeighbors()->neighbors)
-		{
-			if (neighbor != nullptr && !neighbor->IsTriggered())
-			{
-				if (m_Material->GetTemperature(unit->GetValue()) > m_Material->GetTemperature(neighbor->GetValue()))
-				{
-					//TODO: use simulation function
-					*unit -= 1;
-					*neighbor += 1;
-					float neighborTemperature = m_Material->GetTemperature(neighbor->GetValue());
-					if (neighborTemperature > m_Material->Flash_Point)
-					{
-						if (!arr[neighbor->GetIndex()])
-						{
-							neighbor->Trigger(m_Particle);
-							temp.Enqueue(neighbor);
-							arr[neighbor->GetIndex()] = true;
-						}
-					}
-				}
-				if (!flag && m_Material->GetTemperature(neighbor->GetValue()) < m_Material->Flash_Point)
-				{
-					temp.Enqueue(unit);
-					flag = true;
-				}
-			}
-		}
-	}
-	
-	delete[] arr;
-
-	BEACON_LOG(Warning, "%d units need to be updated", count);
-	while (temp.Dequeue(unit))
-	{
-		m_TriggeredUnits.Enqueue(unit);
+		m_UnitUpdater->UpdateUnit(m_TriggeredUnits, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
 	}
 }
 

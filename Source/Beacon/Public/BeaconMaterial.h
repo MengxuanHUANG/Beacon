@@ -41,9 +41,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Flash_Point = 100; 
 	
+	/** Coefficient of thermal exchange (between 0 and 1)*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Thermal_Exchange_Coefficient = 0.5;
+
 	/** Define relationship of thermal and temperature */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UCurveFloat* Temperature_Curve; 
+
+	/** Whether the object can always burn*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool Has_Max_BurningTime = false;
+
+	/** Maximum time (in second) that object can burn*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Max_BurningTime = 0;
 
 public:
 	UFUNCTION()

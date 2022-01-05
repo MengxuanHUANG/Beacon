@@ -182,14 +182,14 @@ void UFlammableComponent::CreateUnits()
 	//TODO: move to a function
 	
 	//Generate template Effect
-	if (m_Material)
+	if (T_Material)
 	{
 		if (m_UnitManager)
 		{
-			m_UnitManager->SetMaterial(m_Material);
+			m_UnitManager->SetMaterial(T_Material);
 		}
 
-		ObjectTemplate Template = m_Material->GetObjectTemplate();
+		ObjectTemplate Template = T_Material->GetObjectTemplate();
 		switch (Template)
 		{
 		case ObjectTemplate::None:
@@ -208,7 +208,7 @@ void UFlammableComponent::CreateUnits()
 	}
 }
 
-void UFlammableComponent::Ignited(UParticleSystem* particle)
+void UFlammableComponent::Ignited(UBeaconFire* beaconFireWrapper)
 {
 	//TODO: burn
 }
@@ -229,7 +229,7 @@ void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 		UFlammableComponent* otherflammable = Cast<UFlammableComponent>(OtherActor->GetComponentByClass(UFlammableComponent::StaticClass()));
 		if (otherflammable->IsBurning())
 		{
-			this->Ignited(otherflammable->GetFireParticle());
+			//this->Ignited(otherflammable->GetBeaconFire());
 		}
 	}
 }

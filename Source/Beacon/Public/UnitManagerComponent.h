@@ -11,6 +11,7 @@
 
 class UUnitComponent;
 class UBeaconMaterial;
+class UnitUpdater;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEACON_API UUnitManagerComponent : public USceneComponent
@@ -50,6 +51,7 @@ public:
 
 protected:
 	ConnectType m_ConnectType;
+	TSharedPtr<UnitUpdater> m_UnitUpdater;
 
 public:
 	UPROPERTY(VisibleAnywhere)

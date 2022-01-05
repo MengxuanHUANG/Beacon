@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Neighbor.h"
 #include "UnitManagerComponent.h"
+#include "BeaconFire.h"
+
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
@@ -56,7 +58,10 @@ public:
 		UParticleSystem* T_FireParticle;
 
 	UPROPERTY(EditAnywhere)
-		UBeaconMaterial* m_Material;
+		TSubclassOf<UBeaconFire> T_BeaconFire;
+
+	UPROPERTY(EditAnywhere)
+		UBeaconMaterial* T_Material;
 
 	UPROPERTY(EditAnywhere)
 		uint32 m_Count = 1;
@@ -80,7 +85,7 @@ public:
 		void CreateUnits();
 
 	UFUNCTION()
-		void Ignited(UParticleSystem* particle);
+		void Ignited(UBeaconFire* beaconFire);
 
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
@@ -95,5 +100,5 @@ public:
 
 	//return nullptr is not burning
 	UFUNCTION()
-		inline UParticleSystem* GetFireParticle() const { return T_FireParticle; }
+		inline UParticleSystem* GetBeaconFire() const { return T_FireParticle; }
 };
