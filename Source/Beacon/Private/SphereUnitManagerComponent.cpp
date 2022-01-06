@@ -4,6 +4,7 @@
 #include "SphereUnitManagerComponent.h"
 #include "UnitComponent.h"
 #include "BeaconLog.h"
+#include "UnitUpdater.h"
 
 USphereUnitManagerComponent::USphereUnitManagerComponent()
 {
@@ -17,49 +18,10 @@ USphereUnitManagerComponent::~USphereUnitManagerComponent()
 void USphereUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	TQueue<UUnitComponent*> temp;
-	int32 count = 0;
-
-	UUnitComponent* unit;
-	while (m_TriggeredUnits.Dequeue(unit))
+	
+	if (m_UnitUpdater.IsValid())
 	{
-		count++;
-
-		bool flag = false;
-		if (unit->IsTriggered())
-		{
-			*unit += 5.f;
-		}
-		for (auto neighbor : unit->GetNeighbors()->neighbors)
-		{
-			if (neighbor != nullptr && !neighbor->IsTriggered())
-			{
-				if (*unit > *neighbor)
-				{
-					//TODO: use simulation function
-					*unit -= 0.01;
-					*neighbor += 0.02;
-					if (*neighbor > 2.f)
-					{
-							neighbor->Trigger(m_Particle);
-							temp.Enqueue(neighbor);
-
-					}
-				}
-				if (!flag && *neighbor < 2.f)
-				{
-					temp.Enqueue(unit);
-					flag = true;
-				}
-			}
-		}
-	}
-
-	BEACON_LOG(Warning, "%d units need to be updated", count);
-	while (temp.Dequeue(unit))
-	{
-		m_TriggeredUnits.Enqueue(unit);
+		m_UnitUpdater->UpdateUnit(m_TriggeredUnits, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
 	}
 }
 
@@ -101,12 +63,12 @@ void USphereUnitManagerComponent::TriggerUnit(FVector index)
 	UUnitComponent* unit;
 	if ((unit = GetUnit(index)) != nullptr)
 	{
-		unit->Trigger(m_Particle);
+		unit->Trigger(m_BeaconFire);
 		m_TriggeredUnits.Enqueue(unit);
 	}
 }
 
-void USphereUnitManagerComponent::SetParticle(UParticleSystem* particle)
+void USphereUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)
 {
-	m_Particle = particle;
+	m_BeaconFire = beaconFire;
 }

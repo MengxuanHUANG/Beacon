@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
+#include "GenericPlatform/GenericPlatformMisc.h"
 #include "BeaconFire.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), Blueprintable, BlueprintType, meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), Blueprintable, BlueprintType, meta = (BlueprintSpawnableComponent))
 class BEACON_API UBeaconFire : public USceneComponent
 {
 	GENERATED_BODY()
@@ -16,17 +17,9 @@ public:
 	// Sets default values for this component's properties
 	UBeaconFire();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintNativeEvent)
+		void StartBurning();
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
-	//UFUNCTION(BlueprintNativeEvent)
-	//	void TestFunction();
-
-public:
-
+	UFUNCTION(BlueprintNativeEvent)
+		void EndBurning();
 };

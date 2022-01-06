@@ -8,16 +8,11 @@
 
 #include "Components/SceneComponent.h"
 
-#include "Particles/ParticleSystemComponent.h"
-
 #include "DrawDebugHelpers.h"
 #include "Misc/App.h"
 
 UFlammableUnitComponent::UFlammableUnitComponent()
 {
-	m_ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle"));
-	m_ParticleSystem->SetupAttachment(this);
-	m_ParticleSystem->SetUsingAbsoluteRotation(true);
 }
 
 void UFlammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -37,9 +32,9 @@ void UFlammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void UFlammableUnitComponent::OnUnregister()
 {
-	if (m_ParticleSystem != nullptr)
+	if (m_BeaconFire != nullptr)
 	{
-		m_ParticleSystem->UnregisterComponent();
+		m_BeaconFire->UnregisterComponent();
 	}
 	if (m_Neighbors != nullptr)
 	{
@@ -51,8 +46,6 @@ void UFlammableUnitComponent::OnUnregister()
 
 void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
 {
-	m_ParticleSystem->RegisterComponent();
-
 	m_UnitExtent = extent;
 	m_ConnectType = type;
 
@@ -76,14 +69,17 @@ void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
 		true, -1, 0, 1);
 }
 
-void UFlammableUnitComponent::Trigger(UParticleSystem* particle)
+void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
-	if (!b_IsBurning && m_ParticleSystem != nullptr)
+	if (!b_IsBurning)
 	{
-		FString name;
-		GetName(name);
 		m_Value = 1000.f;
-		m_ParticleSystem->SetTemplate(particle);
+		m_BeaconFire = NewObject<UBeaconFire>(this, beaconFire);
+		m_BeaconFire->RegisterComponent();
+
+		m_BeaconFire->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+		m_BeaconFire->StartBurning();
+
 		b_IsBurning = true;
 	}
 }

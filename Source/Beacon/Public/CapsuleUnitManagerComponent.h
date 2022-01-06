@@ -27,7 +27,7 @@ public:
 	virtual void SetParameter2(uint32 x, uint32 y) override;
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 
-	virtual void SetParticle(UParticleSystem* particle) override;
+	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 
 public:
 	uint32 m_Count;

@@ -7,6 +7,8 @@
 #include "Components/BoxComponent.h"
 #include "BoxUnitManagerComponent.generated.h"
 
+class UBeaconFire;
+
 /**
  * 
  */
@@ -26,7 +28,7 @@ public:
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void TriggerUnit(FVector index) override;
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
-	virtual void SetParticle(UParticleSystem* particle) override;
+	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 
 public:
 	UPROPERTY(VisibleAnywhere)
@@ -38,7 +40,7 @@ public:
 	TQueue<UUnitComponent*> m_TriggeredUnits;
 	
 	UPROPERTY(VisibleAnywhere)
-		UParticleSystem* m_Particle;
+		TSubclassOf<UBeaconFire> m_BeaconFire;
 
 public:
 	template<typename InnerUnitType, typename OuterUnitType>

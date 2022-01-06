@@ -62,7 +62,7 @@ void UBoxUnitManagerComponent::TriggerUnit(FVector index)
 	UUnitComponent* unit;
 	if ((unit = GetUnit(index)) != nullptr)
 	{
-		unit->Trigger(m_Particle);
+		unit->Trigger(m_BeaconFire);
 		m_TriggeredUnits.Enqueue(unit);
 	}
 }
@@ -74,7 +74,7 @@ void UBoxUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 	m_UnitCount.Z = z;
 }
 
-void UBoxUnitManagerComponent::SetParticle(UParticleSystem* particle)
+void UBoxUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)
 {
-	m_Particle = particle;
+	m_BeaconFire = beaconFire;
 }

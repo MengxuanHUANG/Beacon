@@ -12,6 +12,7 @@
 class UUnitComponent;
 class UBeaconMaterial;
 class UnitUpdater;
+class UBeaconFire;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEACON_API UUnitManagerComponent : public USceneComponent
@@ -36,7 +37,7 @@ public:
 	virtual UUnitComponent* GetUnit(FVector index) { return nullptr; }
 	virtual void UpdateUnits() {}
 
-	virtual void SetParticle(UParticleSystem* particle) {}
+	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) {}
 
 	virtual void SetParameter(uint32 x) {}
 	virtual void SetParameter2(uint32 x, uint32 y) {}

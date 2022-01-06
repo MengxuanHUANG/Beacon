@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UnitComponent.h"
+#include "BeaconFire.h"
 #include "BeaconCore.h"
 #include "FlammableUnitComponent.generated.h"
+
 
 /**
  * 
@@ -24,7 +26,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void Initialize(FVector extent, ConnectType type);
-	virtual void Trigger(UParticleSystem* particle);
+	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit);
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 
@@ -34,8 +36,8 @@ public:
 	virtual bool IsTriggered() const override { return b_IsBurning; }
 
 public:
-	UPROPERTY(VisibleAnyWhere, BlueprintReadOnly)
-		UParticleSystemComponent* m_ParticleSystem;
+	UPROPERTY(VisibleAnyWhere)
+		UBeaconFire* m_BeaconFire;
 
 	UPROPERTY(VisibleAnyWhere)
 		FVector m_UnitExtent;

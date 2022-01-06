@@ -2,7 +2,6 @@
 
 
 #include "BeaconFire.h"
-#include "BeaconLog.h"
 
 // Sets default values for this component's properties
 UBeaconFire::UBeaconFire()
@@ -10,30 +9,12 @@ UBeaconFire::UBeaconFire()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
-	// ...
 }
 
-
-// Called when the game starts
-void UBeaconFire::BeginPlay()
+void UBeaconFire::StartBurning_Implementation()
 {
-	Super::BeginPlay();
-
-	// ...
-	
 }
 
-
-// Called every frame
-void UBeaconFire::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UBeaconFire::EndBurning_Implementation()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
-
-//void UBeaconFire::TestFunction_Implementation()
-//{
-//	BEACON_LOG(Display, "TestFunction");
-//}

@@ -59,7 +59,7 @@ void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent
 	m_Neighbors->SetNeighbor(x, y, z, unit);
 }
 
-void UNonflammableUnitComponent::Trigger(UParticleSystem* particle)
+void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
 	b_NeedUpdate = true;
 }

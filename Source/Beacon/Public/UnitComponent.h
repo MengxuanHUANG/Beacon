@@ -7,6 +7,8 @@
 #include "Neighbor.h"
 #include "UnitComponent.generated.h"
 
+class UBeaconFire;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEACON_API UUnitComponent : public USceneComponent
 {
@@ -24,7 +26,7 @@ public:
 	// Called every frame
 
 	virtual void Initialize(FVector extent, ConnectType type) {}
-	virtual void Trigger(UParticleSystem* particle) {}
+	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) {}
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) {}
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 

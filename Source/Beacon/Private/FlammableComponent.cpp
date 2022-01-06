@@ -48,8 +48,7 @@ void UFlammableComponent::BeginPlay()
 	//trigger one unit
 	if (InitializeWithFlame && m_UnitManager != nullptr)
 	{
-		m_UnitManager->SetParticle(T_FireParticle);
-
+		m_UnitManager->SetBeaconFire(T_BeaconFire);
 		//TODO: StartBurning
 		/*for (float i = -10; i < 10; i++)
 		{
@@ -62,7 +61,6 @@ void UFlammableComponent::BeginPlay()
 			}
 		}*/
 		m_UnitManager->TriggerUnit(FVector(0));
-		
 	}
 }
 

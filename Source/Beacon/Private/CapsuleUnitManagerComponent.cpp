@@ -49,6 +49,6 @@ void UCapsuleUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 {
 }
 
-void UCapsuleUnitManagerComponent::SetParticle(UParticleSystem* particle)
+void UCapsuleUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)
 {
 }

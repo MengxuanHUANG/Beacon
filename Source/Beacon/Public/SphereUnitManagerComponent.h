@@ -27,8 +27,7 @@ public:
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void TriggerUnit(FVector index) override;
 	virtual void SetParameter(uint32 x) override;
-
-	virtual void SetParticle(UParticleSystem* particle) override;
+	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 
 public:
 	uint32 m_Count;
@@ -40,7 +39,9 @@ public:
 		TMap<FVector, UUnitComponent*> m_Units;
 
 	TQueue<UUnitComponent*> m_TriggeredUnits;
-	UParticleSystem* m_Particle;
+	
+	UPROPERTY(VisibleAnywhere)
+		TSubclassOf<UBeaconFire> m_BeaconFire;
 
 public:
 	template<typename InnerUnitType, typename OuterUnitType>
