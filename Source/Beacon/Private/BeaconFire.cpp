@@ -18,3 +18,8 @@ void UBeaconFire::StartBurning_Implementation()
 void UBeaconFire::EndBurning_Implementation()
 {
 }
+
+void UBeaconFire::CallBurningEvent(FString eventName)
+{
+	F_BurningEvents.Broadcast(eventName);
+}

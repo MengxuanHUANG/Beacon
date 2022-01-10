@@ -7,6 +7,7 @@
 #include "GenericPlatform/GenericPlatformMisc.h"
 #include "BeaconFire.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBeaconBurningEvents_DynamicMulticast, FString, EventName);
 
 UCLASS( ClassGroup=(Custom), Blueprintable, BlueprintType, meta = (BlueprintSpawnableComponent))
 class BEACON_API UBeaconFire : public USceneComponent
@@ -22,4 +23,12 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 		void EndBurning();
+
+protected:
+	UPROPERTY(BlueprintAssignable, Category = "Beacon Burning Events")
+		FBeaconBurningEvents_DynamicMulticast F_BurningEvents;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Beacon Functions")
+		void CallBurningEvent(FString eventName);
 };
