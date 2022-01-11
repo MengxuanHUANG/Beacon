@@ -2,7 +2,7 @@
 
 
 #include "BoxUnitManagerComponent.h"
-#include "UnitComponent.h"
+
 #include "BeaconMaterial.h"
 #include "Curves/CurveFloat.h"
 #include "UnitUpdater.h"
@@ -10,6 +10,7 @@
 #include "BeaconLog.h"
 
 UBoxUnitManagerComponent::UBoxUnitManagerComponent()
+	:m_TriggeredUnits(UBoxUnitManagerComponent::CompareUnit)
 {
 	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
 }
@@ -63,7 +64,7 @@ void UBoxUnitManagerComponent::TriggerUnit(FVector index)
 	if ((unit = GetUnit(index)) != nullptr)
 	{
 		unit->Trigger(m_BeaconFire);
-		//m_TriggeredUnits.HeapPush(unit);
+		m_TriggeredUnits.Push(unit);
 	}
 }
 
@@ -77,4 +78,9 @@ void UBoxUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 void UBoxUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)
 {
 	m_BeaconFire = beaconFire;
+}
+
+bool UBoxUnitManagerComponent::CompareUnit(UUnitComponent* a, UUnitComponent* b)
+{
+	return *a > *b;
 }

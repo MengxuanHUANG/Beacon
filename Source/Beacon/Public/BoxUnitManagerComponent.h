@@ -3,6 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
+#include "UnitComponent.h"
+#include "Beacon_PriorityQueue.h"
+
 #include "UnitManagerComponent.h"
 #include "Components/BoxComponent.h"
 #include "BoxUnitManagerComponent.generated.h"
@@ -30,6 +34,9 @@ public:
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 
+private:
+	static bool CompareUnit(UUnitComponent* a, UUnitComponent* b);
+
 public:
 	UPROPERTY(VisibleAnywhere)
 		TArray<UUnitComponent*> m_Units;
@@ -37,8 +44,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FVector m_UnitCount;
 
-	TArray<UUnitComponent*> m_TriggeredUnits;
+	//TArray<UUnitComponent*> m_TriggeredUnits;
 	
+	Beacon_PriorityQueue<UUnitComponent> m_TriggeredUnits;
+
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<UBeaconFire> m_BeaconFire;
 

@@ -2,8 +2,8 @@
 
 
 #include "UnitUpdater.h"
-#include "BeaconMaterial.h"
 #include "UnitComponent.h"
+#include "BeaconMaterial.h"
 
 #include "BeaconLog.h"
 
@@ -18,7 +18,7 @@ UnitUpdater::~UnitUpdater()
 	m_Material = nullptr;
 }
 
-void UnitUpdater::UpdateUnit(TArray<UUnitComponent*>& triggeredUnits, uint32 unitsCount) const
+void UnitUpdater::UpdateUnit(Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, uint32 unitsCount) const
 {
 	BEACON_LOG(Display, "UpdateUnit in UnitUpdater");
 	//TODO: calculate new value for the unit and the queue

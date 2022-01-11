@@ -21,7 +21,7 @@ void USphereUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	
 	if (m_UnitUpdater.IsValid())
 	{
-		m_UnitUpdater->UpdateUnit(m_TriggeredUnits, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
+		//m_UnitUpdater->UpdateUnit(m_TriggeredUnits, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
 	}
 }
 
