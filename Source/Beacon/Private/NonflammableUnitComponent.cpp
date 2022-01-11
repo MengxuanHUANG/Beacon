@@ -7,11 +7,17 @@
 #include "BeaconLog.h"
 
 #include "Components/SceneComponent.h"
+#include "Components/BoxComponent.h"
 
 #include "Particles/ParticleSystemComponent.h"
 
 #include "DrawDebugHelpers.h"
 #include "Misc/App.h"
+
+void UNonflammableUnitComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
 
 void UNonflammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -34,6 +40,14 @@ void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
 	m_UnitExtent = extent;
 	m_ConnectType = type;
 
+	DebugBox = NewObject<UBoxComponent>(this);
+	DebugBox->RegisterComponent();
+
+	DebugBox->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+	DebugBox->SetVisibility(BEACON_HIDE_DEBUG_BOX);
+	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
+	DebugBox->SetBoxExtent(extent);
+	
 	switch (type)
 	{
 	case ConnectType::SixDirection:
@@ -45,13 +59,6 @@ void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
 	case ConnectType::None:
 		break;
 	}
-
-	DrawDebugBox(
-		GetWorld(),
-		GetComponentLocation(),
-		m_UnitExtent - 1,
-		FColor::Blue ,
-		true, -1, 0, 1);
 }
 
 void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* unit)

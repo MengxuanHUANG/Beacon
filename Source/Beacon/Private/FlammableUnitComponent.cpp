@@ -7,12 +7,18 @@
 #include "BeaconLog.h"
 
 #include "Components/SceneComponent.h"
+#include "Components/BoxComponent.h"
 
 #include "DrawDebugHelpers.h"
 #include "Misc/App.h"
 
 UFlammableUnitComponent::UFlammableUnitComponent()
 {
+}
+
+void UFlammableUnitComponent::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void UFlammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -47,7 +53,14 @@ void UFlammableUnitComponent::OnUnregister()
 void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
 {
 	m_UnitExtent = extent;
-	m_ConnectType = type;
+	m_ConnectType = type; 
+	DebugBox = NewObject<UBoxComponent>(this);
+	DebugBox->RegisterComponent();
+
+	DebugBox->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+	DebugBox->SetVisibility(BEACON_HIDE_DEBUG_BOX);
+	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
+	DebugBox->SetBoxExtent(extent);
 
 	switch (type)
 	{
@@ -60,13 +73,6 @@ void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
 	case ConnectType::None:
 		break;
 	}
-
-	DrawDebugBox(
-		GetWorld(),
-		GetComponentLocation(),
-		m_UnitExtent - 1,
-		FColor::Red,
-		true, -1, 0, 1);
 }
 
 void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)

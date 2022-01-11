@@ -37,7 +37,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FVector m_UnitCount;
 
-	TQueue<UUnitComponent*> m_TriggeredUnits;
+	TArray<UUnitComponent*> m_TriggeredUnits;
 	
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<UBeaconFire> m_BeaconFire;

@@ -63,7 +63,7 @@ void UBoxUnitManagerComponent::TriggerUnit(FVector index)
 	if ((unit = GetUnit(index)) != nullptr)
 	{
 		unit->Trigger(m_BeaconFire);
-		m_TriggeredUnits.Enqueue(unit);
+		//m_TriggeredUnits.HeapPush(unit);
 	}
 }
 

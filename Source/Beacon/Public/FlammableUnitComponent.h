@@ -18,7 +18,10 @@ class BEACON_API UFlammableUnitComponent : public UUnitComponent
 	GENERATED_BODY()
 public:
 	UFlammableUnitComponent();
-
+	
+	// Called when the game starts
+	virtual void BeginPlay() override;
+	
 	virtual void OnUnregister() override;
 
 public:
@@ -41,7 +44,6 @@ public:
 
 	UPROPERTY(VisibleAnyWhere)
 		FVector m_UnitExtent;
-
 private:
 	bool b_IsBurning;
 };

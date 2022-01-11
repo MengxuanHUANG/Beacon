@@ -8,6 +8,7 @@
 #include "UnitComponent.generated.h"
 
 class UBeaconFire;
+class UBoxComponent;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEACON_API UUnitComponent : public USceneComponent
@@ -35,31 +36,21 @@ public:
 	inline uint32 GetIndex() const { return m_Index; }
 	inline void SetIndex(uint32 index) { m_Index = index; }
 	inline float GetValue() const { return m_Value; }
+
 	//override operators for value
-	UUnitComponent& operator = (float value);
-	UUnitComponent& operator + (float value);
-	UUnitComponent& operator += (float value);
-	UUnitComponent& operator - (float value);
-	UUnitComponent& operator -= (float value);
-	UUnitComponent& operator * (float value);
-	UUnitComponent& operator *= (float value);
-	UUnitComponent& operator / (float value);
-	UUnitComponent& operator /= (float value);
+	virtual bool operator < (const UUnitComponent& unit);
+	virtual bool operator <= (const UUnitComponent& unit);
+	virtual bool operator > (const UUnitComponent& unit);
+	virtual bool operator >= (const UUnitComponent& unit);
+	virtual bool operator == (const UUnitComponent& unit);
+	virtual bool operator != (const UUnitComponent& unit);
 
-
-	bool operator < (const UUnitComponent& unit);
-	bool operator <= (const UUnitComponent& unit);
-	bool operator > (const UUnitComponent& unit);
-	bool operator >= (const UUnitComponent& unit);
-	bool operator == (const UUnitComponent& unit);
-	bool operator != (const UUnitComponent& unit);
-
-	bool operator < (float value);
-	bool operator <= (float value);
-	bool operator > (float value);
-	bool operator >= (float value);
-	bool operator == (float value);
-	bool operator != (float value);
+	virtual bool operator < (float value);
+	virtual bool operator <= (float value);
+	virtual bool operator > (float value);
+	virtual bool operator >= (float value);
+	virtual bool operator == (float value);
+	virtual bool operator != (float value);
 
 	virtual void IGetName(FString& name) {}
 
@@ -71,10 +62,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UNeighbor* m_Neighbors;
 
+	UPROPERTY(VisibleAnyWhere)
+		UBoxComponent* DebugBox;
 protected:
 	UPROPERTY(VisibleAnywhere)
 		uint32 m_Index;
 
 	UPROPERTY(VisibleAnywhere)
-		float m_Value;
+		float m_Value;	
 };

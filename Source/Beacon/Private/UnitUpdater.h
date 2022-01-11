@@ -16,7 +16,7 @@ public:
 	virtual ~UnitUpdater();
 
 	//calculate new value for the unit and the queue
-	virtual void UpdateUnit(TQueue<UUnitComponent*>& triggeredUnits, uint32 unitsCount) const;
+	virtual void UpdateUnit(TArray<UUnitComponent*>& triggeredUnits, uint32 unitsCount) const;
 
 public:
 	//set a new material for this updater

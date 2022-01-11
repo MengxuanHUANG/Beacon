@@ -38,7 +38,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TMap<FVector, UUnitComponent*> m_Units;
 
-	TQueue<UUnitComponent*> m_TriggeredUnits;
+	TArray<UUnitComponent*> m_TriggeredUnits;
 	
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<UBeaconFire> m_BeaconFire;
