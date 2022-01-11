@@ -6,6 +6,8 @@
 #include "BeaconFire.h"
 #include "BeaconFire_ParticleSystem.generated.h"
 
+class UAudioComponent;
+
 /**
  * 
  */
@@ -25,4 +27,7 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystemComponent* m_Particle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UAudioComponent* m_AudioComponent;
 };

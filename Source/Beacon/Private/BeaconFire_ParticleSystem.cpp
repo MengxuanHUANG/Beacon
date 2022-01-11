@@ -4,12 +4,15 @@
 #include "BeaconFire_ParticleSystem.h"
 
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
+
 #include "BeaconLog.h"
 UBeaconFire_ParticleSystem::UBeaconFire_ParticleSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
 	m_Particle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Fire Particles"));
+	m_AudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("Fire Sound"));
 }
 
 void UBeaconFire_ParticleSystem::BeginPlay()
