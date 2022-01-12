@@ -12,6 +12,11 @@
 UBoxUnitManagerComponent::UBoxUnitManagerComponent()
 	:m_TriggeredUnits(UBoxUnitManagerComponent::CompareUnit)
 {
+}
+
+void UBoxUnitManagerComponent::BeginPlay()
+{
+	Super::BeginPlay();
 	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
 }
 
@@ -22,7 +27,7 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	if (m_UnitUpdater.IsValid())
 	{
-		m_UnitUpdater->UpdateUnit(m_TriggeredUnits, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
+		m_UnitUpdater->UpdateUnit(DeltaTime, m_TriggeredUnits, m_BeaconFire, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
 	}
 }
 

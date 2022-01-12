@@ -5,6 +5,7 @@
 #include "SixDirNeighbor.h"
 
 #include "BeaconLog.h"
+#include "BeaconMaterial.h"
 
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
@@ -14,40 +15,39 @@
 #include "DrawDebugHelpers.h"
 #include "Misc/App.h"
 
+//BEACON Macro
+#ifdef BEACON_DEBUG
+	//Whether to hide box for UnitComponent
+#define BEACON_DEBUG_BOX_VISIBLE true
+#define BEACON_HIDE_DEBUG_BOX_IN_GAME false
+#endif
+
 void UNonflammableUnitComponent::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
-void UNonflammableUnitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	//TODO: wrapped in BEACON_DEBUG
-	if (b_NeedUpdate)
-	{
-		DrawDebugBox(
-			GetWorld(),
-			GetComponentLocation(),
-			m_UnitExtent - 1,
-			FColor::Blue,
-			false, DeltaTime, 0, 1);
-	}
-}
-
 void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
 {
+	//Debug Box
 	m_UnitExtent = extent;
-	m_ConnectType = type;
-
 	DebugBox = NewObject<UBoxComponent>(this);
 	DebugBox->RegisterComponent();
 
 	DebugBox->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
-	DebugBox->SetVisibility(BEACON_HIDE_DEBUG_BOX);
+	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
 	DebugBox->SetBoxExtent(extent);
 	
+	//burning parameters
+	m_TotalBurningTime = 0.f;
+	if (m_Material)
+	{
+		Value = m_Material->DefaultThermal;
+	}
+	
+	//Connection
+	m_ConnectType = type;
 	switch (type)
 	{
 	case ConnectType::SixDirection:
@@ -59,6 +59,37 @@ void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
 	case ConnectType::None:
 		break;
 	}
+}
+
+bool UNonflammableUnitComponent::Update(float deltaTime)
+{
+	if (b_NeedUpdate)
+	{
+		//reduce remainder burning time
+		if (m_Material->Has_Max_BurningTime)
+		{
+			m_TotalBurningTime += deltaTime;
+		}
+		//increase thermal energy
+		if (Value < m_Material->MAX_Thermal)
+		{
+			Value += deltaTime * float(m_Material->GenThermalPerSecond);
+		}
+		//check whether to end burning
+		if (m_TotalBurningTime >= m_Material->Max_BurningTime)
+		{
+			b_NeedUpdate = false;
+			return false;
+		}
+
+		DrawDebugBox(
+			GetWorld(),
+			GetComponentLocation(),
+			m_UnitExtent - 1,
+			FColor::Blue,
+			false, deltaTime, 0, 1);
+	}
+	return true;
 }
 
 void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* unit)
@@ -75,3 +106,11 @@ bool UNonflammableUnitComponent::IsTriggered() const
 {
 	return false;
 }
+
+#ifdef BEACON_DEBUG_BOX_VISIBLE
+#undef BEACON_DEBUG_BOX_VISIBLE
+#endif
+
+#ifdef BEACON_HIDE_DEBUG_BOX_IN_GAME
+#undef BEACON_HIDE_DEBUG_BOX_IN_GAME
+#endif

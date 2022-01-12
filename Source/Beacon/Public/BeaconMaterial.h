@@ -13,7 +13,16 @@
 
 class UCurveFloat;
 
-UENUM()
+USTRUCT(BlueprintType)
+struct FPair
+{
+	GENERATED_BODY()
+
+	float Time;
+	FString FunctionName;
+};
+
+UENUM(BlueprintType)
 enum class ObjectTemplate : uint8
 {
 	None = 0,
@@ -33,9 +42,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		ObjectTemplate Template = ObjectTemplate::None;
 	
-	/** Default temperature */
+	/** Default thermal */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float Default_Temperature = 0;
+		float DefaultThermal = 0;
 
 	/** Temperature that start to burn */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -56,6 +65,21 @@ public:
 	/** Maximum time (in second) that object can burn*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Max_BurningTime = 0;
+
+	/** Thermal Generated Per Second*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float GenThermalPerSecond = 1;
+	
+	/** Thermal Loss Per Second*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float LoseThermalPerSecond = 1;
+
+	/** Maximum Thermal*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MAX_Thermal = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FPair> BurningEvents;
 
 public:
 	UFUNCTION()

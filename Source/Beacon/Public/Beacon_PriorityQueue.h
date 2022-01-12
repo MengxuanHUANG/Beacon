@@ -98,6 +98,11 @@ public:
 		m_TArray.Empty();
 	}
 
+	inline uint32 Num() const
+	{
+		return m_TArray.Num();
+	}
+
 protected:
 	TArray<Beacon_QueueNode<Element>> m_TArray;
 

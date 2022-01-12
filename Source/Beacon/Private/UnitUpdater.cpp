@@ -18,57 +18,62 @@ UnitUpdater::~UnitUpdater()
 	m_Material = nullptr;
 }
 
-void UnitUpdater::UpdateUnit(Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, uint32 unitsCount) const
+void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, TSubclassOf<UBeaconFire>& beaconFire, uint32 unitsCount) const
 {
 	//TODO: calculate new value for the unit and the queue
 
-	//TQueue<UUnitComponent*> temp;
-	//bool* arr = new bool[unitsCount] {false};
-	//int32 count = 0;
+	TQueue<UUnitComponent*> temp;
+	bool* arr = new bool[unitsCount] {false};
 
-	//UUnitComponent* unit;
-	//while(triggeredUnits.IsEmpty())
-	//{
-	//	unit = triggeredUnits.Pop();
-	//	count++;
+	BEACON_LOG(Warning, "%d units need to be updated", triggeredUnits.Num());
 
-	//	bool flag = false;
+	UUnitComponent* unit;
+	while(!triggeredUnits.IsEmpty())
+	{
+		unit = triggeredUnits.Pop();
 
-	//	for (auto neighbor : unit->GetNeighbors()->neighbors)
-	//	{
-	//		if (neighbor != nullptr && !neighbor->IsTriggered())
-	//		{
-	//			if (m_Material->GetTemperature(unit->GetValue()) > m_Material->GetTemperature(neighbor->GetValue()))
-	//			{
-	//				//TODO: use simulation function
-	//				*unit -= 1;
-	//				*neighbor += 1;
-	//				float neighborTemperature = m_Material->GetTemperature(neighbor->GetValue());
-	//				if (neighborTemperature > m_Material->Flash_Point)
-	//				{
-	//					if (!arr[neighbor->GetIndex()])
-	//					{
-	//						neighbor->Trigger(m_Particle);
-	//						temp.Enqueue(neighbor);
-	//						arr[neighbor->GetIndex()] = true;
-	//					}
-	//				}
-	//			}
-	//			if (!flag && m_Material->GetTemperature(neighbor->GetValue()) < m_Material->Flash_Point)
-	//			{
-	//				temp.Enqueue(unit);
-	//				flag = true;
-	//			}
-	//		}
-	//	}
-	//}
+		//update unit itself
+		bool flag = unit->Update(deltaTime);
 
-	//delete[] arr;
+		//traverse all neighbors of a unit 
+		for (auto neighbor : unit->GetNeighbors()->neighbors)
+		{
+			//ignore thermal exchange among burning units
+			if (neighbor != nullptr)
+			{
+				if (!neighbor->IsTriggered())
+				{
+					float gap = unit->GetTemperature() - neighbor->GetTemperature();
+					unit->Value -= 1;
+					neighbor->Value += 1;
 
-	//BEACON_LOG(Warning, "%d units need to be updated", count);
-	//while (temp.Dequeue(unit))
-	//{
-	//	triggeredUnits.Push(unit);
-	//}
+					if (neighbor->GetTemperature() > m_Material->Flash_Point)
+					{
+						if (!arr[neighbor->GetIndex()])
+						{
+							neighbor->Trigger(beaconFire);
+							temp.Enqueue(neighbor);
+							arr[neighbor->GetIndex()] = true;
+						}
+					}
+					if (flag && m_Material->GetTemperature(neighbor->Value) < m_Material->Flash_Point)
+					{
+						temp.Enqueue(unit);
+						flag = false;
+					}
+				}
+			}
+			else
+			{
+				unit->Value -= m_Material->LoseThermalPerSecond / float(unit->GetNeighbors()->GetCount());
+			}
+		}
+	}
 
+	delete[] arr;
+	
+	while (temp.Dequeue(unit))
+	{
+		triggeredUnits.Push(unit);
+	}
 }

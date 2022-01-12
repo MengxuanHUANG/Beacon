@@ -38,6 +38,7 @@ public:
 	
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit);
 	virtual int GetIndex(int x, int y, int z) { return -1; }
+	virtual int GetCount() const { return 0; }
 
 public:
 	UUnitComponent* self;

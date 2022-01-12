@@ -25,9 +25,7 @@ public:
 	virtual void OnUnregister() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	virtual bool Update(float deltaTime);
 	virtual void Initialize(FVector extent, ConnectType type);
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit);
@@ -46,4 +44,9 @@ public:
 		FVector m_UnitExtent;
 private:
 	bool b_IsBurning;
+
+	UPROPERTY(VisibleAnyWhere)
+		float m_TotalBurningTime;
+
+	int32 m_BurningEventCount;
 };

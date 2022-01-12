@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Beacon_PriorityQueue.h"
+
 class UBeaconMaterial;
+class UBeaconFire;
 
 /**
  * 
@@ -16,7 +18,7 @@ public:
 	virtual ~UnitUpdater();
 
 	//calculate new value for the unit and the queue
-	virtual void UpdateUnit(Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, uint32 unitsCount) const;
+	virtual void UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, TSubclassOf<UBeaconFire>& beaconFire, uint32 unitsCount) const;
 
 public:
 	//set a new material for this updater

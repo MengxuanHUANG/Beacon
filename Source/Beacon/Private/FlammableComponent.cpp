@@ -117,6 +117,7 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 
 			//set necessary parameters
+			m_UnitManager->SetMaterial(T_Material);
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter3(m_UnitCount.X, m_UnitCount.Y, m_UnitCount.Z);
 			
@@ -141,6 +142,7 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 			
 			//set necessary parameters
+			m_UnitManager->SetMaterial(T_Material);
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter(m_Count);
 			
@@ -165,6 +167,7 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 			
 			//set necessary parameters
+			m_UnitManager->SetMaterial(T_Material);
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter2(m_UnitCount.X, m_UnitCount.Y);
 			

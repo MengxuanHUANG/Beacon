@@ -18,10 +18,8 @@ class BEACON_API UNonflammableUnitComponent : public UUnitComponent
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	virtual void Initialize(FVector extent, ConnectType type) override;
+	virtual bool Update(float deltaTime);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) override;
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) override;
 	virtual bool IsTriggered() const override;
@@ -32,4 +30,5 @@ public:
 
 private:
 	bool b_NeedUpdate = false;
+	float m_TotalBurningTime;
 };

@@ -2,6 +2,7 @@
 
 
 #include "UnitComponent.h"
+#include "BeaconMaterial.h"
 
 // Sets default values for this component's properties
 UUnitComponent::UUnitComponent()
@@ -21,29 +22,34 @@ void UUnitComponent::BeginPlay()
 	
 }
 
+float UUnitComponent::GetTemperature() const
+{
+	return m_Material->GetTemperature(Value);
+}
+
 bool UUnitComponent::operator < (const UUnitComponent& unit)
 {
-	return this->m_Value < unit.GetValue();
+	return this->Value < unit.Value;
 }
 
 bool UUnitComponent::operator <= (const UUnitComponent& unit) 
 {
-	return this->m_Value <= unit.GetValue();
+	return this->Value <= unit.Value;
 }
 
 bool UUnitComponent::operator > (const UUnitComponent& unit) 
 {
-	return this->m_Value > unit.GetValue();
+	return this->Value > unit.Value;
 }
 
 bool UUnitComponent::operator >= (const UUnitComponent& unit) 
 {
-	return this->m_Value >= unit.GetValue();
+	return this->Value >= unit.Value;
 }
 
 bool UUnitComponent::operator == (const UUnitComponent& unit) 
 {
-	return this->m_Value == unit.GetValue();
+	return this->Value == unit.Value;
 }
 
 bool UUnitComponent::operator != (const UUnitComponent& unit)
@@ -53,30 +59,30 @@ bool UUnitComponent::operator != (const UUnitComponent& unit)
 
 bool UUnitComponent::operator < (float value)
 {
-	return m_Value < value;
+	return this->Value < value;
 }
 
 bool UUnitComponent::operator <= (float value)
 {
-	return m_Value <= value;
+	return this->Value <= value;
 }
 
 bool UUnitComponent::operator > (float value)
 {
-	return m_Value > value;
+	return this->Value > value;
 }
 
 bool UUnitComponent::operator >= (float value)
 {
-	return m_Value >= value;
+	return this->Value >= value;
 }
 
 bool UUnitComponent::operator == (float value)
 {
-	return m_Value == value;
+	return this->Value == value;
 }
 
 bool UUnitComponent::operator != (float value)
 {
-	return !(m_Value == value);
+	return !(this->Value == value);
 }

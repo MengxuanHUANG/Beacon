@@ -56,5 +56,5 @@ protected:
 
 public:
 	UPROPERTY(VisibleAnywhere)
-		const UBeaconMaterial* m_Material;
+		UBeaconMaterial* m_Material;
 };

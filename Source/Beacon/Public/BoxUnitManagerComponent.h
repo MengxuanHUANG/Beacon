@@ -24,6 +24,9 @@ public:
 	UBoxUnitManagerComponent();
 	~UBoxUnitManagerComponent();
 
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void OnUnregister() override;
@@ -43,8 +46,6 @@ public:
 	
 	UPROPERTY(VisibleAnywhere)
 		FVector m_UnitCount;
-
-	//TArray<UUnitComponent*> m_TriggeredUnits;
 	
 	Beacon_PriorityQueue<UUnitComponent> m_TriggeredUnits;
 
@@ -102,6 +103,7 @@ public:
 					//register component for rendering
 					unit->RegisterComponent();
 					unit->SetIndex(x * count.Y * count.Z + y * count.Z + z);
+					unit->SetMaterial(boxUnitManager->m_Material);
 
 					//setup attachment
 					unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);

@@ -55,9 +55,6 @@ public:
 		bool InitializeWithFlame;
 
 	UPROPERTY(EditAnywhere)
-		UParticleSystem* T_FireParticle;
-
-	UPROPERTY(EditAnywhere)
 		TSubclassOf<UBeaconFire> T_BeaconFire;
 
 	UPROPERTY(EditAnywhere)
@@ -100,5 +97,5 @@ public:
 
 	//return nullptr is not burning
 	UFUNCTION()
-		inline UParticleSystem* GetBeaconFire() const { return T_FireParticle; }
+		inline const TSubclassOf<UBeaconFire>& GetBeaconFire() const { return T_BeaconFire; }
 };
