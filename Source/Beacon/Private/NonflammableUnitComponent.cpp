@@ -39,6 +39,13 @@ void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
 	DebugBox->SetBoxExtent(extent);
 	
+	DrawDebugBox(
+		GetWorld(),
+		GetComponentLocation(),
+		m_UnitExtent - 1,
+		FColor::Blue,
+		true);
+
 	//burning parameters
 	m_TotalBurningTime = 0.f;
 	if (m_Material)

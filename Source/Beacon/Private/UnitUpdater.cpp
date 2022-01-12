@@ -33,7 +33,10 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 		unit = triggeredUnits.Pop();
 
 		//update unit itself
-		bool flag = unit->Update(deltaTime);
+		if (unit->Update(deltaTime))
+		{
+			temp.Enqueue(unit);
+		}
 
 		//traverse all neighbors of a unit 
 		for (auto neighbor : unit->GetNeighbors()->neighbors)
@@ -55,11 +58,6 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 							temp.Enqueue(neighbor);
 							arr[neighbor->GetIndex()] = true;
 						}
-					}
-					if (flag && m_Material->GetTemperature(neighbor->Value) < m_Material->Flash_Point)
-					{
-						temp.Enqueue(unit);
-						flag = false;
 					}
 				}
 			}
