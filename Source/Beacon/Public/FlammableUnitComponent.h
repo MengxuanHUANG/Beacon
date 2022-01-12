@@ -43,7 +43,8 @@ public:
 	UPROPERTY(VisibleAnyWhere)
 		FVector m_UnitExtent;
 private:
-	bool b_IsBurning;
+	UPROPERTY(VisibleAnyWhere)
+		bool b_IsBurning;
 
 	UPROPERTY(VisibleAnyWhere)
 		float m_TotalBurningTime;

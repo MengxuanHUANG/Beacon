@@ -35,6 +35,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 		//update unit itself
 		if (unit->Update(deltaTime))
 		{
+			arr[unit->GetIndex()] = true;
 			temp.Enqueue(unit);
 		}
 
@@ -47,10 +48,10 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 				if (!neighbor->IsTriggered())
 				{
 					float gap = unit->GetTemperature() - neighbor->GetTemperature();
-					unit->Value -= 1;
-					neighbor->Value += 1;
+					unit->Value -= deltaTime;
+					neighbor->Value += deltaTime;
 
-					if (neighbor->GetTemperature() > m_Material->Flash_Point)
+					if (unit->Value > m_Material->Flash_Point)
 					{
 						if (!arr[neighbor->GetIndex()])
 						{
@@ -63,7 +64,8 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 			}
 			else
 			{
-				unit->Value -= m_Material->LoseThermalPerSecond / float(unit->GetNeighbors()->GetCount());
+				float loss = deltaTime * (m_Material->LoseThermalPerSecond / float(unit->GetNeighbors()->neighbors.Num()));
+				unit->Value -= loss;
 			}
 		}
 	}

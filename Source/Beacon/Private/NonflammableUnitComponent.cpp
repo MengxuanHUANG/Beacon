@@ -85,6 +85,7 @@ bool UNonflammableUnitComponent::Update(float deltaTime)
 		//check whether to end burning
 		if (m_TotalBurningTime >= m_Material->Max_BurningTime)
 		{
+			Value = -100;
 			b_NeedUpdate = false;
 			return false;
 		}
@@ -95,8 +96,10 @@ bool UNonflammableUnitComponent::Update(float deltaTime)
 			m_UnitExtent - 1,
 			FColor::Blue,
 			false, deltaTime, 0, 1);
+
+		return true;
 	}
-	return true;
+	return false;
 }
 
 void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* unit)
@@ -107,11 +110,6 @@ void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent
 void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
 	b_NeedUpdate = true;
-}
-
-bool UNonflammableUnitComponent::IsTriggered() const
-{
-	return false;
 }
 
 #ifdef BEACON_DEBUG_BOX_VISIBLE

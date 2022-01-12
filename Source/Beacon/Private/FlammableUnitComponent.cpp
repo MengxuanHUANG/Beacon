@@ -108,6 +108,7 @@ bool UFlammableUnitComponent::Update(float deltaTime)
 		//check whether to end burning
 		if (m_TotalBurningTime >= m_Material->Max_BurningTime)
 		{
+			Value = -100;
 			b_IsBurning = false;
 			m_BeaconFire->EndBurning();
 			return false;
@@ -119,8 +120,10 @@ bool UFlammableUnitComponent::Update(float deltaTime)
 			m_UnitExtent - 1,
 			FColor::Red,
 			false, deltaTime, 0, 1);
+
+		return true;
 	}
-	return true;
+	return false;
 }
 
 void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)

@@ -17,9 +17,12 @@ USTRUCT(BlueprintType)
 struct FPair
 {
 	GENERATED_BODY()
-
-	float Time;
-	FString FunctionName;
+	
+	UPROPERTY(EditAnywhere)
+		float Time;
+	
+	UPROPERTY(EditAnywhere)
+		FString FunctionName;
 };
 
 UENUM(BlueprintType)

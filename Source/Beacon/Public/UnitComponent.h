@@ -72,7 +72,7 @@ public:
 		UBoxComponent* DebugBox;
 
 	UPROPERTY(VisibleAnywhere)
-		float Value;
+		float Value = 0.f;
 
 protected:
 	UPROPERTY(VisibleAnywhere)

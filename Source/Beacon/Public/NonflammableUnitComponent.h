@@ -22,13 +22,16 @@ public:
 	virtual bool Update(float deltaTime);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) override;
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) override;
-	virtual bool IsTriggered() const override;
+	virtual bool IsTriggered() const { return b_NeedUpdate; }
 
 public:
 	UPROPERTY(VisibleAnyWhere)
 		FVector m_UnitExtent;
 
 private:
-	bool b_NeedUpdate = false;
-	float m_TotalBurningTime;
+	UPROPERTY(VisibleAnyWhere)
+		bool b_NeedUpdate = false;
+	
+	UPROPERTY(VisibleAnyWhere)
+		float m_TotalBurningTime;
 };
