@@ -63,13 +63,48 @@ UUnitComponent* UBoxUnitManagerComponent::GetUnit(FVector index)
 	}
 }
 
-void UBoxUnitManagerComponent::TriggerUnit(FVector index)
+void UBoxUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
 {
 	UUnitComponent* unit;
 	if ((unit = GetUnit(index)) != nullptr)
 	{
+		unit->Value = initValue;
 		unit->Trigger(m_BeaconFire);
 		m_TriggeredUnits.Push(unit);
+	}
+}
+
+void UBoxUnitManagerComponent::TriggerAllUnits_Implementation(float initValue)
+{
+	for (UUnitComponent* unit : m_Units)
+	{
+		unit->Value = initValue;
+		unit->Trigger(m_BeaconFire);
+
+		m_TriggeredUnits.Push(unit);
+	}
+}
+
+void UBoxUnitManagerComponent::UnTriggerUnit_Implementation(FVector index, float value)
+{
+	UUnitComponent* unit;
+	if ((unit = GetUnit(index)) != nullptr)
+	{
+		unit->Value = value;
+		unit->UnTrigger();
+
+		//no need to mannully remove the unit from Priority Queue
+	}
+}
+
+void UBoxUnitManagerComponent::UnTriggerAllUnits_Implementation(float value)
+{
+	for (UUnitComponent* unit : m_Units)
+	{
+		unit->Value = value;
+		unit->UnTrigger();
+
+		m_TriggeredUnits.Empty();
 	}
 }
 

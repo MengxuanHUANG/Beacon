@@ -22,7 +22,7 @@ public:
 
 	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
-	virtual void TriggerUnit(FVector index) override;
+	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
 	virtual void SetParameter(uint32 x) override;
 	virtual void SetParameter2(uint32 x, uint32 y) override;
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;

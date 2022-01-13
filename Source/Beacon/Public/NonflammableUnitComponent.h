@@ -22,6 +22,7 @@ public:
 	virtual bool Update(float deltaTime);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) override;
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) override;
+	virtual void UnTrigger() override;
 	virtual bool IsTriggered() const { return b_NeedUpdate; }
 
 public:

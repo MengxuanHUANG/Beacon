@@ -32,7 +32,7 @@ UUnitComponent* UCapsuleUnitManagerComponent::GetUnit(FVector index)
 	return nullptr;
 }
 
-void UCapsuleUnitManagerComponent::TriggerUnit(FVector index)
+void UCapsuleUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
 {
 }
 

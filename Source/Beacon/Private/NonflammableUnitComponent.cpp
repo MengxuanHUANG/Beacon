@@ -112,6 +112,11 @@ void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 	b_NeedUpdate = true;
 }
 
+void UNonflammableUnitComponent::UnTrigger()
+{
+	b_NeedUpdate = false;
+}
+
 #ifdef BEACON_DEBUG_BOX_VISIBLE
 #undef BEACON_DEBUG_BOX_VISIBLE
 #endif

@@ -58,14 +58,8 @@ UUnitComponent* USphereUnitManagerComponent::GetUnit(FVector index)
 	}
 }
 
-void USphereUnitManagerComponent::TriggerUnit(FVector index)
+void USphereUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
 {
-	UUnitComponent* unit;
-	if ((unit = GetUnit(index)) != nullptr)
-	{
-		unit->Trigger(m_BeaconFire);
-		//m_TriggeredUnits.HeapPush(unit);
-	}
 }
 
 void USphereUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)

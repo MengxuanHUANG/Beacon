@@ -37,35 +37,35 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 		{
 			arr[unit->GetIndex()] = true;
 			temp.Enqueue(unit);
-		}
 
-		//traverse all neighbors of a unit 
-		for (auto neighbor : unit->GetNeighbors()->neighbors)
-		{
-			//ignore thermal exchange among burning units
-			if (neighbor != nullptr)
+			//traverse all neighbors of a unit 
+			for (auto neighbor : unit->GetNeighbors()->neighbors)
 			{
-				if (!neighbor->IsTriggered())
+				//ignore thermal exchange among burning units
+				if (neighbor != nullptr)
 				{
-					float gap = unit->GetTemperature() - neighbor->GetTemperature();
-					unit->Value -= deltaTime;
-					neighbor->Value += deltaTime;
-
-					if (unit->Value > m_Material->Flash_Point)
+					if (!neighbor->IsTriggered())
 					{
-						if (!arr[neighbor->GetIndex()])
+						float gap = unit->GetTemperature() - neighbor->GetTemperature();
+						unit->Value -= deltaTime;
+						neighbor->Value += deltaTime;
+
+						if (unit->Value > m_Material->Flash_Point)
 						{
-							neighbor->Trigger(beaconFire);
-							temp.Enqueue(neighbor);
-							arr[neighbor->GetIndex()] = true;
+							if (!arr[neighbor->GetIndex()])
+							{
+								neighbor->Trigger(beaconFire);
+								temp.Enqueue(neighbor);
+								arr[neighbor->GetIndex()] = true;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
-				float loss = deltaTime * (m_Material->LoseThermalPerSecond / float(unit->GetNeighbors()->neighbors.Num()));
-				unit->Value -= loss;
+				else
+				{
+					float loss = deltaTime * (m_Material->LoseThermalPerSecond / float(unit->GetNeighbors()->neighbors.Num()));
+					unit->Value -= loss;
+				}
 			}
 		}
 	}

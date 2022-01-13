@@ -28,6 +28,7 @@ public:
 	virtual bool Update(float deltaTime);
 	virtual void Initialize(FVector extent, ConnectType type);
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire);
+	virtual void UnTrigger();
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit);
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 

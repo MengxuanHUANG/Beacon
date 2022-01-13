@@ -30,6 +30,7 @@ public:
 	virtual void Initialize(FVector extent, ConnectType type) {}
 	virtual bool Update(float deltaTime) { return true; }
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) {}
+	virtual void UnTrigger() {}
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) {}
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 

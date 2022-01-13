@@ -209,7 +209,7 @@ void UFlammableComponent::CreateUnits()
 	}
 }
 
-void UFlammableComponent::Ignited(UBeaconFire* beaconFireWrapper)
+void UFlammableComponent::Ignited(const TSubclassOf<UBeaconFire>& beaconFire)
 {
 	//TODO: burn
 }
@@ -223,14 +223,12 @@ void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 {
 	if (!b_IsBurning && OtherActor->ActorHasTag(FName("Flammable")))
 	{
-#ifdef BEACON_DEBUG
-		UE_LOG(LogTemp, Warning, TEXT("Ignite"));
-#endif
+		BEACON_LOG(Warning, "Ignite");
 
 		UFlammableComponent* otherflammable = Cast<UFlammableComponent>(OtherActor->GetComponentByClass(UFlammableComponent::StaticClass()));
 		if (otherflammable->IsBurning())
 		{
-			//this->Ignited(otherflammable->GetBeaconFire());
+			this->Ignited(otherflammable->GetBeaconFire());
 		}
 	}
 }

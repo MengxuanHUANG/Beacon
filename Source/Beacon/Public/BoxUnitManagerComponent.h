@@ -33,7 +33,12 @@ public:
 
 	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
-	virtual void TriggerUnit(FVector index) override;
+	
+	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
+	virtual void TriggerAllUnits_Implementation(float initValue) override;
+	virtual void UnTriggerUnit_Implementation(FVector index, float value) override;
+	virtual void UnTriggerAllUnits_Implementation(float value) override;
+	
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 

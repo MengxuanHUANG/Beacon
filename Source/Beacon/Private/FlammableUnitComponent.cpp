@@ -140,6 +140,19 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 	}
 }
 
+void UFlammableUnitComponent::UnTrigger()
+{
+	if (b_IsBurning)
+	{
+		if (m_BeaconFire)
+		{
+			m_BeaconFire->EndBurning();
+		}
+
+		b_IsBurning = false;
+	}
+}
+
 void UFlammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* unit)
 {
 	m_Neighbors->SetNeighbor(x, y, z, unit);

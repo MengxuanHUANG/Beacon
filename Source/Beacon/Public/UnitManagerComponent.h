@@ -33,7 +33,13 @@ public:
 
 	virtual ~UUnitManagerComponent() {}
 
-	virtual void TriggerUnit(FVector index) {}
+	
+	virtual void TriggerUnit_Implementation(FVector index, float initValue) {}
+	virtual void TriggerAllUnits_Implementation(float initValue) {}
+	
+	virtual void UnTriggerUnit_Implementation(FVector index, float value) {}
+	virtual void UnTriggerAllUnits_Implementation(float value) {}
+
 	virtual UUnitComponent* GetUnit(FVector index) { return nullptr; }
 	virtual void UpdateUnits() {}
 
@@ -42,6 +48,27 @@ public:
 	virtual void SetParameter(uint32 x) {}
 	virtual void SetParameter2(uint32 x, uint32 y) {}
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) {}
+
+public:
+	inline void TriggerUnit(FVector index, float initValue = 0)
+	{
+		TriggerUnit_Implementation(index, initValue);
+	}
+
+	inline void TriggerAllUnits(float initValue = 0)
+	{
+		TriggerAllUnits_Implementation(initValue);
+	}
+
+	inline void UnTriggerUnit(FVector index, float value = 0)
+	{
+		UnTriggerUnit_Implementation(index, value);
+	}
+
+	inline void UnTriggerAllUnits(float value = 0)
+	{
+		UnTriggerAllUnits_Implementation(value);
+	}
 
 public:
 	inline void SetConnectType(ConnectType type) { m_ConnectType = type; }

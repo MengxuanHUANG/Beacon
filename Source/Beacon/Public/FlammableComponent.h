@@ -82,7 +82,7 @@ public:
 		void CreateUnits();
 
 	UFUNCTION()
-		void Ignited(UBeaconFire* beaconFire);
+		void Ignited(const TSubclassOf<UBeaconFire>& beaconFire);
 
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
