@@ -42,10 +42,14 @@ public:
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 
+	virtual FVector LocalLocation2Index(FVector location) const override;
+
 private:
 	static bool CompareUnit(UUnitComponent* a, UUnitComponent* b);
 
 public:
+	float last;
+
 	UPROPERTY(VisibleAnywhere)
 		TArray<UUnitComponent*> m_Units;
 	
@@ -57,11 +61,16 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<UBeaconFire> m_BeaconFire;
 
+	UPROPERTY(VisibleAnywhere)
+		const UBoxComponent* ParentBox;
+
 public:
 	template<typename InnerUnitType, typename OuterUnitType>
 	static void CreateUnit(UBoxUnitManagerComponent* boxUnitManager, USceneComponent* self, const USceneComponent* parent)
 	{
 		const UBoxComponent* box = Cast<UBoxComponent>(parent);
+		boxUnitManager->ParentBox = box;
+
 		//calculate number required to fit the box collider
 		FVector extent = box->GetUnscaledBoxExtent();
 

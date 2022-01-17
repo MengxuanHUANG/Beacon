@@ -25,7 +25,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 	TQueue<UUnitComponent*> temp;
 	bool* arr = new bool[unitsCount] {false};
 
-	BEACON_LOG(Warning, "%d units need to be updated", triggeredUnits.Num());
+	//BEACON_LOG(Warning, "%d units need to be updated", triggeredUnits.Num());
 
 	UUnitComponent* unit;
 	while(!triggeredUnits.IsEmpty())

@@ -73,16 +73,20 @@ public:
 		UUnitManagerComponent* m_UnitManager;
 
 private:
-	bool b_IsBurning;
+	UPROPERTY(VisibleAnywhere)
+		bool b_IsBurning;
 
 public:
+	UFUNCTION(BlueprintCallable)
+		void BurnAll();
+
 	UFUNCTION()
 		void ClearUnits();
 	UFUNCTION()
 		void CreateUnits();
 
 	UFUNCTION()
-		void Ignited(const TSubclassOf<UBeaconFire>& beaconFire);
+		void OverlapOtherFlammable(UFlammableComponent* otherFlammable, FVector localLocation, const TSubclassOf<UBeaconFire>& beaconFire);
 
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,

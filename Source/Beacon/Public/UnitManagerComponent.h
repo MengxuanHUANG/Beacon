@@ -49,6 +49,8 @@ public:
 	virtual void SetParameter2(uint32 x, uint32 y) {}
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) {}
 
+
+	virtual FVector LocalLocation2Index(FVector location) const { return FVector(0); }
 public:
 	inline void TriggerUnit(FVector index, float initValue = 0)
 	{

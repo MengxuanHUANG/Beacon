@@ -26,6 +26,8 @@ UFlammableComponent::UFlammableComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	
+	//avoid morphing
 	SetUsingAbsoluteScale(true);
 
 	//Set tag to actor
@@ -60,7 +62,7 @@ void UFlammableComponent::BeginPlay()
 				}
 			}
 		}*/
-		m_UnitManager->TriggerUnit(FVector(0));
+		m_UnitManager->TriggerAllUnits();
 	}
 }
 
@@ -80,6 +82,15 @@ void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 void UFlammableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+}
+
+void UFlammableComponent::BurnAll()
+{
+	if (m_UnitManager)
+	{
+		m_UnitManager->SetBeaconFire(T_BeaconFire);
+		m_UnitManager->TriggerAllUnits(100);
+	}
 }
 
 void UFlammableComponent::ClearUnits()
@@ -209,9 +220,10 @@ void UFlammableComponent::CreateUnits()
 	}
 }
 
-void UFlammableComponent::Ignited(const TSubclassOf<UBeaconFire>& beaconFire)
+void UFlammableComponent::OverlapOtherFlammable(UFlammableComponent* otherFlammable, FVector localLocation, const TSubclassOf<UBeaconFire>& beaconFire)
 {
 	//TODO: burn
+	FVector index = m_UnitManager->LocalLocation2Index(localLocation);
 }
 
 void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
@@ -221,14 +233,14 @@ void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (!b_IsBurning && OtherActor->ActorHasTag(FName("Flammable")))
+	if (OtherActor->ActorHasTag(FName(BEACON_FLAMMABLE_TAG)))
 	{
-		BEACON_LOG(Warning, "Ignite");
-
-		UFlammableComponent* otherflammable = Cast<UFlammableComponent>(OtherActor->GetComponentByClass(UFlammableComponent::StaticClass()));
-		if (otherflammable->IsBurning())
-		{
-			this->Ignited(otherflammable->GetBeaconFire());
-		}
+		FVector location = GetComponentLocation();
+		UFlammableComponent* otherflammable = Cast<UFlammableComponent>(HitComp);
+		OverlapOtherFlammable(
+			otherflammable,
+			SweepResult.Location - location,
+			otherflammable->GetBeaconFire()
+		);
 	}
 }

@@ -19,7 +19,7 @@
 #ifdef BEACON_DEBUG
 	//Whether to hide box for UnitComponent
 #define BEACON_DEBUG_BOX_VISIBLE true
-#define BEACON_HIDE_DEBUG_BOX_IN_GAME false
+#define BEACON_HIDE_DEBUG_BOX_IN_GAME true
 #endif
 
 UFlammableUnitComponent::UFlammableUnitComponent()
@@ -88,7 +88,7 @@ bool UFlammableUnitComponent::Update(float deltaTime)
 		if (m_Material->Has_Max_BurningTime)
 		{
 			m_TotalBurningTime += deltaTime;
-
+			BEACON_LOG(Warning, "time is : %f", m_TotalBurningTime);
 			//call burning events
 			if (m_BurningEventCount < m_Material->BurningEvents.Num())
 			{
@@ -114,12 +114,12 @@ bool UFlammableUnitComponent::Update(float deltaTime)
 			return false;
 		}
 
-		DrawDebugBox(
+		/*DrawDebugBox(
 			GetWorld(),
 			GetComponentLocation(),
 			m_UnitExtent - 1,
 			FColor::Red,
-			false, deltaTime, 0, 1);
+			false, deltaTime, 0, 1);*/
 
 		return true;
 	}

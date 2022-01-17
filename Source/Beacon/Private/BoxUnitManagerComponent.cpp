@@ -18,6 +18,8 @@ void UBoxUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
+
+	last = GetWorld()->GetTimeSeconds();
 }
 
 // Called every frame
@@ -35,7 +37,10 @@ void UBoxUnitManagerComponent::OnUnregister()
 {
 	for (auto unit : m_Units)
 	{
-		unit->UnregisterComponent();
+		if (unit)
+		{
+			unit->UnregisterComponent();
+		}
 	}
 	m_TriggeredUnits.Empty();
 	m_Units.Empty();
@@ -118,6 +123,13 @@ void UBoxUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 void UBoxUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)
 {
 	m_BeaconFire = beaconFire;
+}
+
+FVector UBoxUnitManagerComponent::LocalLocation2Index(FVector location) const
+{
+	BEACON_LOG(Display, "%s", *(location.ToString()));
+	FVector extent = ParentBox->GetUnscaledBoxExtent();
+	return extent;
 }
 
 bool UBoxUnitManagerComponent::CompareUnit(UUnitComponent* a, UUnitComponent* b)
