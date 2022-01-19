@@ -86,17 +86,6 @@ public:
 		void CreateUnits();
 
 	UFUNCTION()
-		void OverlapOtherFlammable(UFlammableComponent* otherFlammable, FVector localLocation, const TSubclassOf<UBeaconFire>& beaconFire);
-
-	UFUNCTION()
-		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
-			class AActor* OtherActor,
-			class UPrimitiveComponent* OtherComp,
-			int32 OtherBodyIndex,
-			bool bFromSweep,
-			const FHitResult& SweepResult);
-
-	UFUNCTION()
 		inline bool IsBurning() const { return b_IsBurning; }
 
 	//return nullptr is not burning

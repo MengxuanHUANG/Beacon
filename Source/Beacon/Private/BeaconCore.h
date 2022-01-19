@@ -10,4 +10,8 @@
 
 #endif
 
+#ifndef BEACON_TAGS
+#define BEACON_TAGS
 #define BEACON_FLAMMABLE_TAG "Beacon_Flammable"
+#define BEACON_FLAMMABLE_UNIT_TAG "Beacon_FlammableUnit"
+#endif

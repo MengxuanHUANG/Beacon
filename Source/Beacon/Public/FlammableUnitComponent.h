@@ -26,13 +26,29 @@ public:
 
 public:
 	virtual bool Update(float deltaTime);
-	virtual void Initialize(FVector extent, ConnectType type);
+	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type);
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire);
 	virtual void UnTrigger();
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit);
+	virtual void SetNeighbor(FVector direction, UUnitComponent* unit);
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
+	virtual void GetTemporaryNeighbors(TArray<TSharedPtr<UnitConnection>>& tempConnections) const;
 
 	virtual void DisplayDebugInfo();
+
+	UFUNCTION()
+		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
+			class AActor* OtherActor,
+			class UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex,
+			bool bFromSweep,
+			const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnEndOverlap(class UPrimitiveComponent* HitComp,
+			class AActor* OtherActor,
+			class UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex);
 
 public:
 	virtual bool IsTriggered() const override { return b_IsBurning; }
@@ -51,4 +67,6 @@ private:
 		float m_TotalBurningTime;
 
 	int32 m_BurningEventCount;
+
+	TMap<FString, TSharedPtr<UnitConnection>> m_TempConnections;
 };

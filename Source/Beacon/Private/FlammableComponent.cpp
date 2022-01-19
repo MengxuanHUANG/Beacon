@@ -47,10 +47,11 @@ void UFlammableComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	m_UnitManager->SetBeaconFire(T_BeaconFire);
+
 	//trigger one unit
 	if (InitializeWithFlame && m_UnitManager != nullptr)
 	{
-		m_UnitManager->SetBeaconFire(T_BeaconFire);
 		//TODO: StartBurning
 		/*for (float i = -10; i < 10; i++)
 		{
@@ -119,8 +120,8 @@ void UFlammableComponent::CreateUnits()
 			UBoxComponent* box = Cast<UBoxComponent>(parent);
 
 			//Bind callback function to collider
-			box->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
-			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			/*box->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
 
 			//create UnitsManager
 			m_UnitManager = NewObject<UBoxUnitManagerComponent>(this);
@@ -144,8 +145,8 @@ void UFlammableComponent::CreateUnits()
 			USphereComponent* sphere = Cast<USphereComponent>(parent);
 
 			//Bind callback function to collider
-			sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
-			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			/*sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
 			
 			//create UnitsManager
 			m_UnitManager = NewObject<USphereUnitManagerComponent>(this);
@@ -169,8 +170,8 @@ void UFlammableComponent::CreateUnits()
 			UCapsuleComponent* capsule = Cast<UCapsuleComponent>(parent);
 
 			//Bind callback function to collider
-			capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
-			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			/*capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
 			
 			//create UnitsManager
 			m_UnitManager = NewObject<UCapsuleUnitManagerComponent>(this);
@@ -217,30 +218,5 @@ void UFlammableComponent::CreateUnits()
 			BEACON_ASSERT(false);
 			break;
 		}
-	}
-}
-
-void UFlammableComponent::OverlapOtherFlammable(UFlammableComponent* otherFlammable, FVector localLocation, const TSubclassOf<UBeaconFire>& beaconFire)
-{
-	//TODO: burn
-	FVector index = m_UnitManager->LocalLocation2Index(localLocation);
-}
-
-void UFlammableComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
-	AActor* OtherActor,
-	UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex,
-	bool bFromSweep,
-	const FHitResult& SweepResult)
-{
-	if (OtherActor->ActorHasTag(FName(BEACON_FLAMMABLE_TAG)))
-	{
-		FVector location = GetComponentLocation();
-		UFlammableComponent* otherflammable = Cast<UFlammableComponent>(HitComp);
-		OverlapOtherFlammable(
-			otherflammable,
-			SweepResult.Location - location,
-			otherflammable->GetBeaconFire()
-		);
 	}
 }

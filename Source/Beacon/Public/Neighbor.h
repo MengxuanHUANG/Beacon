@@ -7,6 +7,16 @@
 #include "Neighbor.generated.h"
 
 
+#ifndef BEACON_SIX_DIR_MACRO
+	#define BEACON_SIX_DIR_MACRO
+	#define BEACON_SIX_DIR_X_FORWARD  FVector( 1, 0, 0)
+	#define BEACON_SIX_DIR_X_BACKWARD FVector(-1, 0, 0)
+	#define BEACON_SIX_DIR_Y_FORWARD  FVector(0,  1, 0)
+	#define BEACON_SIX_DIR_Y_BACKWARD FVector(0, -1, 0)
+	#define BEACON_SIX_DIR_Z_FORWARD  FVector(0, 0,  1)
+	#define BEACON_SIX_DIR_Z_BACKWARD FVector(0, 0, -1)
+#endif
+
 class UUnitComponent;
 
 UENUM()

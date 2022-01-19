@@ -76,7 +76,7 @@ public:
 						}
 						//register component for rendering
 						unit->RegisterComponent();
-						unit->Initialize(FVector(size), capsuleUnitManager->m_ConnectType);
+						unit->Initialize(capsuleUnitManager, FVector(size), capsuleUnitManager->m_ConnectType);
 
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
@@ -163,7 +163,7 @@ public:
 
 						//register component for rendering
 						unit->RegisterComponent();
-						unit->Initialize(FVector(size), capsuleUnitManager->m_ConnectType);
+						unit->Initialize(capsuleUnitManager, FVector(size), capsuleUnitManager->m_ConnectType);
 
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
@@ -259,7 +259,7 @@ public:
 
 						//register component for rendering
 						unit->RegisterComponent();
-						unit->Initialize(FVector(size, size, size_height), capsuleUnitManager->m_ConnectType);
+						unit->Initialize(capsuleUnitManager, FVector(size, size, size_height), capsuleUnitManager->m_ConnectType);
 
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);

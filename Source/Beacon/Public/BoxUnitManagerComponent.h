@@ -34,6 +34,7 @@ public:
 	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	
+	virtual void TriggerUnit_Implementation(UUnitComponent* unit) override;
 	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
 	virtual void TriggerAllUnits_Implementation(float initValue) override;
 	virtual void UnTriggerUnit_Implementation(FVector index, float value) override;
@@ -129,7 +130,7 @@ public:
 						) + size
 					);
 
-					unit->Initialize(size, boxUnitManager->m_ConnectType);
+					unit->Initialize(boxUnitManager, size, boxUnitManager->m_ConnectType);
 
 					//TODO: move to a function
 					//bind pointer
@@ -139,20 +140,20 @@ public:
 						if (x - 1 >= 0)
 						{
 							neighbor = boxUnitManager->m_Units[(x - 1) * count.Y * count.Z + y * count.Z + z];
-							unit->SetNeighbor(-1, 0, 0, neighbor);
-							neighbor->SetNeighbor(1, 0, 0, unit);
+							unit->SetNeighbor(BEACON_SIX_DIR_X_BACKWARD, neighbor);
+							neighbor->SetNeighbor(BEACON_SIX_DIR_X_FORWARD, unit);
 						}
 						if (y - 1 >= 0)
 						{
 							neighbor = boxUnitManager->m_Units[x * count.Y * count.Z + (y - 1) * count.Z + z];
-							unit->SetNeighbor(0, -1, 0, neighbor);
-							neighbor->SetNeighbor(0, 1, 0, unit);
+							unit->SetNeighbor(BEACON_SIX_DIR_Y_BACKWARD, neighbor);
+							neighbor->SetNeighbor(BEACON_SIX_DIR_Y_FORWARD, unit);
 						}
 						if (z - 1 >= 0)
 						{
 							neighbor = boxUnitManager->m_Units[x * count.Y * count.Z + y * count.Z + z - 1];
-							unit->SetNeighbor(0, 0, -1, neighbor);
-							neighbor->SetNeighbor(0, 0, 1, unit);
+							unit->SetNeighbor(BEACON_SIX_DIR_Z_BACKWARD, neighbor);
+							neighbor->SetNeighbor(BEACON_SIX_DIR_Z_FORWARD, unit);
 						}
 					}
 

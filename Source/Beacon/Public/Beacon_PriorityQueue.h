@@ -58,11 +58,6 @@ template<typename Element>
 class BEACON_API Beacon_PriorityQueue
 {
 public:
-	/*Beacon_PriorityQueue()
-	{
-		F_Compare = [](const Beacon_QueueNode<Element>& a, const Beacon_QueueNode<Element>& b) -> bool {return a < b; };
-	}*/
-	
 	Beacon_PriorityQueue(TFunction<bool(Element* a, Element* b)> compare = [=](Element* a, Element* b) -> bool {return *a < *b; })
 	{
 		F_Compare = [=](const Beacon_QueueNode<Element>& a, const Beacon_QueueNode<Element>& b) -> bool {return compare(a._ElePtr, b._ElePtr); };
@@ -73,19 +68,26 @@ public:
 public:
 	inline void Push(Element* e)
 	{
-		m_TArray.HeapPush(Beacon_QueueNode<Element>(e), F_Compare);
+		if (!m_ID.Contains(e))
+		{
+			m_ID.Add(e);
+			m_TArray.HeapPush(Beacon_QueueNode<Element>(e), F_Compare);
+		}
 	}
 
 	inline Element* Pop()
 	{
 		Beacon_QueueNode<Element> node;
 		m_TArray.HeapPop(node, F_Compare);
+		m_ID.Remove(node._ElePtr);
 		return node._ElePtr;
 	}
 
 	inline void RemoveTop()
 	{
-		m_TArray.HeapPopDiscard();
+		Beacon_QueueNode<Element> node;
+		m_TArray.HeapPop(node, F_Compare);
+		m_ID.Remove(node._ElePtr);
 	}
 
 	inline bool IsEmpty() const
@@ -96,6 +98,7 @@ public:
 	inline void Empty()
 	{
 		m_TArray.Empty();
+		m_ID.Empty();
 	}
 
 	inline uint32 Num() const
@@ -105,6 +108,6 @@ public:
 
 protected:
 	TArray<Beacon_QueueNode<Element>> m_TArray;
-
+	TSet<Element*> m_ID;
 	TFunction<bool(const Beacon_QueueNode<Element>& a, const Beacon_QueueNode<Element>& b)> F_Compare;
 };

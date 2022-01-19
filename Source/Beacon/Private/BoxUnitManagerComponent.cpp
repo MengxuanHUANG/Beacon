@@ -68,6 +68,12 @@ UUnitComponent* UBoxUnitManagerComponent::GetUnit(FVector index)
 	}
 }
 
+void UBoxUnitManagerComponent::TriggerUnit_Implementation(UUnitComponent* unit)
+{
+	unit->Trigger(m_BeaconFire);
+	m_TriggeredUnits.Push(unit);
+}
+
 void UBoxUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
 {
 	UUnitComponent* unit;

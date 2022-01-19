@@ -4,6 +4,7 @@
 #include "UnitUpdater.h"
 #include "UnitComponent.h"
 #include "BeaconMaterial.h"
+#include "UnitManagerComponent.h"
 
 #include "BeaconLog.h"
 
@@ -20,8 +21,6 @@ UnitUpdater::~UnitUpdater()
 
 void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, TSubclassOf<UBeaconFire>& beaconFire, uint32 unitsCount) const
 {
-	//TODO: calculate new value for the unit and the queue
-
 	TQueue<UUnitComponent*> temp;
 	bool* arr = new bool[unitsCount] {false};
 
@@ -50,7 +49,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 						unit->Value -= deltaTime;
 						neighbor->Value += deltaTime;
 
-						if (unit->Value > m_Material->Flash_Point)
+						if (neighbor->Value > m_Material->Flash_Point)
 						{
 							if (!arr[neighbor->GetIndex()])
 							{
@@ -67,6 +66,23 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 					unit->Value -= loss;
 				}
 			}
+
+			//traverse all temp neighbors of a unit 
+			TArray<TSharedPtr<UnitConnection>> tempConnections;
+			unit->GetTemporaryNeighbors(tempConnections);
+			for (TSharedPtr<UnitConnection>& connection : tempConnections)
+			{
+				UUnitComponent* other = connection->Other;
+				other->Value += deltaTime;
+				if (other->Value > other->GetMaterial()->Flash_Point)
+				{
+					other->GetManager()->TriggerUnit(other);
+				}
+			}
+		}
+		else
+		{
+			//TODO: remove unit from set
 		}
 	}
 

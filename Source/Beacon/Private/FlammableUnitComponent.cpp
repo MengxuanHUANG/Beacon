@@ -19,7 +19,7 @@
 #ifdef BEACON_DEBUG
 	//Whether to hide box for UnitComponent
 #define BEACON_DEBUG_BOX_VISIBLE true
-#define BEACON_HIDE_DEBUG_BOX_IN_GAME true
+#define BEACON_HIDE_DEBUG_BOX_IN_GAME false
 #endif
 
 UFlammableUnitComponent::UFlammableUnitComponent()
@@ -45,8 +45,13 @@ void UFlammableUnitComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
-void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
+void UFlammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type)
 { 
+	//Manager
+	m_Manager = manager;
+
+	
+
 	//Debug Box
 	m_UnitExtent = extent;
 	DebugBox = NewObject<UBoxComponent>(this);
@@ -56,6 +61,15 @@ void UFlammableUnitComponent::Initialize(FVector extent, ConnectType type)
 	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
 	DebugBox->SetBoxExtent(extent);
+
+	DebugBox->OnComponentBeginOverlap.AddDynamic(this, &UFlammableUnitComponent::OnBeginOverlap);
+	DebugBox->OnComponentEndOverlap.AddDynamic(this, &UFlammableUnitComponent::OnEndOverlap);
+
+	//Set tag to BoxComponent
+	if (!(DebugBox->ComponentHasTag(BEACON_FLAMMABLE_UNIT_TAG)))
+	{
+		DebugBox->ComponentTags.Add(BEACON_FLAMMABLE_UNIT_TAG);
+	}
 
 	//burning parameters
 	m_TotalBurningTime = 0.f;
@@ -85,35 +99,34 @@ bool UFlammableUnitComponent::Update(float deltaTime)
 	if (b_IsBurning)
 	{
 		//reduce remainder burning time
-		if (m_Material->Has_Max_BurningTime)
+		m_TotalBurningTime += deltaTime;
+		//BEACON_LOG(Warning, "time is : %f", m_TotalBurningTime);
+		
+		//call burning events
+		if (m_BurningEventCount < m_Material->BurningEvents.Num())
 		{
-			m_TotalBurningTime += deltaTime;
-			BEACON_LOG(Warning, "time is : %f", m_TotalBurningTime);
-			//call burning events
-			if (m_BurningEventCount < m_Material->BurningEvents.Num())
+			FPair& event = m_Material->BurningEvents[m_BurningEventCount];
+			if (m_TotalBurningTime > event.Time)
 			{
-				FPair& event = m_Material->BurningEvents[m_BurningEventCount];
-				if (m_TotalBurningTime > event.Time)
-				{
-					m_BeaconFire->CallBurningEvent(event.FunctionName);
-					m_BurningEventCount++;
-				}
+				m_BeaconFire->CallBurningEvent(event.FunctionName);
+				m_BurningEventCount++;
 			}
 		}
+
 		//increase thermal energy
 		if (Value < m_Material->MAX_Thermal)
 		{
 			Value += deltaTime * float(m_Material->GenThermalPerSecond);
 		}
+
 		//check whether to end burning
-		if (m_TotalBurningTime >= m_Material->Max_BurningTime)
+		if (m_Material->Has_Max_BurningTime && m_TotalBurningTime >= m_Material->Max_BurningTime)
 		{
 			Value = -100;
 			b_IsBurning = false;
 			m_BeaconFire->EndBurning();
 			return false;
 		}
-
 		/*DrawDebugBox(
 			GetWorld(),
 			GetComponentLocation(),
@@ -158,9 +171,59 @@ void UFlammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* u
 	m_Neighbors->SetNeighbor(x, y, z, unit);
 }
 
+void UFlammableUnitComponent::SetNeighbor(FVector direction, UUnitComponent* unit)
+{
+	SetNeighbor(direction.X, direction.Y, direction.Z, unit);
+}
+
+void UFlammableUnitComponent::GetTemporaryNeighbors(TArray<TSharedPtr<UnitConnection>>& tempConnections) const
+{
+	m_TempConnections.GenerateValueArray(tempConnections);
+}
+
 void UFlammableUnitComponent::DisplayDebugInfo()
 {
 
+}
+
+void UFlammableUnitComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
+	AActor* OtherActor,
+	UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
+{
+	if (OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
+	{
+		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
+		if (!(other->IsTriggered()))
+		{
+			FString actorName;
+			FString compName;
+			OtherActor->GetName(actorName);
+			other->GetName(compName);
+
+			FVector dir = other->GetComponentLocation() - this->GetComponentLocation();
+			m_TempConnections.Add(actorName.Append("_" + compName), MakeShared<UnitConnection>(this, other, dir));
+		}
+	}
+}
+
+void UFlammableUnitComponent::OnEndOverlap(class UPrimitiveComponent* HitComp,
+	class AActor* OtherActor,
+	class UPrimitiveComponent* OtherComp,
+	int32 OtherBodyIndex)
+{
+	if (OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
+	{
+		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
+		FString actorName;
+		FString compName;
+		OtherActor->GetName(actorName);
+		other->GetName(compName);
+
+		m_TempConnections.Remove(actorName.Append("_" + compName));
+	}
 }
 
 #ifdef BEACON_DEBUG_BOX_VISIBLE

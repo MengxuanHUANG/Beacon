@@ -27,8 +27,11 @@ void UNonflammableUnitComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UNonflammableUnitComponent::Initialize(FVector extent, ConnectType type)
+void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type)
 {
+	//Manager
+	m_Manager = manager;
+
 	//Debug Box
 	m_UnitExtent = extent;
 	DebugBox = NewObject<UBoxComponent>(this);
@@ -105,6 +108,11 @@ bool UNonflammableUnitComponent::Update(float deltaTime)
 void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* unit)
 {
 	m_Neighbors->SetNeighbor(x, y, z, unit);
+}
+
+void UNonflammableUnitComponent::SetNeighbor(FVector direction, UUnitComponent* unit)
+{
+	SetNeighbor(direction.X, direction.Y, direction.Z, unit);
 }
 
 void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)

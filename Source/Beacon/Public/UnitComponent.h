@@ -10,6 +10,17 @@
 class UBeaconFire;
 class UBoxComponent;
 class UBeaconMaterial;
+class UUnitManagerComponent;
+
+struct UnitConnection
+{
+	UnitConnection(UUnitComponent* self, UUnitComponent* other, FVector dir)
+		:Self(self), Other(other), Direction(dir)
+	{}
+	UUnitComponent* Self;
+	UUnitComponent* Other;
+	FVector Direction;
+};
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BEACON_API UUnitComponent : public USceneComponent
@@ -27,20 +38,23 @@ protected:
 public:	
 	// Called every frame
 
-	virtual void Initialize(FVector extent, ConnectType type) {}
+	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type) {}
 	virtual bool Update(float deltaTime) { return true; }
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) {}
 	virtual void UnTrigger() {}
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) {}
+	virtual void SetNeighbor(FVector direction, UUnitComponent* unit) {}
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
-
+	virtual void GetTemporaryNeighbors(TArray<TSharedPtr<UnitConnection>>& tempConnections) const {}
 	virtual bool IsTriggered() const { return false; }
 
 public:
 	float GetTemperature() const;
 	inline uint32 GetIndex() const { return m_Index; }
 	inline void SetIndex(uint32 index) { m_Index = index; }
-	virtual void SetMaterial(UBeaconMaterial* material) { m_Material = material; }
+	void SetMaterial(UBeaconMaterial* material) { m_Material = material; }
+	UBeaconMaterial* GetMaterial() const { return m_Material; }
+	UUnitManagerComponent* GetManager() { return m_Manager; }
 
 public:
 	//override operators for value
@@ -81,4 +95,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		UBeaconMaterial* m_Material;
+
+	UPROPERTY(VisibleAnywhere)
+		UUnitManagerComponent* m_Manager;
 };

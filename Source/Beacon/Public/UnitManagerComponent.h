@@ -33,7 +33,7 @@ public:
 
 	virtual ~UUnitManagerComponent() {}
 
-	
+	virtual void TriggerUnit_Implementation(UUnitComponent* unit) {}
 	virtual void TriggerUnit_Implementation(FVector index, float initValue) {}
 	virtual void TriggerAllUnits_Implementation(float initValue) {}
 	
@@ -52,6 +52,11 @@ public:
 
 	virtual FVector LocalLocation2Index(FVector location) const { return FVector(0); }
 public:
+	inline void TriggerUnit(UUnitComponent* unit)
+	{
+		TriggerUnit_Implementation(unit);
+	}
+
 	inline void TriggerUnit(FVector index, float initValue = 0)
 	{
 		TriggerUnit_Implementation(index, initValue);

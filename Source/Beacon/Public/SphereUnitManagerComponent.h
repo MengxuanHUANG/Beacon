@@ -75,7 +75,7 @@ public:
 
 						//register component for rendering
 						unit->RegisterComponent();
-						unit->Initialize(FVector(size), sphereUnitManager->m_ConnectType);
+						unit->Initialize(sphereUnitManager, FVector(size), sphereUnitManager->m_ConnectType);
 
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);

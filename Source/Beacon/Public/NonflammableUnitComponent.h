@@ -18,9 +18,10 @@ class BEACON_API UNonflammableUnitComponent : public UUnitComponent
 	virtual void BeginPlay() override;
 
 public:
-	virtual void Initialize(FVector extent, ConnectType type) override;
+	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type) override;
 	virtual bool Update(float deltaTime);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) override;
+	virtual void SetNeighbor(FVector direction, UUnitComponent* unit) override;
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) override;
 	virtual void UnTrigger() override;
 	virtual bool IsTriggered() const { return b_NeedUpdate; }
