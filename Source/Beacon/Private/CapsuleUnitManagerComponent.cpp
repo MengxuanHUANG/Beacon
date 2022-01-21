@@ -29,7 +29,7 @@ void UCapsuleUnitManagerComponent::UpdateUnits()
 
 UUnitComponent* UCapsuleUnitManagerComponent::GetUnit(FVector index)
 {
-	return nullptr;
+	return m_Units[index];
 }
 
 void UCapsuleUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)

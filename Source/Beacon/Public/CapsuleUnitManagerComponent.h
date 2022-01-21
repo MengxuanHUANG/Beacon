@@ -88,66 +88,11 @@ public:
 							)
 
 						);
-
-						/*
-						BEACON_LOG(Warning, "x is %f", 2 * x * size);
-						BEACON_LOG(Warning, "y is %f", 2 * y * size);
-						BEACON_LOG(Warning, "z is %f", 2 * z * size);
-						*/
-
-
-						//bind pointer
-						if (capsuleUnitManager->m_ConnectType == ConnectType::SixDirection)
-						{
-							UUnitComponent* neighbor;
-							if (x - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x - 1) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y) * capsuleUnitManager->m_Count
-										+ (count + z)];
-								unit->SetNeighbor(-1, 0, 0, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(1, 0, 0, unit);
-								}
-							}
-							if (y - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y - 1) * capsuleUnitManager->m_Count
-										+ (count + z)];
-								unit->SetNeighbor(0, -1, 0, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(0, 1, 0, unit);
-								}
-							}
-							if (z - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y) * capsuleUnitManager->m_Count
-										+ count + z - 1];
-								unit->SetNeighbor(0, 0, -1, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(0, 0, 1, unit);
-								}
-							}
-						}
-
-						unitsArray.Add(unit);
-						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
-						
-					}
-					else
-					{
-						unitsArray.Add(nullptr);
+						capsuleUnitManager->m_Units.Add(FVector(x,y,z - count_height/2),unit);
 					}
 				}
-				for (int z = count; z >= 0; z--)
+
+				for (int z = 0; z <= count; z++)
 				{
 					if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) <= 3 * (count - 1))
 					{
@@ -176,64 +121,9 @@ public:
 
 						);
 
-						/*
-						BEACON_LOG(Warning, "x is %f", 2 * x * size);
-						BEACON_LOG(Warning, "y is %f", 2 * y * size);
-						BEACON_LOG(Warning, "z is %f", 2 * z * size);
-						*/
-
-
-						//bind pointer
-						if (capsuleUnitManager->m_ConnectType == ConnectType::SixDirection)
-						{
-							UUnitComponent* neighbor;
-							if (x - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x - 1) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y) * capsuleUnitManager->m_Count
-										+ (count + z)];
-								unit->SetNeighbor(-1, 0, 0, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(1, 0, 0, unit);
-								}
-							}
-							if (y - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y - 1) * capsuleUnitManager->m_Count
-										+ (count + z)];
-								unit->SetNeighbor(0, -1, 0, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(0, 1, 0, unit);
-								}
-							}
-							if (z - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y) * capsuleUnitManager->m_Count
-										+ count + z - 1];
-								unit->SetNeighbor(0, 0, -1, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(0, 0, 1, unit);
-								}
-							}
-						}
-
-						unitsArray.Add(unit);
-						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
-					}
-					else
-					{
-						unitsArray.Add(nullptr);
+						capsuleUnitManager->m_Units.Add(FVector(x, y, z + count_height / 2), unit);
 					}
 				}
-
 			}
 		}
 
@@ -272,62 +162,69 @@ public:
 
 						);
 
-
-						//bind pointer
-						/*if (capsuleUnitManager->m_ConnectType == ConnectType::SixDirection)
-						{
-							UUnitComponent* neighbor;
-							if (x - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x - 1) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y) * capsuleUnitManager->m_Count
-										+ (count + z)];
-								unit->SetNeighbor(-1, 0, 0, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(1, 0, 0, unit);
-								}
-							}
-							if (y - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y - 1) * capsuleUnitManager->m_Count
-										+ (count + z)];
-								unit->SetNeighbor(0, -1, 0, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(0, 1, 0, unit);
-								}
-							}
-							if (z - 1 >= 0)
-							{
-								neighbor = unitsArray[
-									(count + x) * capsuleUnitManager->m_Count * capsuleUnitManager->m_Count
-										+ (count + y) * capsuleUnitManager->m_Count
-										+ count + z - 1];
-								unit->SetNeighbor(0, 0, -1, neighbor);
-								if (neighbor != nullptr)
-								{
-									neighbor->SetNeighbor(0, 0, 1, unit);
-								}
-							}
-						}*/
-
-						unitsArray.Add(unit);
 						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
-					}
-					else
-					{
-						unitsArray.Add(nullptr);
+
 					}
 				}
 			}
 
 		}
 
+		
+		for (int x = -count; x <= count; x++)
+		{
+			for (int y = -count; y <= count; y++)
+			{
+				for (int z = -count_height/2 - count; z <= count_height / 2 + count; z++)
+				{
+					if (capsuleUnitManager->m_ConnectType == ConnectType::SixDirection)
+					{
+						UUnitComponent* neighbor;
+						if (!capsuleUnitManager->m_Units.Contains(FVector(x,y,z)))
+						{
+							continue;
+						}
+						unit = capsuleUnitManager->m_Units[FVector(x, y, z)];
+						if (capsuleUnitManager->m_Units.Contains(FVector(x+1, y, z)))
+						{
+							neighbor = capsuleUnitManager->m_Units[FVector(x+1, y, z)];
+							unit->SetNeighbor(BEACON_SIX_DIR_X_FORWARD, neighbor);
+							if (neighbor != nullptr)
+							{
+								neighbor->SetNeighbor(BEACON_SIX_DIR_X_BACKWARD, unit);
+							}
+						}
 
-		unitsArray.Empty();
+						if (capsuleUnitManager->m_Units.Contains(FVector(x, y+1, z)))
+						{
+							neighbor = capsuleUnitManager->m_Units[FVector(x, y+1, z)];
+							unit->SetNeighbor(BEACON_SIX_DIR_Y_FORWARD, neighbor);
+							if (neighbor != nullptr)
+							{
+								neighbor->SetNeighbor(BEACON_SIX_DIR_Y_BACKWARD, unit);
+							}
+						}
+
+						if (capsuleUnitManager->m_Units.Contains(FVector(x, y, z+1)))
+						{
+							neighbor = capsuleUnitManager->m_Units[FVector(x, y, z+1)];
+							unit->SetNeighbor(BEACON_SIX_DIR_Z_FORWARD, neighbor);
+							if (neighbor != nullptr)
+							{
+								neighbor->SetNeighbor(BEACON_SIX_DIR_Z_BACKWARD, unit);
+							}
+						}
+						
+
+						
+					}
+				}
+			}
+		}
+
+
+
+
 	}
 };
+
