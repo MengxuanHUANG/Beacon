@@ -10,7 +10,7 @@
 #include "BeaconLog.h"
 
 UBoxUnitManagerComponent::UBoxUnitManagerComponent()
-	:m_TriggeredUnits(UBoxUnitManagerComponent::CompareUnit)
+	:m_UpdateList(UBoxUnitManagerComponent::CompareUnit)
 {
 }
 
@@ -29,7 +29,7 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	if (m_UnitUpdater.IsValid())
 	{
-		m_UnitUpdater->UpdateUnit(DeltaTime, m_TriggeredUnits, m_BeaconFire, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
+		m_UnitUpdater->UpdateUnit(DeltaTime, m_UpdateList, T_BeaconFire, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
 	}
 }
 
@@ -42,7 +42,7 @@ void UBoxUnitManagerComponent::OnUnregister()
 			unit->UnregisterComponent();
 		}
 	}
-	m_TriggeredUnits.Empty();
+	m_UpdateList.Empty();
 	m_Units.Empty();
 
 	Super::OnUnregister();
@@ -68,10 +68,18 @@ UUnitComponent* UBoxUnitManagerComponent::GetUnit(FVector index)
 	}
 }
 
+void UBoxUnitManagerComponent::AddToUpdateList(UUnitComponent* unit)
+{
+	if (unit && unit->GetManager() == this)
+	{
+		m_UpdateList.Push(unit);
+	}
+}
+
 void UBoxUnitManagerComponent::TriggerUnit_Implementation(UUnitComponent* unit)
 {
-	unit->Trigger(m_BeaconFire);
-	m_TriggeredUnits.Push(unit);
+	unit->Trigger(T_BeaconFire);
+	m_UpdateList.Push(unit);
 }
 
 void UBoxUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
@@ -80,8 +88,8 @@ void UBoxUnitManagerComponent::TriggerUnit_Implementation(FVector index, float i
 	if ((unit = GetUnit(index)) != nullptr)
 	{
 		unit->Value = initValue;
-		unit->Trigger(m_BeaconFire);
-		m_TriggeredUnits.Push(unit);
+		unit->Trigger(T_BeaconFire);
+		m_UpdateList.Push(unit);
 	}
 }
 
@@ -90,9 +98,9 @@ void UBoxUnitManagerComponent::TriggerAllUnits_Implementation(float initValue)
 	for (UUnitComponent* unit : m_Units)
 	{
 		unit->Value = initValue;
-		unit->Trigger(m_BeaconFire);
+		unit->Trigger(T_BeaconFire);
 
-		m_TriggeredUnits.Push(unit);
+		m_UpdateList.Push(unit);
 	}
 }
 
@@ -115,7 +123,7 @@ void UBoxUnitManagerComponent::UnTriggerAllUnits_Implementation(float value)
 		unit->Value = value;
 		unit->UnTrigger();
 
-		m_TriggeredUnits.Empty();
+		m_UpdateList.Empty();
 	}
 }
 
@@ -124,11 +132,6 @@ void UBoxUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 	m_UnitCount.X = x;
 	m_UnitCount.Y = y;
 	m_UnitCount.Z = z;
-}
-
-void UBoxUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)
-{
-	m_BeaconFire = beaconFire;
 }
 
 FVector UBoxUnitManagerComponent::LocalLocation2Index(FVector location) const

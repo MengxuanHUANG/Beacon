@@ -33,7 +33,8 @@ public:
 
 	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
-	
+
+	virtual void AddToUpdateList(UUnitComponent* unit) override;
 	virtual void TriggerUnit_Implementation(UUnitComponent* unit) override;
 	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
 	virtual void TriggerAllUnits_Implementation(float initValue) override;
@@ -41,7 +42,6 @@ public:
 	virtual void UnTriggerAllUnits_Implementation(float value) override;
 	
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
-	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 
 	virtual FVector LocalLocation2Index(FVector location) const override;
 
@@ -57,10 +57,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		FVector m_UnitCount;
 	
-	Beacon_PriorityQueue<UUnitComponent> m_TriggeredUnits;
-
-	UPROPERTY(VisibleAnywhere)
-		TSubclassOf<UBeaconFire> m_BeaconFire;
+	Beacon_PriorityQueue<UUnitComponent> m_UpdateList;
 
 	UPROPERTY(VisibleAnywhere)
 		const UBoxComponent* ParentBox;
@@ -118,7 +115,6 @@ public:
 					//register component for rendering
 					unit->RegisterComponent();
 					unit->SetIndex(x * count.Y * count.Z + y * count.Z + z);
-					unit->SetMaterial(boxUnitManager->m_Material);
 
 					//setup attachment
 					unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);

@@ -12,6 +12,14 @@ class UBoxComponent;
 class UBeaconMaterial;
 class UUnitManagerComponent;
 
+#define BEACON_Bit(i) (1<<i)
+
+enum UnitFlag : int8
+{
+	NeedUpdate = BEACON_Bit(0),
+	Triggered  = BEACON_Bit(1),
+};
+
 struct UnitConnection
 {
 	UnitConnection(UUnitComponent* self, UUnitComponent* other, FVector dir)
@@ -39,22 +47,24 @@ public:
 	// Called every frame
 
 	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type) {}
-	virtual bool Update(float deltaTime) { return true; }
+	virtual void Update(float deltaTime) {}
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) {}
 	virtual void UnTrigger() {}
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) {}
 	virtual void SetNeighbor(FVector direction, UUnitComponent* unit) {}
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 	virtual void GetTemporaryNeighbors(TArray<TSharedPtr<UnitConnection>>& tempConnections) const {}
-	virtual bool IsTriggered() const { return false; }
+	virtual bool IsTriggered() const { return CheckFlag(UnitFlag::Triggered); }
 
 public:
 	float GetTemperature() const;
 	inline uint32 GetIndex() const { return m_Index; }
 	inline void SetIndex(uint32 index) { m_Index = index; }
-	void SetMaterial(UBeaconMaterial* material) { m_Material = material; }
-	UBeaconMaterial* GetMaterial() const { return m_Material; }
+	UBeaconMaterial* GetMaterial() const;
 	UUnitManagerComponent* GetManager() { return m_Manager; }
+
+	inline void SetFlag(UnitFlag flag, bool needUpdate = true) { m_Flag = (needUpdate ? m_Flag | flag : m_Flag & ~flag); }
+	inline bool CheckFlag(UnitFlag flag) const { return (m_Flag & flag) != 0; }
 
 public:
 	//override operators for value
@@ -94,8 +104,8 @@ protected:
 		uint32 m_Index;
 
 	UPROPERTY(VisibleAnywhere)
-		UBeaconMaterial* m_Material;
-
-	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_Manager;
+	
+	UPROPERTY(VisibleAnywhere)
+		int8 m_Flag = 0;
 };

@@ -46,13 +46,15 @@ UFlammableComponent::~UFlammableComponent()
 void UFlammableComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	m_UnitManager->SetBeaconFire(T_BeaconFire);
-
 	//trigger one unit
-	if (InitializeWithFlame && m_UnitManager != nullptr)
+
+	if (m_UnitManager != nullptr)
 	{
-		//TODO: StartBurning
+		m_UnitManager->SetBeaconFire(T_BeaconFire);
+		m_UnitManager->SetMaterial(T_Material);
+		if (InitializeWithFlame)
+		{
+			//TODO: StartBurning
 		/*for (float i = -10; i < 10; i++)
 		{
 			for (float j = -10; j < 10; j++)
@@ -63,7 +65,8 @@ void UFlammableComponent::BeginPlay()
 				}
 			}
 		}*/
-		m_UnitManager->TriggerAllUnits();
+			m_UnitManager->TriggerAllUnits();
+		}
 	}
 }
 
@@ -129,7 +132,6 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 
 			//set necessary parameters
-			m_UnitManager->SetMaterial(T_Material);
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter3(m_UnitCount.X, m_UnitCount.Y, m_UnitCount.Z);
 			
@@ -154,7 +156,6 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 			
 			//set necessary parameters
-			m_UnitManager->SetMaterial(T_Material);
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter(m_Count);
 			
@@ -179,7 +180,6 @@ void UFlammableComponent::CreateUnits()
 			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 			
 			//set necessary parameters
-			m_UnitManager->SetMaterial(T_Material);
 			m_UnitManager->SetConnectType(m_ConnectType);
 			m_UnitManager->SetParameter2(m_UnitCount.X, m_UnitCount.Y);
 			
@@ -199,10 +199,10 @@ void UFlammableComponent::CreateUnits()
 	{
 		if (m_UnitManager)
 		{
-			m_UnitManager->SetMaterial(T_Material);
+			/*m_UnitManager->SetMaterial(T_Material);*/
 		}
 
-		ObjectTemplate Template = T_Material->GetObjectTemplate();
+		/*ObjectTemplate Template = T_Material->GetObjectTemplate();
 		switch (Template)
 		{
 		case ObjectTemplate::None:
@@ -217,6 +217,6 @@ void UFlammableComponent::CreateUnits()
 			BEACON_LOG(Warning, "Undefine Template Type!");
 			BEACON_ASSERT(false);
 			break;
-		}
+		}*/
 	}
 }

@@ -18,7 +18,7 @@ public:
 	virtual ~UnitUpdater();
 
 	//calculate new value for the unit and the queue
-	virtual void UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, TSubclassOf<UBeaconFire>& beaconFire, uint32 unitsCount) const;
+	virtual void UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& updateList, TSubclassOf<UBeaconFire>& beaconFire, uint32 unitsCount) const;
 
 public:
 	//set a new material for this updater

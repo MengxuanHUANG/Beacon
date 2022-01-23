@@ -64,7 +64,7 @@ public:
 		uint32 m_Count = 1;
 
 	UPROPERTY(EditAnywhere)
-		FUnitCount m_UnitCount = { 3, 3, 3 };
+		FUnitCount m_UnitCount;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		ConnectType m_ConnectType = ConnectType::SixDirection;

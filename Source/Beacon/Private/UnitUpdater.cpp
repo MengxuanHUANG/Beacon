@@ -19,51 +19,47 @@ UnitUpdater::~UnitUpdater()
 	m_Material = nullptr;
 }
 
-void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& triggeredUnits, TSubclassOf<UBeaconFire>& beaconFire, uint32 unitsCount) const
+void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& updateList, TSubclassOf<UBeaconFire>& beaconFire, uint32 unitsCount) const
 {
-	TQueue<UUnitComponent*> temp;
-	bool* arr = new bool[unitsCount] {false};
+	TQueue<UUnitComponent*> tempList;
+	TQueue<UUnitComponent*> checkList;
+	bool* isInList = new bool[unitsCount] {false};
 
 	//BEACON_LOG(Warning, "%d units need to be updated", triggeredUnits.Num());
 
 	UUnitComponent* unit;
-	while(!triggeredUnits.IsEmpty())
+	while(!updateList.IsEmpty())
 	{
-		unit = triggeredUnits.Pop();
+		unit = updateList.Pop();
 
-		//update unit itself
-		if (unit->Update(deltaTime))
+		if (unit->CheckFlag(UnitFlag::NeedUpdate))
 		{
-			arr[unit->GetIndex()] = true;
-			temp.Enqueue(unit);
+			//update unit itself
+			unit->Update(deltaTime);
+		}
+
+		//Exchange thermal energy only if unit is triggered
+		if (unit->CheckFlag(UnitFlag::Triggered))
+		{
+			//avoid repeating add same unit to queue
+			isInList[unit->GetIndex()] = true;
+			tempList.Enqueue(unit);
 
 			//traverse all neighbors of a unit 
 			for (auto neighbor : unit->GetNeighbors()->neighbors)
 			{
 				//ignore thermal exchange among burning units
-				if (neighbor != nullptr)
+				if (neighbor != nullptr && !neighbor->CheckFlag(UnitFlag::Triggered))
 				{
-					if (!neighbor->IsTriggered())
-					{
-						float gap = unit->GetTemperature() - neighbor->GetTemperature();
-						unit->Value -= deltaTime;
-						neighbor->Value += deltaTime;
+					float gap = unit->GetTemperature() - neighbor->GetTemperature();
+					unit->Value -= deltaTime;
+					neighbor->Value += deltaTime;
 
-						if (neighbor->Value > m_Material->Flash_Point)
-						{
-							if (!arr[neighbor->GetIndex()])
-							{
-								neighbor->Trigger(beaconFire);
-								temp.Enqueue(neighbor);
-								arr[neighbor->GetIndex()] = true;
-							}
-						}
+					if (!isInList[neighbor->GetIndex()])
+					{
+						isInList[neighbor->GetIndex()] = true;
+						checkList.Enqueue(neighbor);
 					}
-				}
-				else
-				{
-					float loss = deltaTime * (m_Material->LoseThermalPerSecond / float(unit->GetNeighbors()->neighbors.Num()));
-					unit->Value -= loss;
 				}
 			}
 
@@ -72,24 +68,27 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 			unit->GetTemporaryNeighbors(tempConnections);
 			for (TSharedPtr<UnitConnection>& connection : tempConnections)
 			{
-				UUnitComponent* other = connection->Other;
-				other->Value += deltaTime;
-				if (other->Value > other->GetMaterial()->Flash_Point)
+				if (!connection->Other->CheckFlag(UnitFlag::Triggered))
 				{
-					other->GetManager()->TriggerUnit(other);
+					connection->Other->Value += deltaTime;
 				}
 			}
 		}
-		else
+	}
+
+	while (checkList.Dequeue(unit))
+	{
+		if (unit->Value > m_Material->Flash_Point)
 		{
-			//TODO: remove unit from set
+			unit->Trigger(beaconFire);
+			tempList.Enqueue(unit);
 		}
 	}
 
-	delete[] arr;
+	delete[] isInList;
 	
-	while (temp.Dequeue(unit))
+	while (tempList.Dequeue(unit))
 	{
-		triggeredUnits.Push(unit);
+		updateList.Push(unit);
 	}
 }

@@ -3,6 +3,7 @@
 
 #include "UnitComponent.h"
 #include "BeaconMaterial.h"
+#include "UnitManagerComponent.h"
 
 // Sets default values for this component's properties
 UUnitComponent::UUnitComponent()
@@ -24,7 +25,12 @@ void UUnitComponent::BeginPlay()
 
 float UUnitComponent::GetTemperature() const
 {
-	return m_Material->GetTemperature(Value);
+	return m_Manager->m_Material->GetTemperature(Value);
+}
+
+UBeaconMaterial* UUnitComponent::GetMaterial() const
+{ 
+	return m_Manager != nullptr ? m_Manager->m_Material : nullptr; 
 }
 
 bool UUnitComponent::operator < (const UUnitComponent& unit)

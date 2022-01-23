@@ -25,7 +25,7 @@ public:
 	virtual void OnUnregister() override;
 
 public:
-	virtual bool Update(float deltaTime);
+	virtual void Update(float deltaTime);
 	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type);
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire);
 	virtual void UnTrigger();
@@ -33,8 +33,6 @@ public:
 	virtual void SetNeighbor(FVector direction, UUnitComponent* unit);
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 	virtual void GetTemporaryNeighbors(TArray<TSharedPtr<UnitConnection>>& tempConnections) const;
-
-	virtual void DisplayDebugInfo();
 
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
@@ -49,9 +47,6 @@ public:
 			class AActor* OtherActor,
 			class UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex);
-
-public:
-	virtual bool IsTriggered() const override { return b_IsBurning; }
 
 public:
 	UPROPERTY(VisibleAnyWhere)

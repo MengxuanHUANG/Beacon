@@ -6,6 +6,7 @@
 
 #include "BeaconLog.h"
 #include "BeaconMaterial.h"
+#include "UnitManagerComponent.h"
 
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
@@ -51,9 +52,10 @@ void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVec
 
 	//burning parameters
 	m_TotalBurningTime = 0.f;
-	if (m_Material)
+	UBeaconMaterial* material = GetMaterial();
+	if (material != nullptr)
 	{
-		Value = m_Material->DefaultThermal;
+		Value = material->DefaultThermal;
 	}
 	
 	//Connection
@@ -71,38 +73,47 @@ void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVec
 	}
 }
 
-bool UNonflammableUnitComponent::Update(float deltaTime)
+void UNonflammableUnitComponent::Update(float deltaTime)
 {
-	if (b_NeedUpdate)
+	UBeaconMaterial* material = GetMaterial();
+	BEACON_ASSERT(material != nullptr);
+
+	if (CheckFlag(UnitFlag::NeedUpdate))
 	{
-		//reduce remainder burning time
-		if (m_Material->Has_Max_BurningTime)
+		if (CheckFlag(UnitFlag::Triggered))
 		{
-			m_TotalBurningTime += deltaTime;
-		}
-		//increase thermal energy
-		if (Value < m_Material->MAX_Thermal)
-		{
-			Value += deltaTime * float(m_Material->GenThermalPerSecond);
-		}
-		//check whether to end burning
-		if (m_TotalBurningTime >= m_Material->Max_BurningTime)
-		{
-			Value = -100;
-			b_NeedUpdate = false;
-			return false;
+			//reduce remainder burning time
+			if (material->Has_Max_BurningTime)
+			{
+				m_TotalBurningTime += deltaTime;
+			}
+			//increase thermal energy
+			if (Value < material->MAX_Thermal)
+			{
+				Value += deltaTime * float(material->GenThermalPerSecond);
+			}
+			//check whether to end burning
+			if (m_TotalBurningTime >= material->Max_BurningTime)
+			{
+				SetFlag(UnitFlag::Triggered, false);
+			}
 		}
 
-		DrawDebugBox(
-			GetWorld(),
-			GetComponentLocation(),
-			m_UnitExtent - 1,
-			FColor::Blue,
-			false, deltaTime, 0, 1);
+		//reduce thermal energy
+		float loss = deltaTime * GetMaterial()->LoseThermalPerSecond;
+		Value -= loss;
 
-		return true;
+		if (Value >= material->Flash_Point)
+		{
+			Trigger(GetManager()->GetBeaconFire());
+		}
+		else if (Value < GetMaterial()->DefaultThermal)
+		{
+			//Stop update unit if its value smaller than default value
+			Value = GetMaterial()->DefaultThermal;
+			UnTrigger();
+		}
 	}
-	return false;
 }
 
 void UNonflammableUnitComponent::SetNeighbor(int x, int y, int z, UUnitComponent* unit)
@@ -117,12 +128,13 @@ void UNonflammableUnitComponent::SetNeighbor(FVector direction, UUnitComponent* 
 
 void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
-	b_NeedUpdate = true;
+	SetFlag(UnitFlag::Triggered);
+	SetFlag(UnitFlag::NeedUpdate);
 }
 
 void UNonflammableUnitComponent::UnTrigger()
 {
-	b_NeedUpdate = false;
+	SetFlag(UnitFlag::Triggered, false);
 }
 
 #ifdef BEACON_DEBUG_BOX_VISIBLE

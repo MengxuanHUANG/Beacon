@@ -40,6 +40,7 @@ class BEACON_API UBeaconMaterial : public UDataAsset
 	GENERATED_BODY()
 public:
 	UBeaconMaterial();
+
 public:
 	/** Effect template */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

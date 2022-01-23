@@ -19,21 +19,17 @@ class BEACON_API UNonflammableUnitComponent : public UUnitComponent
 
 public:
 	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type) override;
-	virtual bool Update(float deltaTime);
+	virtual void Update(float deltaTime);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) override;
 	virtual void SetNeighbor(FVector direction, UUnitComponent* unit) override;
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) override;
 	virtual void UnTrigger() override;
-	virtual bool IsTriggered() const { return b_NeedUpdate; }
 
 public:
 	UPROPERTY(VisibleAnyWhere)
 		FVector m_UnitExtent;
 
 private:
-	UPROPERTY(VisibleAnyWhere)
-		bool b_NeedUpdate = false;
-	
 	UPROPERTY(VisibleAnyWhere)
 		float m_TotalBurningTime;
 };

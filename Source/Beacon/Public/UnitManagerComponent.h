@@ -32,6 +32,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual ~UUnitManagerComponent() {}
+	
+	virtual void AddToUpdateList(UUnitComponent* unit) {}
 
 	virtual void TriggerUnit_Implementation(UUnitComponent* unit) {}
 	virtual void TriggerUnit_Implementation(FVector index, float initValue) {}
@@ -43,7 +45,8 @@ public:
 	virtual UUnitComponent* GetUnit(FVector index) { return nullptr; }
 	virtual void UpdateUnits() {}
 
-	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) {}
+	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) { T_BeaconFire = beaconFire; }
+	virtual TSubclassOf<UBeaconFire>& GetBeaconFire() { return T_BeaconFire; }
 
 	virtual void SetParameter(uint32 x) {}
 	virtual void SetParameter2(uint32 x, uint32 y) {}
@@ -81,7 +84,10 @@ public:
 	inline void SetConnectType(ConnectType type) { m_ConnectType = type; }
 	inline ConnectType GetConnectType() const { return m_ConnectType; }
 
-	inline void SetMaterial(UBeaconMaterial* material) { m_Material = material; }
+	inline void SetMaterial(const UBeaconMaterial* material) 
+	{ 
+		m_Material = DuplicateObject<UBeaconMaterial>(material, this);
+	}
 	inline const UBeaconMaterial* GetMaterial() { return m_Material; }
 
 protected:
@@ -91,4 +97,7 @@ protected:
 public:
 	UPROPERTY(VisibleAnywhere)
 		UBeaconMaterial* m_Material;
+	
+	UPROPERTY(VisibleAnywhere)
+		TSubclassOf<UBeaconFire> T_BeaconFire;
 };
