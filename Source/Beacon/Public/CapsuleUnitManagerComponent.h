@@ -76,6 +76,7 @@ public:
 
 		TArray<UUnitComponent*> unitsArray;
 		UUnitComponent* unit;
+		int tem_count = 1;
 		for (int x = -count; x <= count; x++) // Generate two semi-sphere
 		{
 			for (int y = -count; y <= count; y++)
@@ -95,6 +96,8 @@ public:
 						//register component for rendering
 						unit->RegisterComponent();
 						unit->Initialize(capsuleUnitManager, FVector(size), capsuleUnitManager->m_ConnectType);
+						unit->SetIndex(tem_count);
+						++tem_count;
 
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
@@ -126,6 +129,8 @@ public:
 
 						//register component for rendering
 						unit->RegisterComponent();
+						unit->SetIndex(tem_count);
+						++tem_count;
 						unit->Initialize(capsuleUnitManager, FVector(size), capsuleUnitManager->m_ConnectType);
 
 						//setup attachment
@@ -140,6 +145,7 @@ public:
 						);
 
 						capsuleUnitManager->m_Units.Add(FVector(x, y, z + count_height / 2), unit);
+						
 					}
 				}
 			}
@@ -167,7 +173,10 @@ public:
 
 						//register component for rendering
 						unit->RegisterComponent();
+						unit->SetIndex(tem_count);
+						++tem_count;
 						unit->Initialize(capsuleUnitManager, FVector(size, size, size_height), capsuleUnitManager->m_ConnectType);
+						
 
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
@@ -193,7 +202,7 @@ public:
 		{
 			for (int y = -count; y <= count; y++)
 			{
-				for (int z = -count_height/2 - count; z <= count_height / 2 + count; z++)
+				for (float z = -count_height/2 - count; z <= count_height / 2 + count; z++)
 				{
 					if (capsuleUnitManager->m_ConnectType == ConnectType::SixDirection)
 					{

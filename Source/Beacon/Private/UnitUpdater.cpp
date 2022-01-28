@@ -23,7 +23,9 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 {
 	TQueue<UUnitComponent*> tempList;
 	TQueue<UUnitComponent*> checkList;
-	bool* isInList = new bool[unitsCount] {false};
+	int size = unitsCount;
+	bool* isInList = new bool[size];
+	for (int i = 0; i < size; i++) { isInList[i] = false; }
 
 	//BEACON_LOG(Warning, "%d units need to be updated", triggeredUnits.Num());
 
