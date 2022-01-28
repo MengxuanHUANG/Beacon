@@ -3,6 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UnitComponent.h"
+#include "Beacon_PriorityQueue.h"
 #include "UnitManagerComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "CapsuleUnitManagerComponent.generated.h"
@@ -14,6 +16,9 @@ UCLASS()
 class BEACON_API UCapsuleUnitManagerComponent : public UUnitManagerComponent
 {
 	GENERATED_BODY()
+
+private:
+	static bool CompareUnit(UUnitComponent* a, UUnitComponent* b);
 public:
 	UCapsuleUnitManagerComponent();
 	~UCapsuleUnitManagerComponent();
@@ -23,18 +28,31 @@ public:
 	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
+	virtual void TriggerUnit_Implementation(UUnitComponent* unit) override;
+	virtual void TriggerAllUnits_Implementation(float initValue) override;
+	virtual void UnTriggerUnit_Implementation(FVector index, float value) override;
+	virtual void UnTriggerAllUnits_Implementation(float value) override;
+
 	virtual void SetParameter(uint32 x) override;
 	virtual void SetParameter2(uint32 x, uint32 y) override;
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 
-	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void AddToUpdateList(UUnitComponent* unit) override;
 
 public:
 	uint32 m_Count;
 	uint32 m_Count_height;
+	float last;
 
 	UPROPERTY(VisibleAnywhere)
 		TMap<FVector, UUnitComponent*> m_Units;
+
+	Beacon_PriorityQueue<UUnitComponent> m_UpdateList;
+
+	UPROPERTY(VisibleAnywhere)
+		const UCapsuleComponent* ParentBox;
 
 public:
 	template<typename InnerUnitType, typename OuterUnitType>
