@@ -17,7 +17,7 @@ class BEACON_API UCapsuleUnitManagerComponent : public UUnitManagerComponent
 {
 	GENERATED_BODY()
 
-private:
+public:
 	static bool CompareUnit(UUnitComponent* a, UUnitComponent* b);
 public:
 	UCapsuleUnitManagerComponent();
@@ -76,7 +76,7 @@ public:
 
 		TArray<UUnitComponent*> unitsArray;
 		UUnitComponent* unit;
-		int tem_count = 1;
+		int tem_count = 0;
 		for (int x = -count; x <= count; x++) // Generate two semi-sphere
 		{
 			for (int y = -count; y <= count; y++)

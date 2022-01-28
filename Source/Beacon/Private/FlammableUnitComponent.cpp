@@ -56,6 +56,7 @@ void UFlammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector
 	DebugBox = NewObject<UBoxComponent>(this);
 	DebugBox->RegisterComponent();
 
+	DebugBox->ShapeColor = FColor::Red;
 	DebugBox->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
@@ -130,16 +131,16 @@ void UFlammableUnitComponent::Update(float deltaTime)
 				SetFlag(UnitFlag::Triggered, false);
 			}
 		}
+		else if(Value >= material->Flash_Point)
+		{
+			Trigger(GetManager()->GetBeaconFire());
+		}
 
 		//reduce thermal energy
 		float loss = deltaTime * material->LoseThermalPerSecond;
 		Value -= loss;
 
-		if (Value >= material->Flash_Point)
-		{
-			Trigger(GetManager()->GetBeaconFire());
-		}
-		else if (Value < material->DefaultThermal)
+		if (Value < material->DefaultThermal)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;
@@ -252,10 +253,10 @@ void UFlammableUnitComponent::OnEndOverlap(class UPrimitiveComponent* HitComp,
 		other->GetName(compName);
 		FString id = actorName.Append("_" + compName);
 
-		if (m_TempConnections.Contains(id))
+		/*if (m_TempConnections.Contains(id))
 		{
 			m_TempConnections.Remove(id);
-		}
+		}*/
 	}
 }
 

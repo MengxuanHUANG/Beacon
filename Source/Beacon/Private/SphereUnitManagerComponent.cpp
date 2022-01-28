@@ -7,11 +7,18 @@
 #include "UnitUpdater.h"
 
 USphereUnitManagerComponent::USphereUnitManagerComponent()
+	:m_UpdateList(USphereUnitManagerComponent::CompareUnits)
 {
 }
 
 USphereUnitManagerComponent::~USphereUnitManagerComponent()
 {
+}
+
+void USphereUnitManagerComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
 }
 
 // Called every frame
@@ -21,7 +28,7 @@ void USphereUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	
 	if (m_UnitUpdater.IsValid())
 	{
-		//m_UnitUpdater->UpdateUnit(m_TriggeredUnits, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
+		m_UnitUpdater->UpdateUnit(DeltaTime, m_UpdateList, T_BeaconFire, m_Units.Num());
 	}
 }
 
@@ -31,14 +38,10 @@ void USphereUnitManagerComponent::OnUnregister()
 	{
 		unit.Value->UnregisterComponent();
 	}
-	m_TriggeredUnits.Empty();
+	m_UpdateList.Empty();
 	m_Units.Empty();
 
 	Super::OnUnregister();
-}
-
-void USphereUnitManagerComponent::UpdateUnits()
-{
 }
 
 void USphereUnitManagerComponent::SetParameter(uint32 x)
@@ -58,11 +61,69 @@ UUnitComponent* USphereUnitManagerComponent::GetUnit(FVector index)
 	}
 }
 
-void USphereUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
+void USphereUnitManagerComponent::AddToUpdateList(UUnitComponent* unit)
 {
+	if (unit && unit->GetManager() == this)
+	{
+		m_UpdateList.Push(unit);
+	}
 }
 
-void USphereUnitManagerComponent::SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire)
+void USphereUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
 {
-	m_BeaconFire = beaconFire;
+	UUnitComponent* unit;
+	if ((unit = GetUnit(index)) != nullptr)
+	{
+		unit->Value = initValue;
+		unit->Trigger(T_BeaconFire);
+		m_UpdateList.Push(unit);
+	}
+}
+
+void USphereUnitManagerComponent::TriggerUnit_Implementation(UUnitComponent* unit)
+{
+	if (unit && unit->GetManager() == this)
+	{
+		unit->Trigger(T_BeaconFire);
+		m_UpdateList.Push(unit);
+	}
+}
+
+void USphereUnitManagerComponent::TriggerAllUnits_Implementation(float initValue)
+{
+	for (auto unit : m_Units)
+	{
+		unit.Value->Value = initValue;
+		unit.Value->Trigger(T_BeaconFire);
+
+		m_UpdateList.Push(unit.Value);
+	}
+}
+
+void USphereUnitManagerComponent::UnTriggerUnit_Implementation(FVector index, float value)
+{
+	UUnitComponent* unit;
+	if ((unit = GetUnit(index)) != nullptr)
+	{
+		unit->Value = value;
+		unit->UnTrigger();
+
+		//no need to mannully remove the unit from Priority Queue
+	}
+}
+
+void USphereUnitManagerComponent::UnTriggerAllUnits_Implementation(float value)
+{
+	for (auto unit : m_Units)
+	{
+		unit.Value->Value = value;
+		unit.Value->UnTrigger();
+
+		m_UpdateList.Empty();
+	}
+}
+
+bool USphereUnitManagerComponent::CompareUnits(UUnitComponent* a, UUnitComponent* b)
+{
+	return *a > *b;
 }

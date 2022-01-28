@@ -25,6 +25,11 @@ struct UnitConnection
 	UnitConnection(UUnitComponent* self, UUnitComponent* other, FVector dir)
 		:Self(self), Other(other), Direction(dir)
 	{}
+	~UnitConnection()
+	{
+		Self = Other = nullptr;
+	}
+
 	UUnitComponent* Self;
 	UUnitComponent* Other;
 	FVector Direction;

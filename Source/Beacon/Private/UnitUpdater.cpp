@@ -36,6 +36,10 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 
 		if (unit->CheckFlag(UnitFlag::NeedUpdate))
 		{
+			//avoid repeating add same unit to queue
+			isInList[unit->GetIndex()] = true;
+			tempList.Enqueue(unit);
+
 			//update unit itself
 			unit->Update(deltaTime);
 		}
@@ -43,10 +47,6 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 		//Exchange thermal energy only if unit is triggered
 		if (unit->CheckFlag(UnitFlag::Triggered))
 		{
-			//avoid repeating add same unit to queue
-			isInList[unit->GetIndex()] = true;
-			tempList.Enqueue(unit);
-
 			//traverse all neighbors of a unit 
 			for (auto neighbor : unit->GetNeighbors()->neighbors)
 			{
@@ -78,6 +78,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 		}
 	}
 
+	unit = nullptr;
 	while (checkList.Dequeue(unit))
 	{
 		if (unit->Value > m_Material->Flash_Point)
@@ -88,7 +89,8 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 	}
 
 	delete[] isInList;
-	
+
+	unit = nullptr;
 	while (tempList.Dequeue(unit))
 	{
 		updateList.Push(unit);

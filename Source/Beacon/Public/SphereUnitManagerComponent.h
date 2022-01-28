@@ -19,16 +19,23 @@ public:
 	USphereUnitManagerComponent();
 	~USphereUnitManagerComponent();
 
+	// Called when the game starts
+	virtual void BeginPlay() override;
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void OnUnregister() override;
 
-	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
-	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
 	virtual void SetParameter(uint32 x) override;
-	virtual void SetBeaconFire(TSubclassOf<UBeaconFire>& beaconFire) override;
 
+	virtual void TriggerUnit_Implementation(UUnitComponent* unit) override;
+	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
+	virtual void TriggerAllUnits_Implementation(float initValue) override;
+	virtual void UnTriggerUnit_Implementation(FVector index, float value) override;
+	virtual void UnTriggerAllUnits_Implementation(float value) override;
+
+	virtual void AddToUpdateList(UUnitComponent* unit) override;
 public:
 	uint32 m_Count;
 	
@@ -38,10 +45,13 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		TMap<FVector, UUnitComponent*> m_Units;
 
-	TArray<UUnitComponent*> m_TriggeredUnits;
+	Beacon_PriorityQueue<UUnitComponent> m_UpdateList;
 	
 	UPROPERTY(VisibleAnywhere)
 		TSubclassOf<UBeaconFire> m_BeaconFire;
+
+private:
+	static bool CompareUnits(UUnitComponent* a, UUnitComponent* b);
 
 public:
 	template<typename InnerUnitType, typename OuterUnitType>
@@ -55,6 +65,9 @@ public:
 
 		TArray<UUnitComponent*> unitsArray;
 		UUnitComponent* unit;
+
+		int index = 0;
+
 		for (int x = -count; x <= count; x++)
 		{
 			for (int y = -count; y <= count; y++)
@@ -67,6 +80,10 @@ public:
 						{
 							unit = NewObject<OuterUnitType>(self);
 						}
+						else if(FMath::Abs(x) == count || FMath::Abs(y) == count || FMath::Abs(z) == count)
+						{
+							unit = NewObject<OuterUnitType>(self);
+						}
 						else
 						{
 							unit = NewObject<InnerUnitType>(self);
@@ -76,7 +93,10 @@ public:
 						//register component for rendering
 						unit->RegisterComponent();
 						unit->Initialize(sphereUnitManager, FVector(size), sphereUnitManager->m_ConnectType);
-
+						
+						unit->SetIndex(index);
+						++index;
+						
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
 						unit->SetRelativeLocation(
@@ -91,40 +111,40 @@ public:
 						if (sphereUnitManager->m_ConnectType == ConnectType::SixDirection)
 						{
 							UUnitComponent* neighbor;
-							if (x - 1 >= 0)
+							if (x > -count)
 							{
 								neighbor = unitsArray[
-									(count + x - 1) * sphereUnitManager->m_Count * sphereUnitManager->m_Count 
-										+ (count + y) * sphereUnitManager->m_Count
+									(count + x - 1) * 4 * count * count
+										+ (count + y) * 2 * count
 										+ (count + z)];
-								unit->SetNeighbor(-1, 0, 0, neighbor);
+								unit->SetNeighbor(BEACON_SIX_DIR_X_BACKWARD, neighbor);
 								if (neighbor != nullptr)
 								{
-									neighbor->SetNeighbor(1, 0, 0, unit);
+									neighbor->SetNeighbor(BEACON_SIX_DIR_X_FORWARD, unit);
 								}
 							}
-							if (y - 1 >= 0)
+							if (y > -count)
 							{
 								neighbor = unitsArray[
-									(count + x) * sphereUnitManager->m_Count * sphereUnitManager->m_Count 
-										+ (count + y - 1) * sphereUnitManager->m_Count
+									(count + x) * 4 * count * count
+										+ (count + y - 1) * 2 * count
 										+ (count + z)];
-								unit->SetNeighbor(0, -1, 0, neighbor);
+								unit->SetNeighbor(BEACON_SIX_DIR_Y_BACKWARD, neighbor);
 								if (neighbor != nullptr)
 								{
-									neighbor->SetNeighbor(0, 1, 0, unit);
+									neighbor->SetNeighbor(BEACON_SIX_DIR_Y_FORWARD, unit);
 								}
 							}
-							if (z - 1 >= 0)
+							if (z > -count)
 							{
 								neighbor = unitsArray[
-									(count + x) * sphereUnitManager->m_Count * sphereUnitManager->m_Count 
-										+ (count + y) * sphereUnitManager->m_Count 
+									(count + x) * 4 * count * count
+										+ (count + y) * 2 * count
 										+ count + z - 1];
-								unit->SetNeighbor(0, 0, -1, neighbor);
+								unit->SetNeighbor(BEACON_SIX_DIR_Z_BACKWARD, neighbor);
 								if (neighbor != nullptr)
 								{
-									neighbor->SetNeighbor(0, 0, 1, unit);
+									neighbor->SetNeighbor(BEACON_SIX_DIR_Z_FORWARD, unit);
 								}
 							}
 						}

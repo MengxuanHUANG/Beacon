@@ -38,6 +38,7 @@ void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVec
 	DebugBox = NewObject<UBoxComponent>(this);
 	DebugBox->RegisterComponent();
 
+	DebugBox->ShapeColor = FColor::Blue;
 	DebugBox->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
@@ -98,16 +99,17 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 				SetFlag(UnitFlag::Triggered, false);
 			}
 		}
+		else if (Value >= material->Flash_Point)
+		{
+			Trigger(GetManager()->GetBeaconFire());
+		}
 
 		//reduce thermal energy
 		float loss = deltaTime * GetMaterial()->LoseThermalPerSecond;
 		Value -= loss;
 
-		if (Value >= material->Flash_Point)
-		{
-			Trigger(GetManager()->GetBeaconFire());
-		}
-		else if (Value < GetMaterial()->DefaultThermal)
+		
+		if (Value < GetMaterial()->DefaultThermal)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = GetMaterial()->DefaultThermal;
@@ -137,8 +139,6 @@ void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 void UNonflammableUnitComponent::UnTrigger()
 {
 	SetFlag(UnitFlag::Triggered, false);
-
-	DebugBox->ShapeColor = FColor::White;
 }
 
 #ifdef BEACON_DEBUG_BOX_VISIBLE
