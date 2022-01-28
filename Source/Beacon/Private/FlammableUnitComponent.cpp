@@ -161,6 +161,10 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 		SetFlag(UnitFlag::Triggered);
 		SetFlag(UnitFlag::NeedUpdate);
 
+		//For visualize debug
+
+		DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Red, true, -1, 0, 3);
+
 		//TODO: maybe move to another placce
 		TArray<TSharedPtr<UnitConnection>> tempConnections;
 		m_TempConnections.GenerateValueArray(tempConnections);
@@ -174,13 +178,13 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 
 void UFlammableUnitComponent::UnTrigger()
 {
-	if (b_IsBurning)
+	if (CheckFlag(UnitFlag::Triggered))
 	{
 		if (m_BeaconFire)
 		{
 			m_BeaconFire->EndBurning();
 		}
-
+		DebugBox->ShapeColor = FColor::White;
 		SetFlag(UnitFlag::Triggered, false);
 	}
 }

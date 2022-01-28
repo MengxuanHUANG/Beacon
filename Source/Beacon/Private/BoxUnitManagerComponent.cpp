@@ -29,7 +29,7 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 	if (m_UnitUpdater.IsValid())
 	{
-		m_UnitUpdater->UpdateUnit(DeltaTime, m_UpdateList, T_BeaconFire, m_UnitCount.X * m_UnitCount.Y * m_UnitCount.Z);
+		m_UnitUpdater->UpdateUnit(DeltaTime, m_UpdateList, T_BeaconFire, m_Units.Num());
 	}
 }
 

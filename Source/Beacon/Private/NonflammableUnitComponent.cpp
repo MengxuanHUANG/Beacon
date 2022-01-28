@@ -130,11 +130,15 @@ void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
 	SetFlag(UnitFlag::Triggered);
 	SetFlag(UnitFlag::NeedUpdate);
+
+	DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Blue, true, -1, 0, 3);
 }
 
 void UNonflammableUnitComponent::UnTrigger()
 {
 	SetFlag(UnitFlag::Triggered, false);
+
+	DebugBox->ShapeColor = FColor::White;
 }
 
 #ifdef BEACON_DEBUG_BOX_VISIBLE
