@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "UnitManagerComponent.h"
 #include "Components/SphereComponent.h"
+
+#include "BeaconLog.h"
 #include "SphereUnitManagerComponent.generated.h"
 
 /**
@@ -61,6 +63,7 @@ public:
 		float radius = sphere->GetUnscaledSphereRadius();
 		float size = radius / ((float)(sphereUnitManager->m_Count) - 0.5f) / FMath::Sqrt(3) / 2; // divided by sqrt(2)
 		int count = (int)(sphereUnitManager->m_Count);
+		int loop_size = (count<<1) | 1;
 		//int count = radius / m_UnitExtent.X;
 
 		TArray<UUnitComponent*> unitsArray;
@@ -93,7 +96,7 @@ public:
 						//register component for rendering
 						unit->RegisterComponent();
 						unit->Initialize(sphereUnitManager, FVector(size), sphereUnitManager->m_ConnectType);
-						
+
 						unit->SetIndex(index);
 						++index;
 						
@@ -114,8 +117,8 @@ public:
 							if (x > -count)
 							{
 								neighbor = unitsArray[
-									(count + x - 1) * 4 * count * count
-										+ (count + y) * 2 * count
+									(count + x - 1) * loop_size * loop_size
+										+ (count + y) * loop_size
 										+ (count + z)];
 								unit->SetNeighbor(BEACON_SIX_DIR_X_BACKWARD, neighbor);
 								if (neighbor != nullptr)
@@ -126,8 +129,8 @@ public:
 							if (y > -count)
 							{
 								neighbor = unitsArray[
-									(count + x) * 4 * count * count
-										+ (count + y - 1) * 2 * count
+									(count + x) * loop_size * loop_size
+										+ (count + y - 1) * loop_size
 										+ (count + z)];
 								unit->SetNeighbor(BEACON_SIX_DIR_Y_BACKWARD, neighbor);
 								if (neighbor != nullptr)
@@ -138,8 +141,8 @@ public:
 							if (z > -count)
 							{
 								neighbor = unitsArray[
-									(count + x) * 4 * count * count
-										+ (count + y) * 2 * count
+									(count + x) * loop_size * loop_size
+										+ (count + y) * loop_size
 										+ count + z - 1];
 								unit->SetNeighbor(BEACON_SIX_DIR_Z_BACKWARD, neighbor);
 								if (neighbor != nullptr)

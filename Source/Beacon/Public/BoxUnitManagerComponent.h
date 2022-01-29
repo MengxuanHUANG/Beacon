@@ -9,6 +9,9 @@
 
 #include "UnitManagerComponent.h"
 #include "Components/BoxComponent.h"
+
+#include "BeaconLog.h"
+
 #include "BoxUnitManagerComponent.generated.h"
 
 class UBeaconFire;
@@ -157,13 +160,34 @@ public:
 				}
 			}
 		}
+//TODO: Remove
+#ifdef BEACON_DEBUG_1
 
-#ifdef BEACON_DEBUG
-		for (UUnitComponent* unit : boxUnitManager->m_Units)
+		TArray<FString> message = {
+			"X -1",
+			"X +1",
+			"Y -1",
+			"Y +1",
+			"Z -1",
+			"Z +1"
+		};
+
+		for (auto _unit : boxUnitManager->m_Units)
 		{
-			if (unit)
+			BEACON_LOG_FULL(Warning, "Unit is : %s", *(_unit->Debug_Index.ToString()));
+			TArray<UUnitComponent*>& tempArr = _unit->GetNeighbors()->neighbors;
+
+			for (int i = 0; i < tempArr.Num(); i++)
 			{
-				unit->DisplayDebugInfo();
+				//ignore thermal exchange among burning units
+				if (tempArr[i] != nullptr)
+				{
+					BEACON_LOG(Warning, "Neighbor at %s is : %s", *message[i], *(tempArr[i]->Debug_Index.ToString()));
+				}
+				else
+				{
+					BEACON_LOG(Warning, "Neighbor at %s is : NULL", *message[i]);
+				}
 			}
 		}
 #endif

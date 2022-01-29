@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 #include "Neighbor.h"
+#include "BeaconCore.h"
+
 #include "UnitComponent.generated.h"
 
 class UBeaconFire;
@@ -103,7 +105,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		float Value = 0.f;
+#ifdef BEACON_DEBUG
+	// index for debug only
+	FVector Debug_Index;
 
+#endif
 protected:
 	UPROPERTY(VisibleAnywhere)
 		uint32 m_Index;

@@ -18,8 +18,6 @@ void UBoxUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
-
-	last = GetWorld()->GetTimeSeconds();
 }
 
 // Called every frame
