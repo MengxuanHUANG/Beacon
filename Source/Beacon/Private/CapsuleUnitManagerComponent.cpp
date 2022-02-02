@@ -46,6 +46,7 @@ void UCapsuleUnitManagerComponent::OnUnregister()
 		if (unit.Value)
 		{
 			unit.Value->UnregisterComponent();
+			unit.Value->DestroyComponent();
 		}
 	}
 	m_UpdateList.Empty();

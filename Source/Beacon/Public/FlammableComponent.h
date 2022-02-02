@@ -84,10 +84,5 @@ public:
 		void BurnAll();
 
 	UFUNCTION()
-		void ClearUnits();
-	UFUNCTION()
-		void CreateUnits();
-
-	UFUNCTION()
 		inline const TSubclassOf<UBeaconFire>& GetBeaconFire() const { return T_BeaconFire; }
 };

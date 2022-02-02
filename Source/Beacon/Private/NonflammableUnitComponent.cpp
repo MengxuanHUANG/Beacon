@@ -28,6 +28,23 @@ void UNonflammableUnitComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
+void UNonflammableUnitComponent::OnUnregister()
+{
+	if (m_Neighbors != nullptr)
+	{
+		m_Neighbors->UnregisterComponent();
+		m_Neighbors->DestroyComponent();
+		m_Neighbors = nullptr;
+	}
+	if (DebugBox)
+	{
+		DebugBox->UnregisterComponent();
+		DebugBox->DestroyComponent();
+		DebugBox = nullptr;
+	}
+	Super::OnUnregister();
+}
+
 void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type)
 {
 	//Manager
@@ -79,9 +96,9 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 	UBeaconMaterial* material = GetMaterial();
 	BEACON_ASSERT(material != nullptr);
 
-	if (CheckFlag(UnitFlag::NeedUpdate))
+	if (CheckFlag(EUnitFlag::NeedUpdate))
 	{
-		if (CheckFlag(UnitFlag::Triggered))
+		if (CheckFlag(EUnitFlag::Triggered))
 		{
 			//reduce remainder burning time
 			if (material->Has_Max_BurningTime)
@@ -96,7 +113,7 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 			//check whether to end burning
 			if (m_TotalBurningTime >= material->Max_BurningTime)
 			{
-				SetFlag(UnitFlag::Triggered, false);
+				SetFlag(EUnitFlag::Triggered, false);
 			}
 		}
 		else if (Value >= material->Flash_Point)
@@ -130,15 +147,15 @@ void UNonflammableUnitComponent::SetNeighbor(FVector direction, UUnitComponent* 
 
 void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
-	SetFlag(UnitFlag::Triggered);
-	SetFlag(UnitFlag::NeedUpdate);
+	SetFlag(EUnitFlag::Triggered);
+	SetFlag(EUnitFlag::NeedUpdate);
 
 	DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Blue, true, -1, 0, 3);
 }
 
 void UNonflammableUnitComponent::UnTrigger()
 {
-	SetFlag(UnitFlag::Triggered, false);
+	SetFlag(EUnitFlag::Triggered, false);
 }
 
 #ifdef BEACON_DEBUG_BOX_VISIBLE

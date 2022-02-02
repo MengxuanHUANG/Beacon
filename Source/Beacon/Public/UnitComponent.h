@@ -16,11 +16,14 @@ class UUnitManagerComponent;
 
 #define BEACON_Bit(i) (1<<i)
 
-enum UnitFlag : int8
+UENUM(Meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class EUnitFlag : int8
 {
+	None = 0 UMETA(Hidden),
 	NeedUpdate = BEACON_Bit(0),
 	Triggered  = BEACON_Bit(1),
 };
+ENUM_CLASS_FLAGS(EUnitFlag);
 
 struct UnitConnection
 {
@@ -61,7 +64,7 @@ public:
 	virtual void SetNeighbor(FVector direction, UUnitComponent* unit) {}
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 	virtual void GetTemporaryNeighbors(TArray<TSharedPtr<UnitConnection>>& tempConnections) const {}
-	virtual bool IsTriggered() const { return CheckFlag(UnitFlag::Triggered); }
+	virtual bool IsTriggered() const { return CheckFlag(EUnitFlag::Triggered); }
 
 public:
 	float GetTemperature() const;
@@ -70,8 +73,8 @@ public:
 	UBeaconMaterial* GetMaterial() const;
 	UUnitManagerComponent* GetManager() { return m_Manager; }
 
-	inline void SetFlag(UnitFlag flag, bool needUpdate = true) { m_Flag = (needUpdate ? m_Flag | flag : m_Flag & ~flag); }
-	inline bool CheckFlag(UnitFlag flag) const { return (m_Flag & flag) != 0; }
+	inline void SetFlag(EUnitFlag flag, bool needUpdate = true) { m_Flag = EUnitFlag(needUpdate ? int8(m_Flag) | int8(flag) : int8(m_Flag) & ~int8(flag)); }
+	inline bool CheckFlag(EUnitFlag flag) const { return (int8(m_Flag) & int8(flag)) != 0; }
 
 public:
 	//override operators for value
@@ -117,6 +120,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_Manager;
 	
-	UPROPERTY(VisibleAnywhere)
-		int8 m_Flag = 0;
+	UPROPERTY(VisibleAnywhere, Meta = (Bitmask, BitmaskEnum = EUnitFlag))
+		EUnitFlag m_Flag = EUnitFlag::None;
+
 };

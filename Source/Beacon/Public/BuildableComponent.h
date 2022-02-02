@@ -40,5 +40,6 @@ public:
 		void ReBuild();
 
 protected:
-	bool bIsBuilded;
+	UPROPERTY(VisibleAnywhere)
+		bool bIsBuilded;
 };

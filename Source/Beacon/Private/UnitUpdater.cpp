@@ -34,7 +34,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 	{
 		unit = updateList.Pop();
 
-		if (unit->CheckFlag(UnitFlag::NeedUpdate))
+		if (unit->CheckFlag(EUnitFlag::NeedUpdate))
 		{
 			//avoid repeating add same unit to queue
 			isInList[unit->GetIndex()] = true;
@@ -45,13 +45,13 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 		}
 
 		//Exchange thermal energy only if unit is triggered
-		if (unit->CheckFlag(UnitFlag::Triggered))
+		if (unit->IsTriggered())
 		{
 			//traverse all neighbors of a unit 
 			for (auto neighbor : unit->GetNeighbors()->neighbors)
 			{
 				//ignore thermal exchange among burning units
-				if (neighbor != nullptr && !neighbor->CheckFlag(UnitFlag::Triggered))
+				if (neighbor != nullptr && !neighbor->IsTriggered())
 				{
 					float gap = unit->GetTemperature() - neighbor->GetTemperature();
 					unit->Value -= deltaTime;
@@ -70,7 +70,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 			unit->GetTemporaryNeighbors(tempConnections);
 			for (TSharedPtr<UnitConnection>& connection : tempConnections)
 			{
-				if (!connection->Other->CheckFlag(UnitFlag::Triggered))
+				if (!connection->Other->IsTriggered())
 				{
 					connection->Other->Value += deltaTime;
 				}

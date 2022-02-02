@@ -37,12 +37,21 @@ void UFlammableUnitComponent::OnUnregister()
 	if (m_BeaconFire != nullptr)
 	{
 		m_BeaconFire->UnregisterComponent();
+		m_BeaconFire->DestroyComponent();
+		m_BeaconFire = nullptr;
 	}
 	if (m_Neighbors != nullptr)
 	{
 		m_Neighbors->UnregisterComponent();
+		m_Neighbors->DestroyComponent();
+		m_Neighbors = nullptr;
 	}
-
+	if (DebugBox)
+	{
+		DebugBox->UnregisterComponent();
+		DebugBox->DestroyComponent();
+		DebugBox = nullptr;
+	}
 	Super::OnUnregister();
 }
 
@@ -100,9 +109,9 @@ void UFlammableUnitComponent::Update(float deltaTime)
 	UBeaconMaterial* material = GetMaterial();
 	BEACON_ASSERT(material != nullptr);
 
-	if (CheckFlag(UnitFlag::NeedUpdate))
+	if (CheckFlag(EUnitFlag::NeedUpdate))
 	{
-		if (CheckFlag(UnitFlag::Triggered))
+		if (CheckFlag(EUnitFlag::Triggered))
 		{
 			//reduce remainder burning time
 			m_TotalBurningTime += deltaTime;
@@ -128,7 +137,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 			if (material->Has_Max_BurningTime && m_TotalBurningTime >= material->Max_BurningTime)
 			{
 				m_BeaconFire->EndBurning();
-				SetFlag(UnitFlag::Triggered, false);
+				SetFlag(EUnitFlag::Triggered, false);
 			}
 		}
 		else if(Value >= material->Flash_Point)
@@ -151,7 +160,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 
 void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
-	if (!CheckFlag(UnitFlag::Triggered))
+	if (!CheckFlag(EUnitFlag::Triggered))
 	{
 		m_BeaconFire = NewObject<UBeaconFire>(this, beaconFire);
 		m_BeaconFire->RegisterComponent();
@@ -159,8 +168,8 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 		m_BeaconFire->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		m_BeaconFire->StartBurning();
 
-		SetFlag(UnitFlag::Triggered);
-		SetFlag(UnitFlag::NeedUpdate);
+		SetFlag(EUnitFlag::Triggered);
+		SetFlag(EUnitFlag::NeedUpdate);
 
 		//For visualize debug
 
@@ -179,14 +188,14 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 
 void UFlammableUnitComponent::UnTrigger()
 {
-	if (CheckFlag(UnitFlag::Triggered))
+	if (CheckFlag(EUnitFlag::Triggered))
 	{
 		if (m_BeaconFire)
 		{
 			m_BeaconFire->EndBurning();
 		}
 		DebugBox->ShapeColor = FColor::White;
-		SetFlag(UnitFlag::Triggered, false);
+		SetFlag(EUnitFlag::Triggered, false);
 	}
 }
 
@@ -229,9 +238,9 @@ void UFlammableUnitComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 				FVector dir = other->GetComponentLocation() - this->GetComponentLocation();
 				m_TempConnections.Add(id, MakeShared<UnitConnection>(this, other, dir));
 
-				if (CheckFlag(UnitFlag::Triggered))
+				if (CheckFlag(EUnitFlag::Triggered))
 				{
-					other->SetFlag(UnitFlag::NeedUpdate);
+					other->SetFlag(EUnitFlag::NeedUpdate);
 					other->GetManager()->AddToUpdateList(other);
 				}
 			}

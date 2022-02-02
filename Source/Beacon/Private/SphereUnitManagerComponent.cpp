@@ -36,7 +36,11 @@ void USphereUnitManagerComponent::OnUnregister()
 {
 	for (auto unit : m_Units)
 	{
-		unit.Value->UnregisterComponent();
+		if (unit.Value)
+		{
+			unit.Value->UnregisterComponent();
+			unit.Value->DestroyComponent();
+		}
 	}
 	m_UpdateList.Empty();
 	m_Units.Empty();

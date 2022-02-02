@@ -38,6 +38,8 @@ void UBoxUnitManagerComponent::OnUnregister()
 		if (unit)
 		{
 			unit->UnregisterComponent();
+			unit->DestroyComponent();
+			unit = nullptr;
 		}
 	}
 	m_UpdateList.Empty();
