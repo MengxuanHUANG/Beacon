@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BeaconFractureComponent.h"
+#include "FractureComponent.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "PhysicsProxy/GeometryCollectionPhysicsProxy.h"
 
@@ -11,46 +11,43 @@
 //Beacon Header files
 #include "BeaconLog.h"
 
-// Sets default values for this component's properties
-UBeaconFractureComponent::UBeaconFractureComponent()
+UFractureComponent::UFractureComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
+	//Create GeometryCollectionComponent
 	GeometryCollectionComponent = CreateDefaultSubobject<UGeometryCollectionComponent>(FName("Geometry Collection"));
 	GeometryCollectionComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts
-void UBeaconFractureComponent::BeginPlay()
+void UFractureComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	this->InitializeCurrentDebris();
-	
-	m_Boxes.Init(nullptr, GeometryCollectionComponent->RestCollection->GetGeometryCollection()->TransformToGeometryIndex.Num());
 }
 
 // Called every frame
-void UBeaconFractureComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UFractureComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	this->UpdateCurrentDebris();
+	//Update Current fragments state (location, wehther disabled)
+	UpdateCurrentDebris();
 
 	FGeometryCollectionPhysicsProxy* physicsProxy = GeometryCollectionComponent ? GeometryCollectionComponent->GetPhysicsProxy() : nullptr;
 	TManagedArray<TUniquePtr<Chaos::FGeometryParticle>>& particles = physicsProxy->GetExternalParticles();
 
 	//BEGIN update flames location
-	for (TPair<int32, int32>& pair : m_CurrentDebrisIndex)
+	for (const FFragment& fragment : m_CurrentFragments)
 	{
-		const int32& index = pair.Key;
-		const int32& level = pair.Value;
+		const int32& index = fragment.Index;
+		const int32& level = fragment.Level;
 
 		TUniquePtr<Chaos::FGeometryParticle>& particle = particles[index];
 		FVector location = particle->X();
-		
+
 
 		if (m_Boxes[index] == nullptr)
 		{
@@ -67,10 +64,10 @@ void UBeaconFractureComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	//END update
 }
 
-void UBeaconFractureComponent::InitializeCurrentDebris()
+bool UFractureComponent::InitializeCurrentDebris()
 {
 	//Clear CurrentDebrisIndex
-	m_CurrentDebrisIndex.Empty();
+	m_CurrentFragments.Empty();
 
 	//Obtain Root node's index
 	if (GeometryCollectionComponent)
@@ -80,14 +77,19 @@ void UBeaconFractureComponent::InitializeCurrentDebris()
 		{
 			if (parentArr[index] == -1)
 			{
-				m_CurrentDebrisIndex.Add(TPair<int32, int32>(index, 0));
+				m_CurrentFragments.Add(FFragment(index, 0));
 				break;
 			}
 		}
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
-void UBeaconFractureComponent::UpdateCurrentDebris()
+void UFractureComponent::UpdateCurrentDebris()
 {
 	//obtain PhysicProxy
 	FGeometryCollectionPhysicsProxy* physicsProxy = GeometryCollectionComponent ? GeometryCollectionComponent->GetPhysicsProxy() : nullptr;
@@ -102,49 +104,84 @@ void UBeaconFractureComponent::UpdateCurrentDebris()
 			//BEGIN update CurrentDebrisIndex
 			const TManagedArray<TSet<int32> >& childrenArr = GeometryCollectionComponent->GetChildrenArray();
 
-			TArray<TPair<int32, int32>> markedRemove;
-			TArray<TPair<int32, int32>> markedEmplace;
+			TArray<FFragment> markedRemove;
+			TArray<FFragment> markedEmplace;
 
-			for (TPair<int32, int32>& pair : m_CurrentDebrisIndex)
+			for (FFragment& fragment : m_CurrentFragments)
 			{
-				const int32& index = pair.Key;
-				const int32& level = pair.Value;
+				const int32& index = fragment.Index;
+				const int32& level = fragment.Level;
 
 				if (disabled[index])
 				{
+					//TODO: remove
+					if (index < m_Boxes.Num() && m_Boxes[index] != nullptr)
+					{
+						m_Boxes[index]->UnregisterComponent();
+						m_Boxes[index] = nullptr;
+					}
+					//End TODO
+
 					//mark index to be removed
-					markedRemove.Emplace(TPair<int32, int32>(index, level));
+					markedRemove.Emplace(FFragment(index, level));
 
 					//mark new debris to be emplace
-					TQueue<TPair<int32, int32>> temp;
-					temp.Enqueue(TPair<int32, int32>(index, level));
-					TPair<int32, int32> parent;
+					TQueue<FFragment> temp;
+					temp.Enqueue(FFragment(index, level)); 
+					FFragment parent;
 					while (temp.Dequeue(parent))
 					{
 						for (auto childIndex : childrenArr[index])
 						{
 							if (disabled[childIndex])
 							{
-								temp.Enqueue(TPair<int32, int32>(childIndex, parent.Value + 1));
+								temp.Enqueue(FFragment(childIndex, parent.Level + 1));
 							}
 							else
 							{
-								markedEmplace.Emplace(TPair<int32, int32>(childIndex, parent.Value + 1));
+								markedEmplace.Emplace(FFragment(childIndex, parent.Level + 1));
 							}
 						}
 					}
 				}
 			}
 
-			for (TPair<int32, int32>& pair : markedRemove)
+			for (FFragment& fragment : markedRemove)
 			{
-				m_CurrentDebrisIndex.RemoveSwap(pair);
+				m_CurrentFragments.RemoveSwap(fragment);
 			}
-			for (TPair<int32, int32>& pair : markedEmplace)
+			for (FFragment& fragment : markedEmplace)
 			{
-				m_CurrentDebrisIndex.Emplace(pair);
+				m_CurrentFragments.Emplace(fragment);
 			}
 			//END update CurrentDebrisIndex
 		}
 	}
 }
+
+void UFractureComponent::ClearCurrentDebris()
+{
+	//Clear CurrentDebrisIndex
+	m_CurrentFragments.Empty();
+}
+
+//Begin implementing BuildableComponent functions
+bool UFractureComponent::Build_Implement()
+{
+	bool result =  this->InitializeCurrentDebris();
+	m_Boxes.Init(nullptr, GeometryCollectionComponent->RestCollection->GetGeometryCollection()->TransformToGeometryIndex.Num());
+
+#ifdef BEACON_DEBUG
+	if (!result)
+	{
+		BEACON_LOG_FULL(Display, "Build Error");
+	}
+#endif
+
+	return result;
+}
+void UFractureComponent::Clear_Implement()
+{
+	this->ClearCurrentDebris();
+}
+//End implementing BuildableComponent functions

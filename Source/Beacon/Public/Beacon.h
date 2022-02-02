@@ -15,8 +15,11 @@ public:
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
-
-	void BuildUnits();
+	
+	void Clear();
+	void Build();
+	void Rebuild();
+	
 	void AddToolbarButton(FToolBarBuilder& Builder);
 
 private:

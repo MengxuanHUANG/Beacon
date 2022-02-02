@@ -3,7 +3,7 @@
 #include "Beacon.h"
 #include "BeaconLog.h"
 
-#include "FlammableComponent.h"
+#include "BuildableComponent.h"
 
 #include "BeaconEditorCommands.h"
 #include "LevelEditor.h"
@@ -17,11 +17,19 @@ void FBeaconModule::StartupModule()
 	BeaconEditorCommands::Register();
 
 	m_BeaconCommands = MakeShareable(new FUICommandList);
+	
+	m_BeaconCommands->MapAction(
+		BeaconEditorCommands::Get().m_ClearCommand,
+		FExecuteAction::CreateRaw(this, &FBeaconModule::Clear)
+	);
 	m_BeaconCommands->MapAction(
 		BeaconEditorCommands::Get().m_BuildCommand,
-		FExecuteAction::CreateRaw(this, &FBeaconModule::BuildUnits)
+		FExecuteAction::CreateRaw(this, &FBeaconModule::Build)
 	);
-
+	m_BeaconCommands->MapAction(
+		BeaconEditorCommands::Get().m_RebuildCommand,
+		FExecuteAction::CreateRaw(this, &FBeaconModule::Rebuild)
+	);
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
 
 	{
@@ -43,24 +51,69 @@ void FBeaconModule::ShutdownModule()
 	BeaconEditorCommands::Unregister();
 }
 
-void FBeaconModule::BuildUnits()
+void FBeaconModule::Build()
 {
-	TArray<AActor*> actors;
-
 	if (GEngine)
 	{
+		TArray<AActor*> actors;
+
 		//obtain actors with tag
-		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_FLAMMABLE_TAG), actors);
+		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_BUILDABLE_TAG), actors);
 		
 		BEACON_LOG(Display, "Fund %d Actor with FlammableComponent", actors.Num());
 		
 		for (AActor* actor : actors)
 		{
-			for (auto component : actor->GetComponentsByClass(UFlammableComponent::StaticClass()))
+			//actor->GetComponentsByInterface
+			for (auto component : actor->GetComponentsByClass(UBuildableComponent::StaticClass()))
 			{
-				UFlammableComponent* flammable = Cast<UFlammableComponent>(component);
-				flammable->ClearUnits();
-				flammable->CreateUnits();
+				UBuildableComponent* build = Cast<UBuildableComponent>(component);
+				build->Build();
+			}
+		}
+	}
+}
+void FBeaconModule::Clear()
+{
+	if (GEngine)
+	{
+		TArray<AActor*> actors;
+
+		//obtain actors with tag
+		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_BUILDABLE_TAG), actors);
+
+		BEACON_LOG(Display, "Fund %d Actor with FlammableComponent", actors.Num());
+
+		for (AActor* actor : actors)
+		{
+			//actor->GetComponentsByInterface
+			for (auto component : actor->GetComponentsByClass(UBuildableComponent::StaticClass()))
+			{
+				UBuildableComponent* build = Cast<UBuildableComponent>(component);
+				build->Clear();
+			}
+		}
+	}
+}
+void FBeaconModule::Rebuild()
+{
+	if (GEngine)
+	{
+		TArray<AActor*> actors;
+
+		//obtain actors with tag
+		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_BUILDABLE_TAG), actors);
+
+		BEACON_LOG(Display, "Fund %d Actor with FlammableComponent", actors.Num());
+
+		for (AActor* actor : actors)
+		{
+			//actor->GetComponentsByInterface
+			for (auto component : actor->GetComponentsByClass(UBuildableComponent::StaticClass()))
+			{
+				UBuildableComponent* build = Cast<UBuildableComponent>(component);
+				build->Clear();
+				build->Build();
 			}
 		}
 	}
@@ -68,7 +121,9 @@ void FBeaconModule::BuildUnits()
 
 void FBeaconModule::AddToolbarButton(FToolBarBuilder& Builder)
 {
+	Builder.AddToolBarButton(BeaconEditorCommands::Get().m_ClearCommand);
 	Builder.AddToolBarButton(BeaconEditorCommands::Get().m_BuildCommand);
+	Builder.AddToolBarButton(BeaconEditorCommands::Get().m_RebuildCommand);
 }
 
 #undef LOCTEXT_NAMESPACE

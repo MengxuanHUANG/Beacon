@@ -220,3 +220,130 @@ void UFlammableComponent::CreateUnits()
 		}*/
 	}
 }
+
+//Begin implementing BuildableComponent functions
+bool UFlammableComponent::Build_Implement()
+{
+	USceneComponent* parent = this->GetAttachParent();
+
+	//TODO: move to a function
+	if (parent != nullptr && m_UnitManager == nullptr)
+	{
+		UClass* uClass = parent->GetClass();
+		FString name = uClass->GetFullGroupName(false);
+
+		//Temp: Bind Dynamic Callback Function
+		if (name.Compare("BoxComponent") == 0)
+		{
+			UBoxComponent* box = Cast<UBoxComponent>(parent);
+
+			//Bind callback function to collider
+			/*box->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
+
+			//create UnitsManager
+			m_UnitManager = NewObject<UBoxUnitManagerComponent>(this);
+			m_UnitManager->RegisterComponent();
+			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+			//set necessary parameters
+			m_UnitManager->SetConnectType(m_ConnectType);
+			m_UnitManager->SetParameter3(m_UnitCount.X, m_UnitCount.Y, m_UnitCount.Z);
+
+			//create units
+			UBoxUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
+				Cast<UBoxUnitManagerComponent>(m_UnitManager),
+				this,
+				parent
+				);
+		}
+		else if (name.Compare("SphereComponent") == 0)
+		{
+			USphereComponent* sphere = Cast<USphereComponent>(parent);
+
+			//Bind callback function to collider
+			/*sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
+
+			//create UnitsManager
+			m_UnitManager = NewObject<USphereUnitManagerComponent>(this);
+			m_UnitManager->RegisterComponent();
+			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+			//set necessary parameters
+			m_UnitManager->SetConnectType(m_ConnectType);
+			m_UnitManager->SetParameter(m_Count);
+
+			//create units
+			USphereUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
+				Cast<USphereUnitManagerComponent>(m_UnitManager),
+				this,
+				parent
+				);
+		}
+		else if (name.Compare("CapsuleComponent") == 0)
+		{
+			UCapsuleComponent* capsule = Cast<UCapsuleComponent>(parent);
+
+			//Bind callback function to collider
+			/*capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
+			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
+
+			//create UnitsManager
+			m_UnitManager = NewObject<UCapsuleUnitManagerComponent>(this);
+			m_UnitManager->RegisterComponent();
+			m_UnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+			//set necessary parameters
+			m_UnitManager->SetConnectType(m_ConnectType);
+			m_UnitManager->SetParameter2(m_UnitCount.X, m_UnitCount.Y);
+
+			//create units
+			UCapsuleUnitManagerComponent::CreateUnit<UNonflammableUnitComponent, UFlammableUnitComponent>(
+				Cast<UCapsuleUnitManagerComponent>(m_UnitManager),
+				this,
+				parent
+				);
+		}
+	}
+
+	//TODO: move to a function
+
+	//Generate template Effect
+	if (T_Material)
+	{
+		if (m_UnitManager)
+		{
+			/*m_UnitManager->SetMaterial(T_Material);*/
+		}
+
+		/*ObjectTemplate Template = T_Material->GetObjectTemplate();
+		switch (Template)
+		{
+		case ObjectTemplate::None:
+			break;
+		case ObjectTemplate::AlwaysBurn:
+			break;
+		case ObjectTemplate::Break:
+			break;
+		case ObjectTemplate::Melt:
+			break;
+		default:
+			BEACON_LOG(Warning, "Undefine Template Type!");
+			BEACON_ASSERT(false);
+			break;
+		}*/
+	}
+
+	return true;
+}
+
+void UFlammableComponent::Clear_Implement()
+{
+	if (m_UnitManager != nullptr)
+	{
+		m_UnitManager->UnregisterComponent();
+		m_UnitManager = nullptr;
+	}
+}
+//End implementing BuildableComponent functions

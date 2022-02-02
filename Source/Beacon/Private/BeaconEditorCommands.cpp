@@ -7,7 +7,9 @@
 
 void BeaconEditorCommands::RegisterCommands()
 {
-	UI_COMMAND(m_BuildCommand, "BeaconBuildCommand", "BeaconBuildCommand Units", EUserInterfaceActionType::Button, FInputGesture());
+	UI_COMMAND(m_ClearCommand, "BeaconClear", "BeaconClearCommand", EUserInterfaceActionType::Button, FInputGesture());
+	UI_COMMAND(m_BuildCommand, "BeaconBuild", "BeaconBuildCommand", EUserInterfaceActionType::Button, FInputGesture());
+	UI_COMMAND(m_RebuildCommand, "BeaconRebuild", "BeaconRebuildCommand", EUserInterfaceActionType::Button, FInputGesture());
 }
 
 #undef LOCTEXT_NAMESPACE

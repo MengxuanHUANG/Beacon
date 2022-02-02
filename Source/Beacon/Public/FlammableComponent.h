@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BuildableComponent.h"
 #include "Neighbor.h"
 #include "UnitManagerComponent.h"
 #include "BeaconFire.h"
@@ -32,7 +33,7 @@ public:
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class BEACON_API UFlammableComponent : public USceneComponent
+class BEACON_API UFlammableComponent : public UBuildableComponent
 {
 	GENERATED_BODY()
 
@@ -64,7 +65,7 @@ public:
 		uint32 m_Count = 1;
 
 	UPROPERTY(EditAnywhere)
-		FUnitCount m_UnitCount;
+		FUnitCount m_UnitCount = {2, 2, 2};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		ConnectType m_ConnectType = ConnectType::SixDirection;
@@ -72,9 +73,11 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_UnitManager;
 
-private:
-	UPROPERTY(VisibleAnywhere)
-		bool b_IsBurning;
+protected:
+	//Begin declaring BuildableComponent functions
+	virtual bool Build_Implement() override;
+	virtual	void Clear_Implement() override;
+	//End declaring BuildableComponent functions
 
 public:
 	UFUNCTION(BlueprintCallable)
@@ -85,10 +88,6 @@ public:
 	UFUNCTION()
 		void CreateUnits();
 
-	UFUNCTION()
-		inline bool IsBurning() const { return b_IsBurning; }
-
-	//return nullptr is not burning
 	UFUNCTION()
 		inline const TSubclassOf<UBeaconFire>& GetBeaconFire() const { return T_BeaconFire; }
 };

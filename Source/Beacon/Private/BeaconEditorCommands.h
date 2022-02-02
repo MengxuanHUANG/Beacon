@@ -25,4 +25,6 @@ public:
 public:
 
 	TSharedPtr<FUICommandInfo> m_BuildCommand;
+	TSharedPtr<FUICommandInfo> m_ClearCommand;
+	TSharedPtr<FUICommandInfo> m_RebuildCommand;
 };
