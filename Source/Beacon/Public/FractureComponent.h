@@ -8,6 +8,9 @@
 
 class UGeometryCollectionComponent;
 class UBoxComponent;
+class UDebrisUnitManagerComponent;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFractured);
 
 USTRUCT(BlueprintType)
 struct FFragment
@@ -15,14 +18,13 @@ struct FFragment
 	GENERATED_BODY()
 public:
 	FFragment() {}
-	FFragment(int32 index, int32 level)
+	FFragment(int32 index, int32 level = 0)
 		:Index(index), Level(level)
 	{}
 	FFragment(const FFragment& other)
 		:Index(other.Index), Level(other.Level)
 	{}
 
-	
 	UPROPERTY(VisibleAnywhere)
 		int32 Index;
 	UPROPERTY(VisibleAnywhere)
@@ -57,26 +59,45 @@ protected:
 	virtual	void Clear_Implement() override;
 	//End declaring BuildableComponent functions
 
-protected:
 	bool InitializeCurrentDebris();
 	void ClearCurrentDebris();
 	void UpdateCurrentDebris();
 
 public:
+	UFUNCTION()
+		inline TArray<FFragment>& GetCurrentFragments() { return m_CurrentFragments; }
+	UFUNCTION()
+		inline TArray<FVector>& GetFragmentsWorldLocation() { return m_FragmentWorldLocation; }
+	UFUNCTION()
+		inline TArray<FFragment>& GetRemovedFragments() { return m_RemovedFragments; }
+public:
+	UPROPERTY(BlueprintAssignable)
+		FOnFractured OnFracturedEvent;
+
+	/*UPROPERTY(EditAnywhere)
+		BeaconFractureMaterial* T_FractureMaterial;*/
+
 	UPROPERTY(EditAnywhere)
 		UGeometryCollectionComponent* GeometryCollectionComponent;
+
+	//Array of removed debris' index in last update
+	UPROPERTY(VisibleAnywhere)
+		TArray<FFragment> m_RemovedFragments;
 
 	//Array of pairs that store debris' index and level 
 	UPROPERTY(VisibleAnywhere)
 		TArray<FFragment> m_CurrentFragments;
+	
+	//Array of debris' world location
+	UPROPERTY(VisibleAnywhere)
+		TArray<FVector> m_FragmentWorldLocation;
 
-	//TODO: remove
-	UPROPERTY(EditAnywhere)
-		int size;
+	UPROPERTY(VisibleAnywhere)
+		UDebrisUnitManagerComponent* m_DebrisUnitManager;
+private:
+	bool CheckBreak();
 
-	UPROPERTY(EditAnywhere)
-		FColor color;
-
-	UPROPERTY(VisibleAnyWhere)
-		TArray<UBoxComponent*> m_Boxes;
+private:
+	UPROPERTY(VisibleAnywhere)
+		bool bIsBreak;
 };

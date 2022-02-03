@@ -31,3 +31,13 @@ void UUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 
 	// ...
 }
+
+void UUnitManagerComponent::OnUnregister()
+{
+	m_Material = nullptr;
+	if (m_UnitUpdater.IsValid())
+	{
+		m_UnitUpdater.Reset();
+	}
+	Super::OnUnregister();
+}

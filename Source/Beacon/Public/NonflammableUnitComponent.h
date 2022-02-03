@@ -16,7 +16,6 @@ class BEACON_API UNonflammableUnitComponent : public UUnitComponent
 	
 	// Called when the game starts
 	virtual void BeginPlay() override;
-	virtual void OnUnregister() override;
 public:
 	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type) override;
 	virtual void Update(float deltaTime);

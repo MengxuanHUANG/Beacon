@@ -37,6 +37,8 @@ public:
 	virtual void UnTriggerUnit_Implementation(FVector index, float value) override;
 	virtual void UnTriggerAllUnits_Implementation(float value) override;
 
+	virtual void SetUnitsMaterial() override;
+
 	virtual void AddToUpdateList(UUnitComponent* unit) override;
 public:
 	uint32 m_Count;

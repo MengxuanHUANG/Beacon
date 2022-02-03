@@ -17,7 +17,7 @@ UBoxUnitManagerComponent::UBoxUnitManagerComponent()
 void UBoxUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
+	m_UnitUpdater = MakeShared<UnitUpdater>();
 }
 
 // Called every frame
@@ -37,7 +37,6 @@ void UBoxUnitManagerComponent::OnUnregister()
 	{
 		if (unit)
 		{
-			unit->UnregisterComponent();
 			unit->DestroyComponent();
 			unit = nullptr;
 		}
@@ -132,6 +131,14 @@ void UBoxUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 	m_UnitCount.X = x;
 	m_UnitCount.Y = y;
 	m_UnitCount.Z = z;
+}
+
+void UBoxUnitManagerComponent::SetUnitsMaterial()
+{
+	for (UUnitComponent* unit : m_Units)
+	{
+		unit->SetMaterial(m_Material);
+	}
 }
 
 FVector UBoxUnitManagerComponent::LocalLocation2Index(FVector location) const

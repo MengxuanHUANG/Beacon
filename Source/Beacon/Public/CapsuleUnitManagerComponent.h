@@ -41,6 +41,8 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual void AddToUpdateList(UUnitComponent* unit) override;
 
+	virtual void SetUnitsMaterial() override;
+
 public:
 	uint32 m_Count;
 	uint32 m_Count_height;

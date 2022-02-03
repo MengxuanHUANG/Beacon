@@ -2,7 +2,8 @@
 
 
 #include "UnitComponent.h"
-#include "BeaconMaterial.h"
+
+#include "Components/BoxComponent.h"
 #include "UnitManagerComponent.h"
 
 // Sets default values for this component's properties
@@ -23,14 +24,26 @@ void UUnitComponent::BeginPlay()
 	
 }
 
-float UUnitComponent::GetTemperature() const
+void UUnitComponent::OnUnregister()
 {
-	return m_Manager->m_Material->GetTemperature(Value);
+	if (m_Neighbors)
+	{
+		m_Neighbors->DestroyComponent();
+		m_Neighbors = nullptr;
+	}
+	if (DebugBox)
+	{
+		DebugBox->DestroyComponent();
+		DebugBox = nullptr;
+	}
+	m_Manager = nullptr;
+	m_Material = nullptr;
+	Super::OnUnregister();
 }
 
-UBeaconMaterial* UUnitComponent::GetMaterial() const
-{ 
-	return m_Manager != nullptr ? m_Manager->m_Material : nullptr; 
+float UUnitComponent::GetTemperature() const
+{
+	return m_Material->GetTemperature(Value);
 }
 
 bool UUnitComponent::operator < (const UUnitComponent& unit)

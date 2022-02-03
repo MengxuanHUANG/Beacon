@@ -79,6 +79,11 @@ protected:
 	virtual	void Clear_Implement() override;
 	//End declaring BuildableComponent functions
 
+	class UFractureComponent* GetFractureComponent() const;
+	void ConfigObjectTemplate(ObjectTemplate objTemplate);
+	
+	UFUNCTION()
+		void OnFractured();
 public:
 	UFUNCTION(BlueprintCallable)
 		void BurnAll();

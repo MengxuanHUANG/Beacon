@@ -36,21 +36,8 @@ void UFlammableUnitComponent::OnUnregister()
 {
 	if (m_BeaconFire != nullptr)
 	{
-		m_BeaconFire->UnregisterComponent();
 		m_BeaconFire->DestroyComponent();
 		m_BeaconFire = nullptr;
-	}
-	if (m_Neighbors != nullptr)
-	{
-		m_Neighbors->UnregisterComponent();
-		m_Neighbors->DestroyComponent();
-		m_Neighbors = nullptr;
-	}
-	if (DebugBox)
-	{
-		DebugBox->UnregisterComponent();
-		DebugBox->DestroyComponent();
-		DebugBox = nullptr;
 	}
 	Super::OnUnregister();
 }
@@ -84,7 +71,7 @@ void UFlammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector
 	m_TotalBurningTime = 0.f;
 	m_BurningEventCount = 0;
 	UBeaconMaterial* material = GetMaterial();
-	if (material != nullptr)
+	if (material)
 	{
 		Value = material->DefaultThermal;
 	}
@@ -107,7 +94,7 @@ void UFlammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector
 void UFlammableUnitComponent::Update(float deltaTime)
 {
 	UBeaconMaterial* material = GetMaterial();
-	BEACON_ASSERT(material != nullptr);
+	BEACON_ASSERT(material);
 
 	if (CheckFlag(EUnitFlag::NeedUpdate))
 	{

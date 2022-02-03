@@ -20,7 +20,7 @@ UCapsuleUnitManagerComponent::~UCapsuleUnitManagerComponent()
 void UCapsuleUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
+	m_UnitUpdater = MakeShared<UnitUpdater>();
 }
 
 
@@ -137,6 +137,14 @@ void UCapsuleUnitManagerComponent::SetParameter2(uint32 x, uint32 y)
 
 void UCapsuleUnitManagerComponent::SetParameter3(uint32 x, uint32 y, uint32 z)
 {
+}
+
+void UCapsuleUnitManagerComponent::SetUnitsMaterial()
+{
+	for (auto unit : m_Units)
+	{
+		unit.Value->SetMaterial(m_Material);
+	}
 }
 
 bool UCapsuleUnitManagerComponent::CompareUnit(UUnitComponent* a, UUnitComponent* b)

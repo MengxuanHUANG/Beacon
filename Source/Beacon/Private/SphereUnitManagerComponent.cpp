@@ -18,7 +18,7 @@ USphereUnitManagerComponent::~USphereUnitManagerComponent()
 void USphereUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	m_UnitUpdater = MakeShared<UnitUpdater>(m_Material);
+	m_UnitUpdater = MakeShared<UnitUpdater>();
 }
 
 // Called every frame
@@ -124,6 +124,14 @@ void USphereUnitManagerComponent::UnTriggerAllUnits_Implementation(float value)
 		unit.Value->UnTrigger();
 
 		m_UpdateList.Empty();
+	}
+}
+
+void USphereUnitManagerComponent::SetUnitsMaterial()
+{
+	for (auto unit : m_Units)
+	{
+		unit.Value->SetMaterial(m_Material);
 	}
 }
 

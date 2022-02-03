@@ -6,12 +6,11 @@
 #include "Components/SceneComponent.h"
 #include "Neighbor.h"
 #include "BeaconCore.h"
-
 #include "UnitComponent.generated.h"
 
 class UBeaconFire;
-class UBoxComponent;
 class UBeaconMaterial;
+class UBoxComponent;
 class UUnitManagerComponent;
 
 #define BEACON_Bit(i) (1<<i)
@@ -52,6 +51,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void OnUnregister() override;
 
 public:	
 	// Called every frame
@@ -70,8 +70,9 @@ public:
 	float GetTemperature() const;
 	inline uint32 GetIndex() const { return m_Index; }
 	inline void SetIndex(uint32 index) { m_Index = index; }
-	UBeaconMaterial* GetMaterial() const;
-	UUnitManagerComponent* GetManager() { return m_Manager; }
+	inline void SetMaterial(UBeaconMaterial* material) { m_Material = material; }
+	inline UBeaconMaterial* GetMaterial() const { return m_Material; }
+	inline UUnitManagerComponent* GetManager() { return m_Manager; }
 
 	inline void SetFlag(EUnitFlag flag, bool needUpdate = true) { m_Flag = EUnitFlag(needUpdate ? int8(m_Flag) | int8(flag) : int8(m_Flag) & ~int8(flag)); }
 	inline bool CheckFlag(EUnitFlag flag) const { return (int8(m_Flag) & int8(flag)) != 0; }
@@ -120,6 +121,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_Manager;
 	
+	UPROPERTY(VisibleAnywhere)
+		UBeaconMaterial* m_Material;
+
 	UPROPERTY(VisibleAnywhere, Meta = (Bitmask, BitmaskEnum = EUnitFlag))
 		EUnitFlag m_Flag = EUnitFlag::None;
 

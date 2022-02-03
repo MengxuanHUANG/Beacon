@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-
 #include "BeaconMaterial.generated.h"
 
 /**

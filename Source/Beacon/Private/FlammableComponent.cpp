@@ -19,6 +19,7 @@
 #include "SphereUnitManagerComponent.h"
 #include "CapsuleUnitManagerComponent.h"
 #include "BeaconMaterial.h"
+#include "FractureComponent.h"
 
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()
@@ -46,25 +47,19 @@ UFlammableComponent::~UFlammableComponent()
 void UFlammableComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	//trigger one unit
+
+	if (T_Material)
+	{
+		ConfigObjectTemplate(T_Material->GetObjectTemplate());
+	}
 
 	if (m_UnitManager != nullptr)
 	{
 		m_UnitManager->SetBeaconFire(T_BeaconFire);
 		m_UnitManager->SetMaterial(T_Material);
+		m_UnitManager->SetUnitsMaterial();
 		if (InitializeWithFlame)
 		{
-			//TODO: StartBurning
-		/*for (float i = -10; i < 10; i++)
-		{
-			for (float j = -10; j < 10; j++)
-			{
-				for (float k = -10; k < 10; k++)
-				{
-					m_UnitManager->TriggerUnit(FVector(i, j, k));
-				}
-			}
-		}*/
 			m_UnitManager->TriggerAllUnits();
 		}
 	}
@@ -78,6 +73,11 @@ void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 	if (owner != nullptr)
 	{
 		owner->Tags.Remove(FName(BEACON_FLAMMABLE_TAG));
+	}
+	if (m_UnitManager != nullptr)
+	{
+		m_UnitManager->DestroyComponent();
+		m_UnitManager = nullptr;
 	}
 	Super::DestroyComponent(bPromoteChildren);
 }
@@ -183,34 +183,6 @@ bool UFlammableComponent::Build_Implement()
 		}
 	}
 
-	//TODO: move to a function
-
-	//Generate template Effect
-	if (T_Material)
-	{
-		if (m_UnitManager)
-		{
-			/*m_UnitManager->SetMaterial(T_Material);*/
-		}
-
-		/*ObjectTemplate Template = T_Material->GetObjectTemplate();
-		switch (Template)
-		{
-		case ObjectTemplate::None:
-			break;
-		case ObjectTemplate::AlwaysBurn:
-			break;
-		case ObjectTemplate::Break:
-			break;
-		case ObjectTemplate::Melt:
-			break;
-		default:
-			BEACON_LOG(Warning, "Undefine Template Type!");
-			BEACON_ASSERT(false);
-			break;
-		}*/
-	}
-
 	return true;
 }
 
@@ -218,9 +190,50 @@ void UFlammableComponent::Clear_Implement()
 {
 	if (m_UnitManager != nullptr)
 	{
-		m_UnitManager->UnregisterComponent();
 		m_UnitManager->DestroyComponent();
 		m_UnitManager = nullptr;
 	}
 }
 //End implementing BuildableComponent functions
+
+UFractureComponent* UFlammableComponent::GetFractureComponent() const
+{
+	USceneComponent* parent = GetAttachParent();
+	USceneComponent* fracture = parent->GetAttachParent();
+	return Cast<UFractureComponent>(fracture);
+}
+
+void UFlammableComponent::ConfigObjectTemplate(ObjectTemplate objTemplate)
+{
+	switch (objTemplate)
+	{
+	case ObjectTemplate::None:
+		break;
+	case ObjectTemplate::AlwaysBurn:
+	{
+		InitializeWithFlame = true;
+		break;
+	}
+	case ObjectTemplate::Break:
+	{
+		UFractureComponent* fractureComp = GetFractureComponent();
+		if (fractureComp)
+		{
+			fractureComp->OnFracturedEvent.AddDynamic(this, &UFlammableComponent::OnFractured);
+		}
+		break;
+	}
+	case ObjectTemplate::Melt:
+		break;
+	default:
+		BEACON_LOG(Warning, "Undefine Template Type!");
+		BEACON_ASSERT(false);
+		break;
+	}
+}
+
+void UFlammableComponent::OnFractured()
+{
+	BEACON_LOG(Warning, "Fractured");
+	Clear_Implement();
+}

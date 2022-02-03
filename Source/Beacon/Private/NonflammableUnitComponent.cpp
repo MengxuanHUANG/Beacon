@@ -28,23 +28,6 @@ void UNonflammableUnitComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
-void UNonflammableUnitComponent::OnUnregister()
-{
-	if (m_Neighbors != nullptr)
-	{
-		m_Neighbors->UnregisterComponent();
-		m_Neighbors->DestroyComponent();
-		m_Neighbors = nullptr;
-	}
-	if (DebugBox)
-	{
-		DebugBox->UnregisterComponent();
-		DebugBox->DestroyComponent();
-		DebugBox = nullptr;
-	}
-	Super::OnUnregister();
-}
-
 void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type)
 {
 	//Manager
@@ -71,7 +54,7 @@ void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVec
 	//burning parameters
 	m_TotalBurningTime = 0.f;
 	UBeaconMaterial* material = GetMaterial();
-	if (material != nullptr)
+	if (material)
 	{
 		Value = material->DefaultThermal;
 	}
@@ -94,7 +77,7 @@ void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVec
 void UNonflammableUnitComponent::Update(float deltaTime)
 {
 	UBeaconMaterial* material = GetMaterial();
-	BEACON_ASSERT(material != nullptr);
+	BEACON_ASSERT(material);
 
 	if (CheckFlag(EUnitFlag::NeedUpdate))
 	{

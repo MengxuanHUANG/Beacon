@@ -10,6 +10,7 @@
 
 //Beacon Header files
 #include "BeaconLog.h"
+#include "DebrisUnitManagerComponent.h"
 
 UFractureComponent::UFractureComponent()
 {
@@ -20,12 +21,18 @@ UFractureComponent::UFractureComponent()
 	//Create GeometryCollectionComponent
 	GeometryCollectionComponent = CreateDefaultSubobject<UGeometryCollectionComponent>(FName("Geometry Collection"));
 	GeometryCollectionComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+	m_DebrisUnitManager = CreateDefaultSubobject<UDebrisUnitManagerComponent>(FName("Debris Unit Manager"));
+	m_DebrisUnitManager->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called when the game starts
 void UFractureComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	bIsBreak = false;
+	m_DebrisUnitManager->Initialize(this, m_CurrentFragments[0].Index, bIsBreak);
 }
 
 // Called every frame
@@ -33,35 +40,21 @@ void UFractureComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//Update Current fragments state (location, wehther disabled)
-	UpdateCurrentDebris();
-
-	FGeometryCollectionPhysicsProxy* physicsProxy = GeometryCollectionComponent ? GeometryCollectionComponent->GetPhysicsProxy() : nullptr;
-	TManagedArray<TUniquePtr<Chaos::FGeometryParticle>>& particles = physicsProxy->GetExternalParticles();
-
-	//BEGIN update flames location
-	for (const FFragment& fragment : m_CurrentFragments)
+	if (bIsBreak)
 	{
-		const int32& index = fragment.Index;
-		const int32& level = fragment.Level;
-
-		TUniquePtr<Chaos::FGeometryParticle>& particle = particles[index];
-		FVector location = particle->X();
-
-
-		if (m_Boxes[index] == nullptr)
-		{
-			UBoxComponent* box = NewObject<UBoxComponent>(this);
-			box->RegisterComponent();
-			box->SetBoxExtent(FVector(size));
-			box->bHiddenInGame = false;
-			box->ShapeColor = color;
-
-			m_Boxes[index] = box;
-		}
-		m_Boxes[index]->SetWorldLocation(location);
+		//Update Current fragments state (location, wehther disabled)
+		UpdateCurrentDebris();
 	}
-	//END update
+	else
+	{
+		bIsBreak = CheckBreak();
+		if (bIsBreak)
+		{
+			OnFracturedEvent.Broadcast();
+			//Update Current fragments state (location, wehther disabled)
+			UpdateCurrentDebris();
+		}
+	}
 }
 
 bool UFractureComponent::InitializeCurrentDebris()
@@ -104,7 +97,7 @@ void UFractureComponent::UpdateCurrentDebris()
 			//BEGIN update CurrentDebrisIndex
 			const TManagedArray<TSet<int32> >& childrenArr = GeometryCollectionComponent->GetChildrenArray();
 
-			TArray<FFragment> markedRemove;
+			m_RemovedFragments.Empty();
 			TArray<FFragment> markedEmplace;
 
 			for (FFragment& fragment : m_CurrentFragments)
@@ -114,16 +107,8 @@ void UFractureComponent::UpdateCurrentDebris()
 
 				if (disabled[index])
 				{
-					//TODO: remove
-					if (index < m_Boxes.Num() && m_Boxes[index] != nullptr)
-					{
-						m_Boxes[index]->UnregisterComponent();
-						m_Boxes[index] = nullptr;
-					}
-					//End TODO
-
 					//mark index to be removed
-					markedRemove.Emplace(FFragment(index, level));
+					m_RemovedFragments.Emplace(FFragment(index, level));
 
 					//mark new debris to be emplace
 					TQueue<FFragment> temp;
@@ -146,7 +131,7 @@ void UFractureComponent::UpdateCurrentDebris()
 				}
 			}
 
-			for (FFragment& fragment : markedRemove)
+			for (FFragment& fragment : m_RemovedFragments)
 			{
 				m_CurrentFragments.RemoveSwap(fragment);
 			}
@@ -155,6 +140,19 @@ void UFractureComponent::UpdateCurrentDebris()
 				m_CurrentFragments.Emplace(fragment);
 			}
 			//END update CurrentDebrisIndex
+			
+			//BEGIN access debris' world location
+
+			m_FragmentWorldLocation.Empty();
+			TManagedArray<TUniquePtr<Chaos::FGeometryParticle>>& particles = physicsProxy->GetExternalParticles();
+
+			for (FFragment& fragment : m_CurrentFragments)
+			{
+				TUniquePtr<Chaos::FGeometryParticle>& particle = particles[fragment.Index];
+				FVector location = particle->X();
+				m_FragmentWorldLocation.Add(location);
+			}
+			//END access debris' world location
 		}
 	}
 }
@@ -169,7 +167,6 @@ void UFractureComponent::ClearCurrentDebris()
 bool UFractureComponent::Build_Implement()
 {
 	bool result =  this->InitializeCurrentDebris();
-	m_Boxes.Init(nullptr, GeometryCollectionComponent->RestCollection->GetGeometryCollection()->TransformToGeometryIndex.Num());
 
 #ifdef BEACON_DEBUG
 	if (!result)
@@ -185,3 +182,21 @@ void UFractureComponent::Clear_Implement()
 	this->ClearCurrentDebris();
 }
 //End implementing BuildableComponent functions
+
+bool UFractureComponent::CheckBreak()
+{
+	//obtain PhysicProxy
+	FGeometryCollectionPhysicsProxy* physicsProxy = GeometryCollectionComponent ? GeometryCollectionComponent->GetPhysicsProxy() : nullptr;
+
+	//const FGeometryCollectionResults* results = physicsProxy ? physicsProxy->GetConsumerResultsGT() : nullptr;
+	if (physicsProxy)
+	{
+		const TArray<bool>& disabled = GeometryCollectionComponent->GetDisabledFlags();
+
+		if (disabled.Num() > m_CurrentFragments[0].Index)
+		{
+			return disabled[m_CurrentFragments[0].Index];
+		}
+	}
+	return false;
+}

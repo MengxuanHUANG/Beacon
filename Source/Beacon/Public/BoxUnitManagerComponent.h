@@ -46,6 +46,8 @@ public:
 	
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 
+	virtual void SetUnitsMaterial() override;
+
 	virtual FVector LocalLocation2Index(FVector location) const override;
 
 private:
