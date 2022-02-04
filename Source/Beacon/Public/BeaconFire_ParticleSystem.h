@@ -23,6 +23,7 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+	virtual void OnUnregister() override;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

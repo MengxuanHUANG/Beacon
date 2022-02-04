@@ -8,23 +8,34 @@
 #include "FractureMaterial.generated.h"
 
 USTRUCT(BlueprintType)
-struct FBurningTime
+struct FFragmentLevel
 {
 	GENERATED_BODY()
 
 public:
-	//maximum time of debris can burn
+	/** Proportion of burning debris */
 	UPROPERTY(EditAnywhere)
-		float MaxBurningTime;
+		float Debris_BurningRate;
 
-	//minimum time of debris can burn
+	/** Temperature that start to burn */
 	UPROPERTY(EditAnywhere)
-		float MinBurningTime;
+		float Flash_Point;
 
 	UPROPERTY(EditAnywhere)
-		FVector DebrisSize;
+		bool Has_Max_BurningTime;
 
-	//minimum time of debris can burn
+	/** maximum time of debris can burn*/
+	UPROPERTY(EditAnywhere)
+		float Max_BurningTime;
+
+	/** minimum time of debris can burn */
+	UPROPERTY(EditAnywhere)
+		float Min_BurningTime;
+
+	UPROPERTY(EditAnywhere)
+		FVector Debris_Size;
+
+	/** minimum time of debris can burn */
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<UBeaconFire> T_BeaconFire;
 };
@@ -38,18 +49,7 @@ class BEACON_API UFractureMaterial : public UDataAsset
 	GENERATED_BODY()
 
 public:
-	//Proportion of burning debris
-	UPROPERTY(EditAnywhere)
-		float DebrisBurningRate;
-
-	UPROPERTY(EditAnywhere)
-		bool HasMaxBurningTime;
-	
-	//Maximum levels of debris
-	UPROPERTY(EditAnywhere)
-		uint8 MaxDebrisLevel;
-
 	//Burning time of different levels, should not exceed MaxDebrisLevel
 	UPROPERTY(EditAnywhere)
-		TArray<FBurningTime> BurningTime;
+		TArray<FFragmentLevel> FragmentLevels;
 };

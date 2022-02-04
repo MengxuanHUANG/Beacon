@@ -11,6 +11,7 @@
 //Beacon Header files
 #include "BeaconLog.h"
 #include "DebrisUnitManagerComponent.h"
+#include "FractureMaterial.h"
 
 UFractureComponent::UFractureComponent()
 {
@@ -32,7 +33,8 @@ void UFractureComponent::BeginPlay()
 	Super::BeginPlay();
 
 	bIsBreak = false;
-	m_DebrisUnitManager->Initialize(this, m_CurrentFragments[0].Index, bIsBreak);
+	m_DebrisUnitManager->Initialize(this, bIsBreak);
+	m_DebrisUnitManager->SetFractureMaterial(T_FractureMaterial);
 }
 
 // Called every frame
@@ -94,6 +96,13 @@ void UFractureComponent::UpdateCurrentDebris()
 
 		if (disabled.Num() > 0)
 		{
+			//Remove Uncessary fragments
+			for (FFragment& fragment : m_NeedRemoveFragments)
+			{
+				m_CurrentFragments.Remove(fragment);
+			}
+			m_NeedRemoveFragments.Empty();
+
 			//BEGIN update CurrentDebrisIndex
 			const TManagedArray<TSet<int32> >& childrenArr = GeometryCollectionComponent->GetChildrenArray();
 

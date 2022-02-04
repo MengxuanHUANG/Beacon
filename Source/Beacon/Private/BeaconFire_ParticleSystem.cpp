@@ -21,6 +21,20 @@ void UBeaconFire_ParticleSystem::BeginPlay()
 
 	Initialize();
 }
+void UBeaconFire_ParticleSystem::OnUnregister()
+{
+	if (m_Particle)
+	{
+		m_Particle->DestroyComponent();
+		m_Particle = nullptr;
+	}
+	if (m_AudioComponent)
+	{
+		m_AudioComponent->DestroyComponent();
+		m_AudioComponent = nullptr;
+	}
+	Super::OnUnregister();
+}
 
 void UBeaconFire_ParticleSystem::Initialize()
 {

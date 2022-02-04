@@ -8,7 +8,8 @@
 #include "DebrisUnitManagerComponent.generated.h"
 
 class UFractureComponent;
-
+class UFractureMaterial;
+class UBeaconMaterial;
 /**
  * 
  */
@@ -28,7 +29,8 @@ public:
 	virtual void OnUnregister() override;
 
 public:
-	void Initialize(UFractureComponent*  fractureComponent, int32 rootIndex, bool isFractured = false);
+	void Initialize(UFractureComponent*  fractureComponent, bool isFractured = false);
+	void SetFractureMaterial(UFractureMaterial* fractureMaterial);
 
 private:
 	UFUNCTION()
@@ -37,6 +39,12 @@ private:
 public:
 	UPROPERTY(VisibleAnywhere)
 		UFractureComponent* m_FractureComponent;
+
+	UPROPERTY(VisibleAnywhere)
+		UFractureMaterial* m_FractureMaterial;
+
+	UPROPERTY(VisibleAnywhere)
+		TArray<UBeaconMaterial*> m_UnitMaterials;
 
 	UPROPERTY(VisibleAnywhere)
 		TMap<int32, UFlammableUnitComponent*> m_FlammableUnits;

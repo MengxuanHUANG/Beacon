@@ -9,6 +9,7 @@
 class UGeometryCollectionComponent;
 class UBoxComponent;
 class UDebrisUnitManagerComponent;
+class UFractureMaterial;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFractured);
 
@@ -70,15 +71,21 @@ public:
 		inline TArray<FVector>& GetFragmentsWorldLocation() { return m_FragmentWorldLocation; }
 	UFUNCTION()
 		inline TArray<FFragment>& GetRemovedFragments() { return m_RemovedFragments; }
+	UFUNCTION()
+		inline TArray<FFragment>& GetNeedRemoveFragments() { return m_NeedRemoveFragments; }
 public:
 	UPROPERTY(BlueprintAssignable)
 		FOnFractured OnFracturedEvent;
 
-	/*UPROPERTY(EditAnywhere)
-		BeaconFractureMaterial* T_FractureMaterial;*/
+	UPROPERTY(EditAnywhere)
+		UFractureMaterial* T_FractureMaterial;
 
 	UPROPERTY(EditAnywhere)
 		UGeometryCollectionComponent* GeometryCollectionComponent;
+
+	//Array of debris' Need to be Removed in last update, will be empty after calling UpdateCurrentDebris
+	UPROPERTY(VisibleAnywhere)
+		TArray<FFragment> m_NeedRemoveFragments;
 
 	//Array of removed debris' index in last update
 	UPROPERTY(VisibleAnywhere)

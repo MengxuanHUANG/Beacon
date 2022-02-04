@@ -159,8 +159,7 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 		SetFlag(EUnitFlag::NeedUpdate);
 
 		//For visualize debug
-
-		DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Red, true, -1, 0, 3);
+		//DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Red, true, -1, 0, 3);
 
 		//TODO: maybe move to another placce
 		TArray<TSharedPtr<UnitConnection>> tempConnections;

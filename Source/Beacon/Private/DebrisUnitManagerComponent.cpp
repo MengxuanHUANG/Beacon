@@ -4,12 +4,13 @@
 #include "DebrisUnitManagerComponent.h"
 
 //Beacon Header Files
-#include "FractureComponent.h"
 #include "BeaconLog.h"
+#include "FractureComponent.h"
+#include "FractureMaterial.h"
+#include "BeaconMaterial.h"
 
 UDebrisUnitManagerComponent::UDebrisUnitManagerComponent()
 {
-
 }
 
 UDebrisUnitManagerComponent::~UDebrisUnitManagerComponent()
@@ -33,9 +34,9 @@ void UDebrisUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 		TArray<FFragment>& removdFragments = m_FractureComponent->GetRemovedFragments();
 		for (const FFragment& fragment : removdFragments)
 		{
-			UFlammableUnitComponent* unit = m_FlammableUnits[fragment.Index];
-			if (unit)
+			if (m_FlammableUnits.Contains(fragment.Index))
 			{
+				UFlammableUnitComponent* unit = m_FlammableUnits[fragment.Index];
 				unit->DestroyComponent();
 				m_FlammableUnits.Remove(fragment.Index);
 			}
@@ -43,6 +44,7 @@ void UDebrisUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 		TArray<FFragment>& currentFragments = m_FractureComponent->GetCurrentFragments();
 		TArray<FVector>& fragmentLocation = m_FractureComponent->GetFragmentsWorldLocation();
+		TArray<FFragment>& needRemove = m_FractureComponent->GetNeedRemoveFragments();
 		for (int i = 0; i < currentFragments.Num(); i++)
 		{
 			UFlammableUnitComponent* unit;
@@ -55,7 +57,7 @@ void UDebrisUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 				//Update Location
 				unit->SetWorldLocation(fragmentLocation[i], true);
 			}
-			else
+			else if(FMath::RandRange(0.f, 1.f) < m_FractureMaterial->FragmentLevels[level].Debris_BurningRate)
 			{
 				//Create New FlammableUnit
 				unit = NewObject<UFlammableUnitComponent>(this);
@@ -65,9 +67,15 @@ void UDebrisUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 				unit->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 				unit->SetWorldLocation(fragmentLocation[i]);
 
-				unit->Initialize(this, FVector(10), ConnectType::None);
+				unit->Initialize(this, m_FractureMaterial->FragmentLevels[level].Debris_Size, ConnectType::None);
+				unit->SetMaterial(m_UnitMaterials[level]);
+				unit->Trigger(m_FractureMaterial->FragmentLevels[level].T_BeaconFire);
 
 				m_FlammableUnits.Add(index, unit);
+			}
+			else
+			{
+				needRemove.Add(FFragment(index));
 			}
 		}
 	}
@@ -84,14 +92,31 @@ void UDebrisUnitManagerComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
-void UDebrisUnitManagerComponent::Initialize(UFractureComponent* fractureComponent, int32 rootIndex, bool isFractured)
+void UDebrisUnitManagerComponent::Initialize(UFractureComponent* fractureComponent, bool isFractured)
 {
-	m_FlammableUnits.Add(rootIndex, nullptr);
 	m_FractureComponent = fractureComponent;
 	//Bind callback function if fractureComponent exist
 	if (!isFractured && m_FractureComponent)
 	{
 		m_FractureComponent->OnFracturedEvent.AddDynamic(this, &UDebrisUnitManagerComponent::OnFractured);
+	}
+}
+
+void UDebrisUnitManagerComponent::SetFractureMaterial(UFractureMaterial* fractureMaterial)
+{
+	m_FractureMaterial = fractureMaterial;
+	for (const FFragmentLevel& level : m_FractureMaterial->FragmentLevels)
+	{
+		UBeaconMaterial* material = NewObject<UBeaconMaterial>(this);
+		material->Has_Max_BurningTime = level.Has_Max_BurningTime;
+		material->Flash_Point = level.Flash_Point;
+		if (material->Has_Max_BurningTime)
+		{
+			material->Max_BurningTime = FMath::RandRange(level.Min_BurningTime, level.Max_BurningTime);
+		}
+
+		m_UnitMaterials.Add(material);
+		material = nullptr;
 	}
 }
 
