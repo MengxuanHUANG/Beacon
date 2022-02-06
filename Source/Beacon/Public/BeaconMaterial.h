@@ -64,6 +64,10 @@ public:
 	/** Whether the object can always burn*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool Has_Max_BurningTime = false;
+	
+	/** Minimum time (in second) that object can burn*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Min_BurningTime = 0;
 
 	/** Maximum time (in second) that object can burn*/
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

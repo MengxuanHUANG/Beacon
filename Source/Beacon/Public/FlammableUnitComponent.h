@@ -34,6 +34,7 @@ public:
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
 	virtual void GetTemporaryNeighbors(TArray<TSharedPtr<UnitConnection>>& tempConnections) const;
 
+public:
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
 			class AActor* OtherActor,

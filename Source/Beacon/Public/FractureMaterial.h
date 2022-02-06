@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "BeaconFire.h"
+#include "BeaconMaterial.h"
 #include "FractureMaterial.generated.h"
 
 USTRUCT(BlueprintType)
@@ -17,20 +18,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		float Debris_BurningRate;
 
-	/** Temperature that start to burn */
+	/** BeaconMaterial for this level */
 	UPROPERTY(EditAnywhere)
-		float Flash_Point;
-
-	UPROPERTY(EditAnywhere)
-		bool Has_Max_BurningTime;
-
-	/** maximum time of debris can burn*/
-	UPROPERTY(EditAnywhere)
-		float Max_BurningTime;
-
-	/** minimum time of debris can burn */
-	UPROPERTY(EditAnywhere)
-		float Min_BurningTime;
+		UBeaconMaterial* BeaconMaterial;
 
 	UPROPERTY(EditAnywhere)
 		FVector Debris_Size;

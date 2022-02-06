@@ -54,12 +54,11 @@ protected:
 	virtual void OnUnregister() override;
 
 public:	
-	// Called every frame
-
 	virtual void Initialize(UUnitManagerComponent* manager, FVector extent, ConnectType type) {}
 	virtual void Update(float deltaTime) {}
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) {}
 	virtual void UnTrigger() {}
+	virtual void NoNeedUpdate() { SetFlag(EUnitFlag::NeedUpdate, false); }
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) {}
 	virtual void SetNeighbor(FVector direction, UUnitComponent* unit) {}
 	virtual UNeighbor* GetNeighbors() const { return m_Neighbors; }
@@ -73,6 +72,9 @@ public:
 	inline void SetMaterial(UBeaconMaterial* material) { m_Material = material; }
 	inline UBeaconMaterial* GetMaterial() const { return m_Material; }
 	inline UUnitManagerComponent* GetManager() { return m_Manager; }
+
+	inline void SetMaxBurningTime(float maxBurningTime) { m_MaxBurningTime = maxBurningTime; }
+	inline float GetMaxBurningTime() const { return m_MaxBurningTime; }
 
 	inline void SetFlag(EUnitFlag flag, bool needUpdate = true) { m_Flag = EUnitFlag(needUpdate ? int8(m_Flag) | int8(flag) : int8(m_Flag) & ~int8(flag)); }
 	inline bool CheckFlag(EUnitFlag flag) const { return (int8(m_Flag) & int8(flag)) != 0; }
@@ -120,6 +122,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_Manager;
+
+	UPROPERTY(VisibleAnyWhere)
+		float m_MaxBurningTime;
 	
 	UPROPERTY(VisibleAnywhere)
 		UBeaconMaterial* m_Material;

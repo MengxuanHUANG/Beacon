@@ -144,6 +144,10 @@ void UCapsuleUnitManagerComponent::SetUnitsMaterial()
 	for (auto unit : m_Units)
 	{
 		unit.Value->SetMaterial(m_Material);
+		if (m_Material->Has_Max_BurningTime)
+		{
+			unit.Value->SetMaxBurningTime(FMath::RandRange(m_Material->Min_BurningTime, m_Material->Max_BurningTime));
+		}
 	}
 }
 

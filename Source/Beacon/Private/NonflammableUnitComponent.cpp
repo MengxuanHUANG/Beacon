@@ -83,37 +83,36 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 	{
 		if (CheckFlag(EUnitFlag::Triggered))
 		{
-			//reduce remainder burning time
-			if (material->Has_Max_BurningTime)
-			{
-				m_TotalBurningTime += deltaTime;
-			}
+			//increase burning time
+			m_TotalBurningTime += deltaTime;
+
 			//increase thermal energy
 			if (Value < material->MAX_Thermal)
 			{
-				Value += deltaTime * float(material->GenThermalPerSecond);
+				Value += deltaTime * material->GenThermalPerSecond;
 			}
 			//check whether to end burning
-			if (m_TotalBurningTime >= material->Max_BurningTime)
+			if (m_TotalBurningTime >= m_MaxBurningTime)
 			{
 				SetFlag(EUnitFlag::Triggered, false);
 			}
 		}
-		else if (Value >= material->Flash_Point)
+		else if (m_TotalBurningTime < m_MaxBurningTime && Value >= material->Flash_Point)
 		{
-			Trigger(GetManager()->GetBeaconFire());
+			BEACON_ASSERT(m_Manager);
+			Trigger(m_Manager->GetBeaconFire());
 		}
 
 		//reduce thermal energy
-		float loss = deltaTime * GetMaterial()->LoseThermalPerSecond;
+		float loss = deltaTime * material->LoseThermalPerSecond;
 		Value -= loss;
 
 		
-		if (Value < GetMaterial()->DefaultThermal)
+		if (Value <= material->DefaultThermal)
 		{
 			//Stop update unit if its value smaller than default value
-			Value = GetMaterial()->DefaultThermal;
-			UnTrigger();
+			Value = material->DefaultThermal;
+			NoNeedUpdate();
 		}
 	}
 }
@@ -132,8 +131,6 @@ void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
 	SetFlag(EUnitFlag::Triggered);
 	SetFlag(EUnitFlag::NeedUpdate);
-
-	DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Blue, true, -1, 0, 3);
 }
 
 void UNonflammableUnitComponent::UnTrigger()

@@ -100,7 +100,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 	{
 		if (CheckFlag(EUnitFlag::Triggered))
 		{
-			//reduce remainder burning time
+			//increase burning time
 			m_TotalBurningTime += deltaTime;
 
 			//call burning events
@@ -117,30 +117,31 @@ void UFlammableUnitComponent::Update(float deltaTime)
 			//increase thermal energy
 			if (Value < material->MAX_Thermal)
 			{
-				Value += deltaTime * float(material->GenThermalPerSecond);
+				Value += deltaTime * material->GenThermalPerSecond;
 			}
 
 			//check whether to end burning
-			if (material->Has_Max_BurningTime && m_TotalBurningTime >= material->Max_BurningTime)
+			if (material->Has_Max_BurningTime && m_TotalBurningTime >= m_MaxBurningTime)
 			{
 				m_BeaconFire->EndBurning();
 				SetFlag(EUnitFlag::Triggered, false);
 			}
 		}
-		else if(Value >= material->Flash_Point)
+		else if(m_TotalBurningTime < m_MaxBurningTime && Value >= material->Flash_Point)
 		{
-			Trigger(GetManager()->GetBeaconFire());
+			BEACON_ASSERT(m_Manager);
+			Trigger(m_Manager->GetBeaconFire());
 		}
 
 		//reduce thermal energy
 		float loss = deltaTime * material->LoseThermalPerSecond;
 		Value -= loss;
 
-		if (Value < material->DefaultThermal)
+		if (Value <= material->DefaultThermal)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;
-			UnTrigger();
+			NoNeedUpdate();
 		}
 	}
 }
@@ -180,7 +181,6 @@ void UFlammableUnitComponent::UnTrigger()
 		{
 			m_BeaconFire->EndBurning();
 		}
-		DebugBox->ShapeColor = FColor::White;
 		SetFlag(EUnitFlag::Triggered, false);
 	}
 }
@@ -207,7 +207,7 @@ void UFlammableUnitComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
+	if (OtherActor != GetOwner() && OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
 	{
 		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
 		if (!(other->IsTriggered()))
@@ -239,7 +239,7 @@ void UFlammableUnitComponent::OnEndOverlap(class UPrimitiveComponent* HitComp,
 	class UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	if (OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
+	if (OtherActor != GetOwner() && OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
 	{
 		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
 		FString actorName;

@@ -10,11 +10,13 @@
 class UFractureComponent;
 class UFractureMaterial;
 class UBeaconMaterial;
+class UnitUpdater;
+
 /**
  * 
  */
 UCLASS()
-class BEACON_API UDebrisUnitManagerComponent : public UUnitManagerComponent
+class BEACON_API UDebrisUnitManagerComponent : public USceneComponent
 {
 	GENERATED_BODY()
 public:
@@ -48,6 +50,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		TMap<int32, UFlammableUnitComponent*> m_FlammableUnits;
+
+protected:
+	UFUNCTION()
+		void UpdateFlammableUnits(float deltaTime);
 
 private:
 	bool bIsFractured;
