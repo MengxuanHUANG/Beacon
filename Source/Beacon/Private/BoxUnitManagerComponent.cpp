@@ -51,10 +51,6 @@ UBoxUnitManagerComponent::~UBoxUnitManagerComponent()
 {
 }
 
-void UBoxUnitManagerComponent::UpdateUnits()
-{
-}
-
 UUnitComponent* UBoxUnitManagerComponent::GetUnit(FVector index)
 {
 	if (index.X * m_UnitCount.Y * m_UnitCount.Z + index.Y * m_UnitCount.Z + index.Z >= m_Units.Num())
@@ -143,13 +139,6 @@ void UBoxUnitManagerComponent::SetUnitsMaterial()
 			unit->SetMaxBurningTime(FMath::RandRange(m_Material->Min_BurningTime, m_Material->Max_BurningTime));
 		}
 	}
-}
-
-FVector UBoxUnitManagerComponent::LocalLocation2Index(FVector location) const
-{
-	BEACON_LOG(Display, "%s", *(location.ToString()));
-	FVector extent = ParentBox->GetUnscaledBoxExtent();
-	return extent;
 }
 
 bool UBoxUnitManagerComponent::CompareUnit(UUnitComponent* a, UUnitComponent* b)

@@ -113,10 +113,6 @@ bool UFlammableComponent::Build_Implement()
 		{
 			UBoxComponent* box = Cast<UBoxComponent>(parent);
 
-			//Bind callback function to collider
-			/*box->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
-			box->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
-
 			//create UnitsManager
 			m_UnitManager = NewObject<UBoxUnitManagerComponent>(this);
 			m_UnitManager->RegisterComponent();
@@ -137,10 +133,6 @@ bool UFlammableComponent::Build_Implement()
 		{
 			USphereComponent* sphere = Cast<USphereComponent>(parent);
 
-			//Bind callback function to collider
-			/*sphere->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
-			sphere->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
-
 			//create UnitsManager
 			m_UnitManager = NewObject<USphereUnitManagerComponent>(this);
 			m_UnitManager->RegisterComponent();
@@ -160,10 +152,6 @@ bool UFlammableComponent::Build_Implement()
 		else if (name.Compare("CapsuleComponent") == 0)
 		{
 			UCapsuleComponent* capsule = Cast<UCapsuleComponent>(parent);
-
-			//Bind callback function to collider
-			/*capsule->OnComponentBeginOverlap.RemoveDynamic(this, &UFlammableComponent::OnBeginOverlap);
-			capsule->OnComponentBeginOverlap.AddDynamic(this, &UFlammableComponent::OnBeginOverlap);*/
 
 			//create UnitsManager
 			m_UnitManager = NewObject<UCapsuleUnitManagerComponent>(this);

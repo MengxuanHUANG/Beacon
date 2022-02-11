@@ -60,8 +60,6 @@ void FBeaconModule::Build()
 		//obtain actors with tag
 		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_BUILDABLE_TAG), actors);
 		
-		BEACON_LOG(Display, "Fund %d Actor with FlammableComponent", actors.Num());
-		
 		for (AActor* actor : actors)
 		{
 			//actor->GetComponentsByInterface
@@ -81,8 +79,6 @@ void FBeaconModule::Clear()
 
 		//obtain actors with tag
 		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_BUILDABLE_TAG), actors);
-
-		BEACON_LOG(Display, "Fund %d Actor with FlammableComponent", actors.Num());
 
 		for (AActor* actor : actors)
 		{
@@ -104,16 +100,13 @@ void FBeaconModule::Rebuild()
 		//obtain actors with tag
 		UGameplayStatics::GetAllActorsWithTag(GEditor->GetEditorWorldContext().World(), FName(BEACON_BUILDABLE_TAG), actors);
 
-		BEACON_LOG(Display, "Fund %d Actor with FlammableComponent", actors.Num());
-
 		for (AActor* actor : actors)
 		{
 			//actor->GetComponentsByInterface
 			for (auto component : actor->GetComponentsByClass(UBuildableComponent::StaticClass()))
 			{
 				UBuildableComponent* build = Cast<UBuildableComponent>(component);
-				build->Clear();
-				build->Build();
+				build->ReBuild();
 			}
 		}
 	}

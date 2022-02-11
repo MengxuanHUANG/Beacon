@@ -13,25 +13,6 @@ UNeighbor::UNeighbor()
 	// ...
 }
 
-
-// Called when the game starts
-void UNeighbor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-
-// Called every frame
-void UNeighbor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
 void UNeighbor::SetNeighbor(int x, int y, int z, UUnitComponent* unit)
 {
 	int index = GetIndex(x + 1, y + 1, z + 1);

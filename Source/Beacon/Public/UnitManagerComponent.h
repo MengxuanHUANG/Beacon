@@ -40,14 +40,12 @@ public:
 	virtual void UnTriggerAllUnits_Implementation(float value) {}
 
 	virtual UUnitComponent* GetUnit(FVector index) { return nullptr; }
-	virtual void UpdateUnits() {}
 
 	virtual void SetParameter(uint32 x) {}
 	virtual void SetParameter2(uint32 x, uint32 y) {}
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) {}
 	virtual void SetUnitsMaterial() {}
-	
-	virtual FVector LocalLocation2Index(FVector location) const { return FVector(0); }
+
 public:
 	inline void TriggerUnit(UUnitComponent* unit)
 	{

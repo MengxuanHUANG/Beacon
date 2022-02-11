@@ -26,23 +26,6 @@ void UBuildableComponent::DestroyComponent(bool bPromoteChildren)
 	Super::DestroyComponent(bPromoteChildren);
 }
 
-// Called when the game starts
-void UBuildableComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-// Called every frame
-void UBuildableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
 void UBuildableComponent::Clear()
 {
 	if (bIsBuilded)

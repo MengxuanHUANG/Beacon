@@ -33,8 +33,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void OnUnregister() override;
-	
-	virtual void UpdateUnits() override;
+
 	virtual UUnitComponent* GetUnit(FVector index) override;
 
 	virtual void AddToUpdateList(UUnitComponent* unit) override;
@@ -47,8 +46,6 @@ public:
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 
 	virtual void SetUnitsMaterial() override;
-
-	virtual FVector LocalLocation2Index(FVector location) const override;
 
 private:
 	static bool CompareUnit(UUnitComponent* a, UUnitComponent* b);

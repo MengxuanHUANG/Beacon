@@ -38,7 +38,6 @@ void USphereUnitManagerComponent::OnUnregister()
 	{
 		if (unit.Value)
 		{
-			unit.Value->UnregisterComponent();
 			unit.Value->DestroyComponent();
 		}
 	}

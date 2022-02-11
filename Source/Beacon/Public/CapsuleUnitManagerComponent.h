@@ -25,7 +25,6 @@ public:
 
 	virtual void OnUnregister() override;
 
-	virtual void UpdateUnits() override;
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
 	virtual void TriggerUnit_Implementation(UUnitComponent* unit) override;

@@ -99,8 +99,7 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 		}
 		else if (m_TotalBurningTime < m_MaxBurningTime && Value >= material->Flash_Point)
 		{
-			BEACON_ASSERT(m_Manager);
-			Trigger(m_Manager->GetBeaconFire());
+			SetFlag(EUnitFlag::Triggered);
 		}
 
 		//reduce thermal energy
@@ -112,7 +111,7 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;
-			NoNeedUpdate();
+			SetFlag(EUnitFlag::NeedUpdate, false);
 		}
 	}
 }
@@ -127,10 +126,14 @@ void UNonflammableUnitComponent::SetNeighbor(FVector direction, UUnitComponent* 
 	SetNeighbor(direction.X, direction.Y, direction.Z, unit);
 }
 
+void UNonflammableUnitComponent::Trigger()
+{
+	SetFlag(EUnitFlag::Triggered | EUnitFlag::NeedUpdate);
+}
+
 void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
-	SetFlag(EUnitFlag::Triggered);
-	SetFlag(EUnitFlag::NeedUpdate);
+	Trigger();
 }
 
 void UNonflammableUnitComponent::UnTrigger()

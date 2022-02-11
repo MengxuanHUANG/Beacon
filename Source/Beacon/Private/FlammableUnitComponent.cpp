@@ -129,8 +129,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 		}
 		else if(m_TotalBurningTime < m_MaxBurningTime && Value >= material->Flash_Point)
 		{
-			BEACON_ASSERT(m_Manager);
-			Trigger(m_Manager->GetBeaconFire());
+			Trigger();
 		}
 
 		//reduce thermal energy
@@ -141,9 +140,15 @@ void UFlammableUnitComponent::Update(float deltaTime)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;
-			NoNeedUpdate();
+			SetFlag(EUnitFlag::NeedUpdate, false);
 		}
 	}
+}
+
+void UFlammableUnitComponent::Trigger()
+{
+	BEACON_ASSERT(m_Manager);
+	Trigger(m_Manager->GetBeaconFire());
 }
 
 void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
@@ -156,8 +161,7 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 		m_BeaconFire->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 		m_BeaconFire->StartBurning();
 
-		SetFlag(EUnitFlag::Triggered);
-		SetFlag(EUnitFlag::NeedUpdate);
+		SetFlag(EUnitFlag::Triggered | EUnitFlag::NeedUpdate);
 
 		//For visualize debug
 		//DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Red, true, -1, 0, 3);

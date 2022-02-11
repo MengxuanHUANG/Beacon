@@ -21,8 +21,10 @@ public:
 	virtual void Update(float deltaTime);
 	virtual void SetNeighbor(int x, int y, int z, UUnitComponent* unit) override;
 	virtual void SetNeighbor(FVector direction, UUnitComponent* unit) override;
+	virtual void Trigger() override;
 	virtual void Trigger(TSubclassOf<UBeaconFire>& beaconFire) override;
 	virtual void UnTrigger() override;
+	
 
 public:
 	UPROPERTY(VisibleAnyWhere)
