@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Neighbor.h"
+#include "BeaconThermalProxy.h"
 #include "UnitManagerComponent.generated.h"
 
 class UUnitComponent;
@@ -12,7 +13,7 @@ class UBeaconFire;
 class UBeaconMaterial;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class BEACON_API UUnitManagerComponent : public USceneComponent
+class BEACON_API UUnitManagerComponent : public USceneComponent, public BeaconThermalProxy
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 	virtual void OnUnregister() override;
+
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

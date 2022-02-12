@@ -10,8 +10,9 @@ class UGeometryCollectionComponent;
 class UBoxComponent;
 class UDebrisUnitManagerComponent;
 class UFractureMaterial;
+struct BeaconThermalData;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnFractured);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFractured, bool, needUpdate);
 
 USTRUCT(BlueprintType)
 struct FFragment
@@ -73,6 +74,9 @@ public:
 		inline TArray<FFragment>& GetRemovedFragments() { return m_RemovedFragments; }
 	UFUNCTION()
 		inline TArray<FFragment>& GetNeedRemoveFragments() { return m_NeedRemoveFragments; }
+
+	inline void BindBeaconThermalData(TSharedPtr<BeaconThermalData>& thermalData) { m_ThermalData = thermalData; }
+
 public:
 	UPROPERTY(BlueprintAssignable)
 		FOnFractured OnFracturedEvent;
@@ -101,10 +105,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UDebrisUnitManagerComponent* m_DebrisUnitManager;
+
+	TSharedPtr<BeaconThermalData> m_ThermalData;
 private:
 	bool CheckBreak();
 
 private:
 	UPROPERTY(VisibleAnywhere)
 		bool bIsBreak;
+
+	UPROPERTY(VisibleAnywhere)
+		bool bNeedUpdate;
 };

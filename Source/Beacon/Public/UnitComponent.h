@@ -78,7 +78,7 @@ public:
 	inline void SetMaxBurningTime(float maxBurningTime) { m_MaxBurningTime = maxBurningTime; }
 	inline float GetMaxBurningTime() const { return m_MaxBurningTime; }
 
-	inline void SetFlag(EUnitFlag flag, bool needUpdate = true) { m_Flag = EUnitFlag(needUpdate ? int8(m_Flag) | int8(flag) : int8(m_Flag) & ~int8(flag)); }
+	inline void SetFlag(EUnitFlag flag, bool isSet = true) { m_Flag = EUnitFlag(isSet ? int8(m_Flag) | int8(flag) : int8(m_Flag) & ~int8(flag)); }
 	inline bool CheckFlag(EUnitFlag flag) const { return (int8(m_Flag) & int8(flag)) != 0; }
 
 public:

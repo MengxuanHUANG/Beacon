@@ -36,7 +36,7 @@ public:
 
 private:
 	UFUNCTION()
-		void OnFractured();
+		void OnFractured(bool needUpdate);
 
 public:
 	UPROPERTY(VisibleAnywhere)

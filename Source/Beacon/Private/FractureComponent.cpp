@@ -14,6 +14,7 @@
 #include "FractureMaterial.h"
 
 UFractureComponent::UFractureComponent()
+	:bIsBreak(false), bNeedUpdate(false)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -42,19 +43,24 @@ void UFractureComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (bIsBreak)
+	if (bIsBreak && bNeedUpdate)
 	{
 		//Update Current fragments state (location, wehther disabled)
 		UpdateCurrentDebris();
 	}
-	else
+	else if(!bIsBreak)
 	{
 		bIsBreak = CheckBreak();
 		if (bIsBreak)
 		{
-			OnFracturedEvent.Broadcast();
-			//Update Current fragments state (location, wehther disabled)
-			UpdateCurrentDebris();
+			if (m_ThermalData.IsValid() && m_ThermalData->bIsBurning)
+			{
+				bNeedUpdate = m_ThermalData->bIsBurning;
+				//Update Current fragments state (location, wehther disabled)
+				UpdateCurrentDebris();
+			}
+
+			OnFracturedEvent.Broadcast(bNeedUpdate);
 		}
 	}
 }
@@ -195,17 +201,15 @@ void UFractureComponent::Clear_Implement()
 bool UFractureComponent::CheckBreak()
 {
 	//obtain PhysicProxy
-	FGeometryCollectionPhysicsProxy* physicsProxy = GeometryCollectionComponent ? GeometryCollectionComponent->GetPhysicsProxy() : nullptr;
+	FGeometryCollectionPhysicsProxy* physicsProxy = GeometryCollectionComponent->GetPhysicsProxy();
 
 	//const FGeometryCollectionResults* results = physicsProxy ? physicsProxy->GetConsumerResultsGT() : nullptr;
-	if (physicsProxy)
-	{
-		const TArray<bool>& disabled = GeometryCollectionComponent->GetDisabledFlags();
 
-		if (disabled.Num() > m_CurrentFragments[0].Index)
-		{
-			return disabled[m_CurrentFragments[0].Index];
-		}
+	const TArray<bool>& disabled = GeometryCollectionComponent->GetDisabledFlags();
+
+	if (disabled.Num() > m_CurrentFragments[0].Index)
+	{
+		return disabled[m_CurrentFragments[0].Index];
 	}
 	return false;
 }

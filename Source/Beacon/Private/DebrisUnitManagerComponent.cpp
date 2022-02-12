@@ -161,7 +161,7 @@ void UDebrisUnitManagerComponent::SetFractureMaterial(UFractureMaterial* fractur
 }
 
 //Handle fracture event
-void UDebrisUnitManagerComponent::OnFractured()
+void UDebrisUnitManagerComponent::OnFractured(bool needUpdate)
 {
-	bIsFractured = true;
+	bIsFractured = needUpdate;
 }

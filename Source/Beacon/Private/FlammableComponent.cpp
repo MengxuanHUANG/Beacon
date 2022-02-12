@@ -60,7 +60,7 @@ void UFlammableComponent::BeginPlay()
 		m_UnitManager->SetUnitsMaterial();
 		if (InitializeWithFlame)
 		{
-			m_UnitManager->TriggerAllUnits();
+			m_UnitManager->TriggerAllUnits(T_Material->Flash_Point);
 		}
 	}
 }
@@ -207,7 +207,10 @@ void UFlammableComponent::ConfigObjectTemplate(ObjectTemplate objTemplate)
 		UFractureComponent* fractureComp = GetFractureComponent();
 		if (fractureComp)
 		{
+			BEACON_LOG(Error, "Must have FractureComponent to support break effect");
 			fractureComp->OnFracturedEvent.AddDynamic(this, &UFlammableComponent::OnFractured);
+			m_UnitManager->SetThermalProxyNeedUpdate(true);
+			fractureComp->BindBeaconThermalData(m_UnitManager->GetBeaconThermalData());
 		}
 		break;
 	}
@@ -220,7 +223,7 @@ void UFlammableComponent::ConfigObjectTemplate(ObjectTemplate objTemplate)
 	}
 }
 
-void UFlammableComponent::OnFractured()
+void UFlammableComponent::OnFractured(bool needUpdate)
 {
 	BEACON_LOG(Warning, "Fractured");
 	Clear_Implement();

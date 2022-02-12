@@ -47,6 +47,10 @@ public:
 
 	virtual void SetUnitsMaterial() override;
 
+	//BEGIN BeaconThermalProxy functions
+	virtual void UpdateThermalData() override;
+	//End BeaconThermalProxy functions
+
 private:
 	static bool CompareUnit(UUnitComponent* a, UUnitComponent* b);
 

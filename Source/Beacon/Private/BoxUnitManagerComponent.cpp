@@ -28,6 +28,10 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 	if (m_UnitUpdater.IsValid())
 	{
 		m_UnitUpdater->UpdateUnit(DeltaTime, m_UpdateList, T_BeaconFire, m_Units.Num());
+		if (GetThermalProxyNeedUpdate())
+		{
+			UpdateThermalData();
+		}
 	}
 }
 
@@ -145,3 +149,24 @@ bool UBoxUnitManagerComponent::CompareUnit(UUnitComponent* a, UUnitComponent* b)
 {
 	return *a > *b;
 }
+
+//BEGIN BeaconThermalProxy functions
+void UBoxUnitManagerComponent::UpdateThermalData()
+{
+	if (ThermalData.IsValid())
+	{
+		ThermalData->bIsBurning = m_UpdateList.Num() != 0;
+		float totalThermal = 0.f;
+		if (ThermalData->bIsBurning)
+		{
+			for (UUnitComponent* unit : m_Units)
+			{
+				totalThermal += unit->Value;
+			}
+
+			totalThermal /= float(m_Units.Num());
+		}
+		ThermalData->Thermal_Value = totalThermal;
+	}
+}
+//End BeaconThermalProxy functions

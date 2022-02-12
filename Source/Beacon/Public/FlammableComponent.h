@@ -83,7 +83,7 @@ protected:
 	void ConfigObjectTemplate(ObjectTemplate objTemplate);
 	
 	UFUNCTION()
-		void OnFractured();
+		void OnFractured(bool needUpdate);
 public:
 	UFUNCTION(BlueprintCallable)
 		void BurnAll();
