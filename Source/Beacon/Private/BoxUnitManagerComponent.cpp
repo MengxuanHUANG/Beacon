@@ -138,6 +138,7 @@ void UBoxUnitManagerComponent::SetUnitsMaterial()
 	for (UUnitComponent* unit : m_Units)
 	{
 		unit->SetMaterial(m_Material);
+		unit->Value = m_Material->DefaultThermal;
 		if (m_Material->Has_Max_BurningTime)
 		{
 			unit->SetMaxBurningTime(FMath::RandRange(m_Material->Min_BurningTime, m_Material->Max_BurningTime));

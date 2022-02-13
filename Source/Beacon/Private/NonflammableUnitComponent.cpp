@@ -102,12 +102,13 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 			SetFlag(EUnitFlag::Triggered);
 		}
 
-		//reduce thermal energy
-		float loss = deltaTime * material->LoseThermalPerSecond;
-		Value -= loss;
-
-		
-		if (Value <= material->DefaultThermal)
+		if (Value > material->DefaultThermal)
+		{
+			//reduce thermal energy
+			float loss = deltaTime * material->LoseThermalPerSecond;
+			Value -= loss;
+		}
+		else
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;

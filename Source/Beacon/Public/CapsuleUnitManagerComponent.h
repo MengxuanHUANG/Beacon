@@ -117,6 +117,7 @@ public:
 
 						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
 						capsuleUnitManager->m_Units.Add(FVector(x,y,z),unit);
+						unit->Debug_Index = FVector(x, y, z);
 						++count_t_new;
 					}
 				}
@@ -163,6 +164,7 @@ public:
 
 						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
 						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
+						unit->Debug_Index = FVector(x, y, z);
 						++count_t_new;
 
 					}
@@ -210,6 +212,7 @@ public:
 
 						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
 						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
+						unit->Debug_Index = FVector(x, y, z);
 						++count_t_new;
 
 					}
@@ -261,17 +264,40 @@ public:
 								neighbor->SetNeighbor(BEACON_SIX_DIR_Z_BACKWARD, unit);
 							}
 						}
-						
-
-						
 					}
 				}
 			}
 		}
 
+#ifdef BEACON_DEBUG_1
+		TArray<FString> message = {
+			"X -1",
+			"X +1",
+			"Y -1",
+			"Y +1",
+			"Z -1",
+			"Z +1"
+		};
 
-		BEACON_LOG(Display, "Count is %d", count_t);
-		BEACON_LOG(Display, "Count_new is %d", count_t_new);
+		for (auto _unit : capsuleUnitManager->m_Units)
+		{
+			BEACON_LOG_FULL(Warning, "Unit is : %s", *(_unit.Value->Debug_Index.ToString()));
+			TArray<UUnitComponent*>& tempArr = _unit.Value->GetNeighbors()->neighbors;
+
+			for (int i = 0; i < tempArr.Num(); i++)
+			{
+				//ignore thermal exchange among burning units
+				if (tempArr[i] != nullptr)
+				{
+					BEACON_LOG(Warning, "Neighbor at %s is : %s", *message[i], *(tempArr[i]->Debug_Index.ToString()));
+				}
+				else
+				{
+					BEACON_LOG(Warning, "Neighbor at %s is : NULL", *message[i]);
+				}
+			}
+		}
+#endif
 	}
 };
 

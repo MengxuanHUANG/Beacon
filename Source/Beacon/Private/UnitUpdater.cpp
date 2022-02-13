@@ -56,6 +56,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 					if (!isInList[neighbor->GetIndex()])
 					{
 						isInList[neighbor->GetIndex()] = true;
+						neighbor->SetFlag(EUnitFlag::NeedUpdate);
 						tempList.Enqueue(neighbor);
 					}
 				}
