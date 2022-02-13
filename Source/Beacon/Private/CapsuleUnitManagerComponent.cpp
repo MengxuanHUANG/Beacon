@@ -23,6 +23,7 @@ void UCapsuleUnitManagerComponent::BeginPlay()
 	m_UnitUpdater = MakeShared<UnitUpdater>();
 }
 
+
 void UCapsuleUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -39,7 +40,6 @@ void UCapsuleUnitManagerComponent::OnUnregister()
 	{
 		if (unit.Value)
 		{
-			unit.Value->UnregisterComponent();
 			unit.Value->DestroyComponent();
 		}
 	}

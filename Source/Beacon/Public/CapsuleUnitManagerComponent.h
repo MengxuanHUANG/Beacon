@@ -74,25 +74,30 @@ public:
 		BEACON_LOG(Warning, "height is %f", height);
 		BEACON_LOG(Warning, "radius is %f", radius);
 
-
+		int count_t = 0;
+		int count_t_new = 0;
 		TArray<UUnitComponent*> unitsArray;
 		UUnitComponent* unit;
 		int tem_count = 0;
-		for (int x = -count; x <= count; x++) // Generate two semi-sphere
+
+		for (int x = -count; x <= count; x++) // Generate lower semi-sphere
 		{
 			for (int y = -count; y <= count; y++)
 			{
-				for (int z = -count; z <= 0; z++)
+				for (int z = 0; z < count; z++)
 				{
-					if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) <= 2 * (count - 1)+ count)
+					if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(count-z) <= 2 * (count - 1)+ count)
 					{
-						if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) == 2 * (count - 1)+ count)
+						if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(count-z) == 2 * (count - 1)+ count)
 						{
 							unit = NewObject<OuterUnitType>(self);
+							++count_t;
+
 						}
 						else 
 						{
 							unit = NewObject<InnerUnitType>(self);
+							++count_t;
 						}
 						//register component for rendering
 						unit->RegisterComponent();
@@ -106,78 +111,45 @@ public:
 							FVector(
 								2 * x * size,
 								2 * y * size,
-								2 * (z - 0.5) * size - height / 2
+								-(count_height)*size_height + size + 2 * size * (z-count)
 							)
-
-						);
-						capsuleUnitManager->m_Units.Add(FVector(x,y,z - count_height/2),unit);
-					}
-				}
-
-				for (int z = 0; z <= count; z++)
-				{
-					if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) <= 3 * (count - 1))
-					{
-						if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z) == 3 * (count - 1))
-						{
-							unit = NewObject<OuterUnitType>(self);
-						}
-						else
-						{
-							unit = NewObject<InnerUnitType>(self);
-						}
-						
-
-						//register component for rendering
-						unit->RegisterComponent();
-						unit->SetIndex(tem_count);
-						++tem_count;
-						unit->Initialize(capsuleUnitManager, FVector(size), capsuleUnitManager->m_ConnectType);
-
-						//setup attachment
-						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
-						unit->SetRelativeLocation(
-							FVector(
-								2 * x * size,
-								2 * y * size,
-								2 * (z + 0.5) * size + height / 2
-							)
-
 						);
 
-						capsuleUnitManager->m_Units.Add(FVector(x, y, z + count_height / 2), unit);
-						
+						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
+						capsuleUnitManager->m_Units.Add(FVector(x,y,z),unit);
+						++count_t_new;
 					}
 				}
 			}
 		}
 
 
-
 		for (int x = -count; x <= count; x++) // generate cylinder
 		{
 			for (int y = -count; y <= count; y++)
 			{
-				for (int z = 0; z < count_height; z++)
+				for (int z = count; z < count+count_height; z++)
 				{
-					if (FMath::Abs(x) + FMath::Abs(y) <= 2 * (count-1) )
+					if (FMath::Abs(x) + FMath::Abs(y) <= 2 * (count - 1))
 					{
 						if (FMath::Abs(x) + FMath::Abs(y) == 2 * (count - 1))
 						{
 							unit = NewObject<OuterUnitType>(self);
+							++count_t;
 						}
 						else
 						{
 							unit = NewObject<InnerUnitType>(self);
+							++count_t;
 						}
-						
+
 
 						//register component for rendering
 						unit->RegisterComponent();
 						unit->SetIndex(tem_count);
 						++tem_count;
 						unit->Initialize(capsuleUnitManager, FVector(size, size, size_height), capsuleUnitManager->m_ConnectType);
-						
+
 
 						//setup attachment
 						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
@@ -185,17 +157,64 @@ public:
 							FVector(
 								2 * x * size,
 								2 * y * size,
-								2 * (z-(count_height-1)/2) * size_height
+								2 * (z- count) * size_height - (count_height - 1) * size_height
 							)
-
 						);
 
+						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
 						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
+						++count_t_new;
 
 					}
 				}
 			}
 
+		}
+
+		for (int x = -count; x <= count; x++) // Generate upper semi-sphere
+		{
+			for (int y = -count; y <= count; y++)
+			{
+				for (int z = count + count_height; z < 2*count + count_height; z++)
+				{
+					if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z - count - count_height) <= 3 * (count - 1))
+					{
+						if (FMath::Abs(x) + FMath::Abs(y) + FMath::Abs(z - count - count_height) == 3 * (count - 1))
+						{
+							unit = NewObject<OuterUnitType>(self);
+							++count_t;
+						}
+						else
+						{
+							unit = NewObject<InnerUnitType>(self);
+							++count_t;
+						}
+
+
+						//register component for rendering
+						unit->RegisterComponent();
+						unit->SetIndex(tem_count);
+						++tem_count;
+						unit->Initialize(capsuleUnitManager, FVector(size), capsuleUnitManager->m_ConnectType);
+
+						//setup attachment
+						unit->AttachToComponent(self, FAttachmentTransformRules::KeepRelativeTransform);
+						unit->SetRelativeLocation(
+							FVector(
+								2 * x * size,
+								2 * y * size,
+								count_height*size_height + size + 2 * size * (z- count - count_height)
+							)
+
+						);
+
+						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
+						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
+						++count_t_new;
+
+					}
+				}
+			}
 		}
 
 		
@@ -203,7 +222,7 @@ public:
 		{
 			for (int y = -count; y <= count; y++)
 			{
-				for (float z = -count_height/2 - count; z <= count_height / 2 + count; z++)
+				for (int z = 0; z < 2 * count + count_height; z++)
 				{
 					if (capsuleUnitManager->m_ConnectType == ConnectType::SixDirection)
 					{
@@ -251,8 +270,8 @@ public:
 		}
 
 
-
-
+		BEACON_LOG(Display, "Count is %d", count_t);
+		BEACON_LOG(Display, "Count_new is %d", count_t_new);
 	}
 };
 
