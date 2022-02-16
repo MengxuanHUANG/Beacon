@@ -5,6 +5,7 @@
 
 #include "Components/BoxComponent.h"
 #include "UnitManagerComponent.h"
+#include "BeaconMaterial.h"
 
 // Sets default values for this component's properties
 UUnitComponent::UUnitComponent()

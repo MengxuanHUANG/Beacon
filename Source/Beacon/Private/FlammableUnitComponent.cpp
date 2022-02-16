@@ -57,6 +57,7 @@ void UFlammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector
 	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
 	DebugBox->SetBoxExtent(extent);
+	DebugBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	DebugBox->OnComponentBeginOverlap.AddDynamic(this, &UFlammableUnitComponent::OnBeginOverlap);
 	DebugBox->OnComponentEndOverlap.AddDynamic(this, &UFlammableUnitComponent::OnEndOverlap);
@@ -166,7 +167,7 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 		SetFlag(EUnitFlag::Triggered | EUnitFlag::NeedUpdate);
 
 		//For visualize debug
-		DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Red, true, -1, 0, 3);
+		//DrawDebugBox(GetWorld(), DebugBox->GetComponentLocation(), DebugBox->GetUnscaledBoxExtent(), FColor::Red, true, -1, 0, 3);
 
 		//TODO: maybe move to another placce
 		TArray<TSharedPtr<UnitConnection>> tempConnections;
@@ -254,10 +255,10 @@ void UFlammableUnitComponent::OnEndOverlap(class UPrimitiveComponent* HitComp,
 		other->GetName(compName);
 		FString id = actorName.Append("_" + compName);
 
-		/*if (m_TempConnections.Contains(id))
+		if (m_TempConnections.Contains(id))
 		{
 			m_TempConnections.Remove(id);
-		}*/
+		}
 	}
 }
 

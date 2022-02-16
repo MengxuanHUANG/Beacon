@@ -43,15 +43,18 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 		//Exchange thermal energy only if unit is triggered
 		if (unit->IsTriggered())
 		{
+			float unitTemp = unit->GetTemperature();
+			float thermalExchangeCoefficient = unit->GetMaterial()->Thermal_Exchange_Coefficient;
 			//traverse all neighbors of a unit 
 			for (auto neighbor : unit->GetNeighbors()->neighbors)
 			{
 				//ignore thermal exchange among burning units
 				if (neighbor != nullptr && !neighbor->IsTriggered())
 				{
-					float gap = unit->GetTemperature() - neighbor->GetTemperature();
-					unit->Value -= deltaTime;
-					neighbor->Value += deltaTime;
+					float gap = unitTemp - neighbor->GetTemperature();
+					float deltaThermal = thermalExchangeCoefficient * deltaTime * gap / unit->Value;
+
+					neighbor->Value += deltaThermal;
 
 					if (!isInList[neighbor->GetIndex()])
 					{
@@ -69,7 +72,10 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 			{
 				if (!connection->Other->IsTriggered())
 				{
-					connection->Other->Value += deltaTime;
+					float gap = unitTemp - connection->Other->GetTemperature();
+					float deltaThermal = thermalExchangeCoefficient * deltaTime * gap / unit->Value;
+
+					connection->Other->Value += deltaThermal;
 				}
 			}
 		}
