@@ -20,6 +20,7 @@
 #include "CapsuleUnitManagerComponent.h"
 #include "BeaconMaterial.h"
 #include "FractureComponent.h"
+#include "ThermalRadiationComponent.h"
 
 // Sets default values for this component's properties
 UFlammableComponent::UFlammableComponent()

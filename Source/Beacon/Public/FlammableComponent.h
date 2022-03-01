@@ -13,6 +13,7 @@
 class UParticleSystemComponent;
 class UFlammableUnitComponent;
 class UBeaconMaterial;
+class UThermalRadiationMaterial;
 
 USTRUCT(BlueprintType)
 struct FUnitCount
@@ -58,11 +59,14 @@ public:
 	UPROPERTY(EditAnywhere)
 		bool EnableThermalProxy;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "FlammableComponent | Beacon Fire")
 		TSubclassOf<UBeaconFire> T_BeaconFire;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "FlammableComponent | Flammable Material")
 		UBeaconMaterial* T_Material;
+
+	UPROPERTY(EditAnywhere, Category = "FlammableComponent | Thermal Radiation")
+		UThermalRadiationMaterial* T_RadiationMaterial;
 
 	UPROPERTY(EditAnywhere)
 		uint32 m_Count = 1;
