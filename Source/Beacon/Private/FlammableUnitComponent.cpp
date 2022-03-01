@@ -133,7 +133,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 			Trigger();
 		}
 
-		if (Value > material->DefaultThermal)
+		if (Value >= material->DefaultThermal)
 		{
 			//reduce thermal energy
 			float loss = deltaTime * material->LoseThermalPerSecond;
@@ -214,10 +214,11 @@ void UFlammableUnitComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
-	if (OtherActor != GetOwner() && OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
+	if (OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
 	{
 		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
-		if (!(other->IsTriggered()))
+
+		if (other->GetManager() != GetManager() && !(other->IsTriggered()))
 		{
 			FString actorName;
 			FString compName;
@@ -246,18 +247,22 @@ void UFlammableUnitComponent::OnEndOverlap(class UPrimitiveComponent* HitComp,
 	class UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	if (OtherActor != GetOwner() && OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
+	if (OtherComp->ComponentHasTag(FName(BEACON_FLAMMABLE_UNIT_TAG)))
 	{
 		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
-		FString actorName;
-		FString compName;
-		OtherActor->GetName(actorName);
-		other->GetName(compName);
-		FString id = actorName.Append("_" + compName);
 
-		if (m_TempConnections.Contains(id))
+		if (other->GetManager() != GetManager())
 		{
-			m_TempConnections.Remove(id);
+			FString actorName;
+			FString compName;
+			OtherActor->GetName(actorName);
+			other->GetName(compName);
+			FString id = actorName.Append("_" + compName);
+
+			if (m_TempConnections.Contains(id))
+			{
+				m_TempConnections.Remove(id);
+			}
 		}
 	}
 }

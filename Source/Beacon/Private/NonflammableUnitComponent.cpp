@@ -20,7 +20,7 @@
 #ifdef BEACON_DEBUG
 	//Whether to hide box for UnitComponent
 #define BEACON_DEBUG_BOX_VISIBLE true
-#define BEACON_HIDE_DEBUG_BOX_IN_GAME false
+#define BEACON_HIDE_DEBUG_BOX_IN_GAME true
 #endif
 
 void UNonflammableUnitComponent::BeginPlay()

@@ -58,6 +58,7 @@ void UFlammableComponent::BeginPlay()
 		m_UnitManager->SetBeaconFire(T_BeaconFire);
 		m_UnitManager->SetMaterial(T_Material);
 		m_UnitManager->SetUnitsMaterial();
+		m_UnitManager->SetThermalProxyNeedUpdate(EnableThermalProxy);
 		if (InitializeWithFlame)
 		{
 			m_UnitManager->TriggerAllUnits(T_Material->Flash_Point);

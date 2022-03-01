@@ -7,6 +7,7 @@
 struct BeaconThermalData
 {
 	bool bIsBurning;
+	FVector Direction;
 	float Thermal_Value;
 };
 

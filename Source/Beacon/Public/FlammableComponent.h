@@ -56,6 +56,9 @@ public:
 		bool InitializeWithFlame;
 
 	UPROPERTY(EditAnywhere)
+		bool EnableThermalProxy;
+
+	UPROPERTY(EditAnywhere)
 		TSubclassOf<UBeaconFire> T_BeaconFire;
 
 	UPROPERTY(EditAnywhere)

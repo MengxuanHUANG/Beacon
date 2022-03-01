@@ -9,6 +9,8 @@
 
 #include "BeaconLog.h"
 
+#include "DrawDebugHelpers.h"
+
 UBoxUnitManagerComponent::UBoxUnitManagerComponent()
 	:m_UpdateList(UBoxUnitManagerComponent::CompareUnit)
 {
@@ -156,18 +158,24 @@ void UBoxUnitManagerComponent::UpdateThermalData()
 {
 	if (ThermalData.IsValid())
 	{
+		float defaultThermal = m_Material->DefaultThermal;
+		FVector dir(0);
 		ThermalData->bIsBurning = m_UpdateList.Num() != 0;
+		ThermalData->Thermal_Value = 0;
+
 		float totalThermal = 0.f;
 		if (ThermalData->bIsBurning)
 		{
 			for (UUnitComponent* unit : m_Units)
 			{
-				totalThermal += unit->Value;
+				float unitThermal = unit->Value - defaultThermal;
+				dir += unit->GetComponentLocation() * unitThermal;
+				totalThermal += unitThermal;
 			}
 
-			totalThermal /= float(m_Units.Num());
+			ThermalData->Direction = totalThermal != 0 ? dir / totalThermal - GetComponentLocation(): dir;
 		}
-		ThermalData->Thermal_Value = totalThermal;
+		ThermalData->Thermal_Value = totalThermal / float(m_Units.Num());
 	}
 }
 //End BeaconThermalProxy functions
