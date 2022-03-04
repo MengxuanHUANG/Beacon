@@ -61,11 +61,6 @@ void UFlammableComponent::BeginPlay()
 		m_UnitManager->SetUnitsMaterial();
 		m_UnitManager->SetThermalProxyNeedUpdate(EnableThermalProxy);
 
-		if (EnableThermalProxy)
-		{
-			m_ThermalRadiationComponent->BindBeaconThermalData(m_UnitManager->GetBeaconThermalData());
-		}
-
 		if (InitializeWithFlame)
 		{
 			m_UnitManager->TriggerAllUnits(T_Material->Flash_Point);
@@ -74,6 +69,11 @@ void UFlammableComponent::BeginPlay()
 	if (m_ThermalRadiationComponent != nullptr)
 	{
 		m_ThermalRadiationComponent->bIsEnabled = true;
+
+		if (EnableThermalProxy)
+		{
+			m_ThermalRadiationComponent->BindBeaconThermalData(m_UnitManager->GetBeaconThermalData());
+		}
 	}
 }
 
