@@ -8,7 +8,6 @@
 
 class USphereComponent;
 class UUnitComponent;
-class UThermalRadiationMaterial;
 struct BeaconThermalData;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -28,7 +27,7 @@ public:
 public:
 	void Initialize(UThermalRadiationMaterial* material, bool enabled = true);
 
-	inline void BindThermalData(TSharedPtr<BeaconThermalData>& data) { ThermalData = data; }
+	inline void BindBeaconThermalData(TSharedPtr<BeaconThermalData>& data) { ThermalData = data; }
 
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
@@ -51,10 +50,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		USphereComponent* RadiationSphere;
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere)
 		UThermalRadiationMaterial* m_Material;
 
 	TSharedPtr<BeaconThermalData> ThermalData;
 
-	TMap<FString, UUnitComponent*> m_Units;
+	TSet<UUnitComponent*> m_Units;
 };

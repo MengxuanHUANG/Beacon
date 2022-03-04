@@ -47,6 +47,21 @@ float UUnitComponent::GetTemperature() const
 	return m_Material->GetTemperature(Value);
 }
 
+void UUnitComponent::SetReceiveThermalRadiation(bool enable)
+{
+	if (enable)
+	{
+		if (!(DebugBox->ComponentHasTag(BEACON_RECEIVE_THERMAL_RADIATION_TAG)))
+		{
+			DebugBox->ComponentTags.Add(BEACON_RECEIVE_THERMAL_RADIATION_TAG);
+		}
+	}
+	else
+	{
+		DebugBox->ComponentTags.Remove(BEACON_RECEIVE_THERMAL_RADIATION_TAG);
+	}
+}
+
 bool UUnitComponent::operator < (const UUnitComponent& unit)
 {
 	return this->Value < unit.Value;

@@ -2,10 +2,11 @@
 
 
 #include "ThermalRadiationComponent.h"
-#include "ThermalRadiationMaterial.h"
 #include "BeaconThermalProxy.h"
+#include "UnitManagerComponent.h"
 #include "UnitComponent.h"
 #include "BeaconLog.h"
+#include "ThermalRadiationMaterial.h"
 
 #include "Components/SphereComponent.h"
 
@@ -50,10 +51,9 @@ void UThermalRadiationComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 	if (bIsEnabled)
 	{
-		for (auto pair : m_Units)
+		BEACON_LOG(Display, "No. of component is: %d", m_Units.Num());
+		for (UUnitComponent* unit : m_Units)
 		{
-			UUnitComponent* unit = pair.Value;
-
 			//TODO: based on material and thermal data
 			unit->Value += 10.f;
 		}
@@ -71,23 +71,12 @@ void UThermalRadiationComponent::OnBeginOverlap(UPrimitiveComponent* HitComp,
 	{
 		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
 
-		if (!(other->IsTriggered()))
+		if (!m_Units.Contains(other) && !(other->IsTriggered()))
 		{
-			FString actorName;
-			FString compName;
-			OtherActor->GetName(actorName);
-			other->GetName(compName);
+			m_Units.Add(other);
 
-			FString id = actorName.Append("_" + compName);
-
-			if (!m_Units.Contains(id))
-			{
-				FVector dir = other->GetComponentLocation() - GetComponentLocation();
-				m_Units.Add(id, other);
-
-				other->SetFlag(EUnitFlag::NeedUpdate);
-				other->GetManager()->AddToUpdateList(other);
-			}
+			other->SetFlag(EUnitFlag::NeedUpdate);
+			other->GetManager()->AddToUpdateList(other);
 		}
 	}
 }
@@ -101,13 +90,6 @@ void UThermalRadiationComponent::OnEndOverlap(UPrimitiveComponent* HitComp,
 	{
 		UUnitComponent* other = Cast<UUnitComponent>(OtherComp->GetAttachParent());
 
-		FString actorName;
-		FString compName;
-		OtherActor->GetName(actorName);
-		other->GetName(compName);
-
-		FString id = actorName.Append("_" + compName);
-
-		m_Units.Remove(id);
+		m_Units.Remove(other);
 	}
 }

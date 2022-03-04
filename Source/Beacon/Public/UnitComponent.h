@@ -82,6 +82,9 @@ public:
 	inline bool CheckFlag(EUnitFlag flag) const { return (int8(m_Flag) & int8(flag)) != 0; }
 
 public:
+	UFUNCTION()
+		void SetReceiveThermalRadiation(bool enable);
+public:
 	//override operators for value
 	virtual bool operator < (const UUnitComponent& unit);
 	virtual bool operator <= (const UUnitComponent& unit);

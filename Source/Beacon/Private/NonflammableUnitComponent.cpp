@@ -43,7 +43,10 @@ void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVec
 	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
 	DebugBox->SetBoxExtent(extent);
-	
+
+	//Disable all overlap event with this object
+	DebugBox->SetGenerateOverlapEvents(false);
+
 	DrawDebugBox(
 		GetWorld(),
 		GetComponentLocation(),

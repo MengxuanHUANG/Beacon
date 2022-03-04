@@ -14,6 +14,7 @@ class UParticleSystemComponent;
 class UFlammableUnitComponent;
 class UBeaconMaterial;
 class UThermalRadiationMaterial;
+class UThermalRadiationComponent;
 
 USTRUCT(BlueprintType)
 struct FUnitCount
@@ -66,7 +67,16 @@ public:
 		UBeaconMaterial* T_Material;
 
 	UPROPERTY(EditAnywhere, Category = "FlammableComponent | Thermal Radiation")
+		bool bEnableReceiveThermalRadiation;
+
+	UPROPERTY(EditAnywhere, Category = "FlammableComponent | Thermal Radiation")
+		bool bEnableSendThermalRadiation;
+
+	UPROPERTY(EditAnywhere, Category = "FlammableComponent | Thermal Radiation")
 		UThermalRadiationMaterial* T_RadiationMaterial;
+
+	UPROPERTY(VisibleAnywhere, Category = "FlammableComponent | Thermal Radiation")
+		UThermalRadiationComponent* m_ThermalRadiationComponent;
 
 	UPROPERTY(EditAnywhere)
 		uint32 m_Count = 1;

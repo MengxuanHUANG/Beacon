@@ -60,6 +60,12 @@ void UFlammableComponent::BeginPlay()
 		m_UnitManager->SetMaterial(T_Material);
 		m_UnitManager->SetUnitsMaterial();
 		m_UnitManager->SetThermalProxyNeedUpdate(EnableThermalProxy);
+
+		if (EnableThermalProxy)
+		{
+			m_ThermalRadiationComponent->BindBeaconThermalData(m_UnitManager->GetBeaconThermalData());
+		}
+
 		if (InitializeWithFlame)
 		{
 			m_UnitManager->TriggerAllUnits(T_Material->Flash_Point);
@@ -171,9 +177,29 @@ bool UFlammableComponent::Build_Implement()
 				parent
 				);
 		}
-	}
 
-	return true;
+		// Create Thermal Radiation
+		if (bEnableSendThermalRadiation)
+		{
+			m_ThermalRadiationComponent = NewObject<UThermalRadiationComponent>(this);
+			m_ThermalRadiationComponent->RegisterComponent();
+			m_ThermalRadiationComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+
+			m_ThermalRadiationComponent->Initialize(T_RadiationMaterial, false);
+		}
+
+		// Let units be able to reveice radiation
+		if (bEnableReceiveThermalRadiation)
+		{
+			//TODO: Enable receive radiation
+		}
+		
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 void UFlammableComponent::Clear_Implement()

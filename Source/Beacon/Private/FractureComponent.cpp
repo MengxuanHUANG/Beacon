@@ -114,7 +114,6 @@ void UFractureComponent::UpdateCurrentDebris()
 
 			m_RemovedFragments.Empty();
 			TArray<FFragment> markedEmplace;
-			BEACON_LOG(Display, "%d fragments need to be updated.", m_CurrentFragments.Num());
 			for (FFragment& fragment : m_CurrentFragments)
 			{
 				const int32& index = fragment.Index;
