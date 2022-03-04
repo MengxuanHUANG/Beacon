@@ -43,6 +43,8 @@ public:
 	virtual void UnTriggerUnit_Implementation(FVector index, float value) override;
 	virtual void UnTriggerAllUnits_Implementation(float value) override;
 	
+	virtual void SetReceiveThermalRadiation(bool enable) override;
+
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 
 	virtual void SetUnitsMaterial() override;

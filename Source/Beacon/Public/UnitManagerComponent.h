@@ -43,6 +43,8 @@ public:
 
 	virtual UUnitComponent* GetUnit(FVector index) { return nullptr; }
 
+	virtual void SetReceiveThermalRadiation(bool enable) {}
+
 	virtual void SetParameter(uint32 x) {}
 	virtual void SetParameter2(uint32 x, uint32 y) {}
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) {}

@@ -22,7 +22,7 @@ public:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	virtual void DestroyComponent(bool bPromoteChildren) override;
+	virtual void DestroyComponent(bool bPromoteChildren = false) override;
 
 public:
 	void Initialize(UThermalRadiationMaterial* material, bool enabled = true);

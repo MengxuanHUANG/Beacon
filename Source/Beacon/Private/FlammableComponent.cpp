@@ -71,6 +71,10 @@ void UFlammableComponent::BeginPlay()
 			m_UnitManager->TriggerAllUnits(T_Material->Flash_Point);
 		}
 	}
+	if (m_ThermalRadiationComponent != nullptr)
+	{
+		m_ThermalRadiationComponent->bIsEnabled = true;
+	}
 }
 
 //Called when component destroyed
@@ -86,6 +90,11 @@ void UFlammableComponent::DestroyComponent(bool bPromoteChildren)
 	{
 		m_UnitManager->DestroyComponent();
 		m_UnitManager = nullptr;
+	}
+	if (m_ThermalRadiationComponent != nullptr)
+	{
+		m_ThermalRadiationComponent->DestroyComponent();
+		m_ThermalRadiationComponent = nullptr;
 	}
 	Super::DestroyComponent(bPromoteChildren);
 }
@@ -191,7 +200,7 @@ bool UFlammableComponent::Build_Implement()
 		// Let units be able to reveice radiation
 		if (bEnableReceiveThermalRadiation)
 		{
-			//TODO: Enable receive radiation
+			m_UnitManager->SetReceiveThermalRadiation(true);
 		}
 		
 		return true;
@@ -208,6 +217,12 @@ void UFlammableComponent::Clear_Implement()
 	{
 		m_UnitManager->DestroyComponent();
 		m_UnitManager = nullptr;
+	}
+
+	if (m_ThermalRadiationComponent != nullptr)
+	{
+		m_ThermalRadiationComponent->DestroyComponent();
+		m_ThermalRadiationComponent = nullptr;
 	}
 }
 //End implementing BuildableComponent functions

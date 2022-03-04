@@ -148,6 +148,14 @@ void UBoxUnitManagerComponent::SetUnitsMaterial()
 	}
 }
 
+void UBoxUnitManagerComponent::SetReceiveThermalRadiation(bool enable)
+{
+	for (UUnitComponent* unit : m_Units)
+	{
+		unit->SetReceiveThermalRadiation(enable);
+	}
+}
+
 bool UBoxUnitManagerComponent::CompareUnit(UUnitComponent* a, UUnitComponent* b)
 {
 	return *a > *b;
