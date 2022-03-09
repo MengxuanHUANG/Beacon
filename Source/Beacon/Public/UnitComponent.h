@@ -68,6 +68,8 @@ public:
 	virtual bool IsTriggered() const { return CheckFlag(EUnitFlag::Triggered); }
 
 public:
+	inline void AddValue(float value) { Value += value; }
+
 	float GetTemperature() const;
 	inline uint32 GetIndex() const { return m_Index; }
 	inline void SetIndex(uint32 index) { m_Index = index; }
