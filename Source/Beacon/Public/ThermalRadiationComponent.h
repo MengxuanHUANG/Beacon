@@ -28,6 +28,9 @@ public:
 	void Initialize(UThermalRadiationMaterial* material, bool enabled = true);
 
 	inline void BindBeaconThermalData(TSharedPtr<BeaconThermalData>& data) { ThermalData = data; }
+	
+	UFUNCTION()
+		void SetRadiationEnable(bool enable);
 
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
@@ -42,8 +45,10 @@ public:
 			class AActor* OtherActor,
 			class UPrimitiveComponent* OtherComp,
 			int32 OtherBodyIndex);
+protected:
+	void UpdateLocation();
 
-public:
+protected:
 	UPROPERTY(VisibleAnywhere)
 		bool bIsEnabled;
 

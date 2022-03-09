@@ -68,7 +68,7 @@ void UFlammableComponent::BeginPlay()
 	}
 	if (m_ThermalRadiationComponent != nullptr)
 	{
-		m_ThermalRadiationComponent->bIsEnabled = true;
+		m_ThermalRadiationComponent->SetRadiationEnable(bEnableSendThermalRadiation);
 
 		if (EnableThermalProxy)
 		{

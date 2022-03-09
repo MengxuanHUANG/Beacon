@@ -33,6 +33,27 @@ void UThermalRadiationComponent::DestroyComponent(bool bPromoteChildren)
 	Super::DestroyComponent(bPromoteChildren);
 }
 
+// Called every frame
+void UThermalRadiationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bIsEnabled)
+	{
+		UpdateLocation();
+
+		BEACON_LOG(Display, "No. of component is: %d", m_Units.Num());
+		for (UUnitComponent* unit : m_Units)
+		{
+			if (!unit->IsTriggered())
+			{
+				//TODO: based on material and thermal data
+				unit->AddValue(10.f);
+			}
+		}
+	}
+}
+
 void UThermalRadiationComponent::Initialize(UThermalRadiationMaterial* material, bool enabled)
 {
 	bIsEnabled = enabled;
@@ -44,19 +65,16 @@ void UThermalRadiationComponent::Initialize(UThermalRadiationMaterial* material,
 	RadiationSphere->SetSphereRadius(m_Material->MAX_Radius, true);
 }
 
-// Called every frame
-void UThermalRadiationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UThermalRadiationComponent::SetRadiationEnable(bool enable)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	bIsEnabled = enable;
+}
 
-	if (bIsEnabled)
+void UThermalRadiationComponent::UpdateLocation()
+{
+	if (ThermalData.IsValid())
 	{
-		BEACON_LOG(Display, "No. of component is: %d", m_Units.Num());
-		for (UUnitComponent* unit : m_Units)
-		{
-			//TODO: based on material and thermal data
-			unit->Value += 10.f;
-		}
+		SetRelativeLocation(ThermalData->Direction, true);
 	}
 }
 
