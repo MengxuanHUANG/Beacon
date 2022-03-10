@@ -95,7 +95,7 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 				Value += deltaTime * material->GenThermalPerSecond;
 			}
 			//check whether to end burning
-			if (m_TotalBurningTime >= m_MaxBurningTime)
+			if (Value < material->Flash_Point || (material->Has_Max_BurningTime && m_TotalBurningTime >= m_MaxBurningTime))
 			{
 				SetFlag(EUnitFlag::Triggered, false);
 			}

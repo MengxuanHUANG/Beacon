@@ -122,7 +122,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 			}
 
 			//check whether to end burning
-			if (material->Has_Max_BurningTime && m_TotalBurningTime >= m_MaxBurningTime)
+			if (Value < material->Flash_Point || (material->Has_Max_BurningTime && m_TotalBurningTime >= m_MaxBurningTime))
 			{
 				m_BeaconFire->EndBurning();
 				SetFlag(EUnitFlag::Triggered, false);
