@@ -52,7 +52,7 @@ void AWeatherSystem::OnEndOverlap(UPrimitiveComponent* HitComp,
 
 
 
-void AWeatherSystem::p(float DeltaTime)
+void AWeatherSystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
