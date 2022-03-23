@@ -7,7 +7,7 @@
 #include "BuildableComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Beacon) )
+UCLASS( ClassGroup=(Beacon), BlueprintType)
 class BEACON_API UBuildableComponent : public USceneComponent
 {
 	GENERATED_BODY()
