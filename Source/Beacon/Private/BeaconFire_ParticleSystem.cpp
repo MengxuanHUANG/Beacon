@@ -40,4 +40,7 @@ void UBeaconFire_ParticleSystem::Initialize()
 {
 	m_Particle->RegisterComponent();
 	m_Particle->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
+	
+	m_AudioComponent->RegisterComponent();
+	m_AudioComponent->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
