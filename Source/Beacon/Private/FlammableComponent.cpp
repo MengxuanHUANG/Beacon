@@ -125,7 +125,6 @@ bool UFlammableComponent::Build_Implement()
 		UClass* uClass = parent->GetClass();
 		FString name = uClass->GetFullGroupName(false);
 
-		//Temp: Bind Dynamic Callback Function
 		if (name.Compare("BoxComponent") == 0)
 		{
 			UBoxComponent* box = Cast<UBoxComponent>(parent);
@@ -186,6 +185,10 @@ bool UFlammableComponent::Build_Implement()
 				parent
 				);
 		}
+		else //Invalid parent component
+		{
+			BEACON_LOG_FULL(Error, "Invalid attached parent component!");
+		}
 
 		// Create Thermal Radiation
 		if (bEnableSendThermalRadiation)
@@ -207,6 +210,7 @@ bool UFlammableComponent::Build_Implement()
 	}
 	else
 	{
+		BEACON_LOG(Warning, "UFlammableComponent build failed!");
 		return false;
 	}
 }

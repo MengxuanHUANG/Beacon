@@ -71,7 +71,7 @@ bool UFractureComponent::InitializeCurrentDebris()
 	m_CurrentFragments.Empty();
 
 	//Obtain Root node's index
-	if (GeometryCollectionComponent)
+	if (GeometryCollectionComponent->RestCollection)
 	{
 		const TManagedArray<int32>& parentArr = GeometryCollectionComponent->GetParentArray();
 		for (int index = 0; index < parentArr.Num(); ++index)
@@ -86,6 +86,7 @@ bool UFractureComponent::InitializeCurrentDebris()
 	}
 	else
 	{
+		BEACON_LOG_FULL(Error, "RestCollection is required for GeometryCollectionComponent!");
 		return false;
 	}
 }
@@ -184,7 +185,7 @@ bool UFractureComponent::Build_Implement()
 #ifdef BEACON_DEBUG
 	if (!result)
 	{
-		BEACON_LOG_FULL(Display, "Build Error");
+		BEACON_LOG(Warning, "UFractureComponent build failed!");
 	}
 #endif
 
