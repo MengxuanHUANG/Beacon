@@ -14,7 +14,7 @@
 void FBeaconModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	BeaconEditorCommands::Register();
+	/*BeaconEditorCommands::Register();
 
 	m_BeaconCommands = MakeShareable(new FUICommandList);
 	
@@ -40,7 +40,7 @@ void FBeaconModule::StartupModule()
 			FToolBarExtensionDelegate::CreateRaw(this, &FBeaconModule::AddToolbarButton));
 
 		LevelEditorModule.GetToolBarExtensibilityManager()->AddExtender(NewToolbarExtender);
-	}
+	}*/
 }
 
 void FBeaconModule::ShutdownModule()
@@ -48,7 +48,7 @@ void FBeaconModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 
-	BeaconEditorCommands::Unregister();
+	//BeaconEditorCommands::Unregister();
 }
 
 void FBeaconModule::Build()
