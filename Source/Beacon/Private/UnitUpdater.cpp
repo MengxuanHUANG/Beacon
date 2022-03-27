@@ -29,16 +29,7 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 	while(!updateList.IsEmpty())
 	{
 		unit = updateList.Pop();
-
-		if (unit->CheckFlag(EUnitFlag::NeedUpdate))
-		{
-			//avoid repeating add same unit to queue
-			isInList[unit->GetIndex()] = true;
-			tempList.Enqueue(unit);
-
-			//update unit itself
-			unit->Update(deltaTime);
-		}
+		tempList.Enqueue(unit);
 
 		//Exchange thermal energy only if unit is triggered
 		if (unit->IsTriggered())
@@ -88,4 +79,29 @@ void UnitUpdater::UpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponen
 	}
 
 	delete[] isInList;
+}
+
+void UnitUpdater::LateUpdateUnit(float deltaTime, Beacon_PriorityQueue<UUnitComponent>& updateList, uint32 unitsCount) const
+{
+	TQueue<UUnitComponent*> tempList;
+
+	UUnitComponent* unit;
+	while (!updateList.IsEmpty())
+	{
+		unit = updateList.Pop();
+
+		//update unit itself
+		unit->Update(deltaTime);
+
+		if (unit->CheckFlag(EUnitFlag::NeedUpdate))
+		{
+			tempList.Enqueue(unit);
+		}
+	}
+
+	unit = nullptr;
+	while (tempList.Dequeue(unit))
+	{
+		updateList.Push(unit);
+	}
 }

@@ -2,15 +2,15 @@
 
 
 #include "BoxUnitManagerComponent.h"
-
+//Beacon Headers BEGIN
 #include "BeaconMaterial.h"
-#include "Curves/CurveFloat.h"
 #include "UnitUpdater.h"
-
 #include "BeaconLog.h"
+#include "LateUpdateComponent.h"
+//Beacon Headers END
 
 #include "DrawDebugHelpers.h"
-
+#include "Curves/CurveFloat.h"
 UBoxUnitManagerComponent::UBoxUnitManagerComponent()
 	:m_UpdateList(UBoxUnitManagerComponent::CompareUnit)
 {
@@ -20,6 +20,11 @@ void UBoxUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	m_UnitUpdater = MakeShared<UnitUpdater>();
+
+
+	ULateUpdateComponent* comp = ULateUpdateComponent::CreateLateUpdataComponent(this);
+	comp->LateTickFunction.BindDynamic(this, &UBoxUnitManagerComponent::LateTickComponent);
+	comp->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called every frame
@@ -33,7 +38,29 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		if (GetThermalProxyNeedUpdate())
 		{
 			UpdateThermalData();
+
+			FlushPersistentDebugLines(GetOwner()->GetWorld());
+
+			DrawDebugDirectionalArrow(
+				GetOwner()->GetWorld(),
+				GetComponentLocation(),
+				GetComponentLocation() + ThermalData->Direction,
+				100.f,
+				FColor::Cyan,
+				true,
+				-1.f,
+				0,
+				5.0f
+			);
 		}
+	}
+}
+
+void UBoxUnitManagerComponent::LateTickComponent(float DeltaTime)
+{
+	if (m_UnitUpdater.IsValid())
+	{
+		m_UnitUpdater->LateUpdateUnit(DeltaTime, m_UpdateList, m_Units.Num());
 	}
 }
 

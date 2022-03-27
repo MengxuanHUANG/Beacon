@@ -34,6 +34,8 @@ public:
 
 	virtual void OnUnregister() override;
 
+public:
+	//BEGIN UUnitManagerComponent virtual functions
 	virtual UUnitComponent* GetUnit(FVector index) override;
 
 	virtual void AddToUpdateList(UUnitComponent* unit) override;
@@ -48,10 +50,15 @@ public:
 	virtual void SetParameter3(uint32 x, uint32 y, uint32 z) override;
 
 	virtual void SetUnitsMaterial() override;
-
+	//END UUnitManagerComponent virtual functions
+	
 	//BEGIN BeaconThermalProxy functions
 	virtual void UpdateThermalData() override;
 	//End BeaconThermalProxy functions
+
+public:
+	UFUNCTION()
+		void LateTickComponent(float DeltaTime);
 
 private:
 	static bool CompareUnit(UUnitComponent* a, UUnitComponent* b);

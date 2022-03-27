@@ -176,6 +176,7 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 		for (TSharedPtr<UnitConnection>& connection : tempConnections)
 		{
 			UUnitComponent* unit = connection->Other;
+			unit->SetFlag(EUnitFlag::NeedUpdate);
 			unit->GetManager()->AddToUpdateList(unit);
 		}
 	}
