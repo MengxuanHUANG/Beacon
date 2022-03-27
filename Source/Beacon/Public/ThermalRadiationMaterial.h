@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Curves/CurveFloat.h"
 #include "ThermalRadiationMaterial.generated.h"
 
 /**
@@ -13,7 +14,10 @@ UCLASS()
 class BEACON_API UThermalRadiationMaterial : public UDataAsset
 {
 	GENERATED_BODY()
+public:
+	UThermalRadiationMaterial();
 
+	float GetThermalTransmitValue(float distance) const;
 public:
 	/** Whether to enable attenuation for thermal transmition */
 	UPROPERTY(EditAnywhere)
@@ -21,7 +25,7 @@ public:
 
 	/** Default thermal transmition */
 	UPROPERTY(EditAnywhere)
-		float Thermal_transmit;
+		float Thermal_Transmit;
 
 	/** Whether to enable attenuation for thermal transmit */
 	UPROPERTY(EditAnywhere, Category = "Attenuation")

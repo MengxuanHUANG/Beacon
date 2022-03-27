@@ -29,7 +29,7 @@ public:
 
 	inline void BindBeaconThermalData(TSharedPtr<BeaconThermalData>& data) { ThermalData = data; }
 	
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 		void SetRadiationEnable(bool enable);
 
 	UFUNCTION()

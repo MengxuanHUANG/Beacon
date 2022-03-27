@@ -19,7 +19,7 @@ UThermalRadiationComponent::UThermalRadiationComponent()
 
 	// ...
 	RadiationSphere = CreateDefaultSubobject<USphereComponent>(FName("Radiation Sphere"));
-	RadiationSphere->AttachTo(this);
+	RadiationSphere->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 void UThermalRadiationComponent::DestroyComponent(bool bPromoteChildren)
@@ -41,14 +41,15 @@ void UThermalRadiationComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	if (bIsEnabled)
 	{
 		UpdateLocation();
+		FVector location = GetComponentLocation();
 
-		BEACON_LOG(Display, "No. of component is: %d", m_Units.Num());
 		for (UUnitComponent* unit : m_Units)
 		{
+			float distance = (unit->GetComponentLocation() - location).Size();
 			if (!unit->IsTriggered())
 			{
-				//TODO: based on material and thermal data
-				unit->AddValue(10.f);
+				float value = m_Material->GetThermalTransmitValue(distance);
+				unit->AddValue(value);
 			}
 		}
 	}
