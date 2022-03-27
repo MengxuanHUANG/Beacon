@@ -57,6 +57,7 @@ void UFlammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector
 	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
 	DebugBox->SetBoxExtent(extent);
+	GetOwner()->bGenerateOverlapEventsDuringLevelStreaming = 1;
 	DebugBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 
 	DebugBox->OnComponentBeginOverlap.AddDynamic(this, &UFlammableUnitComponent::OnBeginOverlap);
