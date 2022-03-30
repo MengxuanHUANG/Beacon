@@ -22,6 +22,18 @@ public:
 	UPROPERTY(VisibleAnyWhere)
 		UBoxComponent* RainColliderPlane;
 
+	UPROPERTY(VisibleAnyWhere)
+		UParticleSystemComponent* RainParticle;
+
+	UPROPERTY(EditAnywhere)
+		FVector2D Rain_Direction;
+
+	UPROPERTY(EditAnywhere)
+		float Rain_speed;
+
+
+	
+
 public:
 	UFUNCTION()
 		void OnBeginOverlap(class UPrimitiveComponent* HitComp,
@@ -44,14 +56,11 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
-public:
-	UPROPERTY(EditAnywhere)
-		FVector m_Direction;
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	FVector m_Rain_Direction;
 
 public:
 	UFUNCTION()

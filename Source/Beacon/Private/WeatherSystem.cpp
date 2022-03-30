@@ -7,6 +7,7 @@
 #include "BeaconLog.h"
 #include "UnitComponent.h"
 #include "Components/PrimitiveComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 AWeatherSystem::AWeatherSystem()
@@ -19,6 +20,9 @@ AWeatherSystem::AWeatherSystem()
 
 	RainColliderPlane = CreateDefaultSubobject<UBoxComponent>(FName("plane"));
 	RainColliderPlane->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+	RainParticle = CreateDefaultSubobject<UParticleSystemComponent>(FName("rain"));
+	RainParticle->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 
@@ -54,8 +58,28 @@ void AWeatherSystem::OnEndOverlap(UPrimitiveComponent* HitComp,
 
 void AWeatherSystem::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	float x1;
+	x1 = Rain_Direction.X;
+	float y2;
+	y2 = Rain_Direction.Y;
+	BEACON_LOG(Warning, "X is: %f, Y is %f", Rain_Direction.X, Rain_Direction.Y);
+	BEACON_LOG(Warning, "X is: %f, Y is %f", x1, y2);
+	if (x1 == float(0) && y2 == float(0))
+	{
+		m_Rain_Direction = FVector(0, 0, -Rain_speed * 100);
+	}
+	else if (FMath::Abs(x1) > FMath::Abs(y2))
+	{
+		m_Rain_Direction = FVector(Rain_speed * 100 * Rain_Direction.X / FMath::Abs(x1),   Rain_speed * 100 * Rain_Direction.Y / FMath::Abs(x1), -Rain_speed * 100);
 
+	}
+	else
+	{
+		m_Rain_Direction = FVector(Rain_speed * 100 * Rain_Direction.X / FMath::Abs(y2), float(Rain_speed * 100) * Rain_Direction.Y / FMath::Abs(y2), -Rain_speed * 100);
+	}
+	BEACON_LOG(Warning, "%s", *m_Rain_Direction.ToString());
+	Super::Tick(DeltaTime);
+	RainParticle->SetVectorParameter("Wind_power", m_Rain_Direction);
 	for (UUnitComponent* Flammableunit : FlammableUnitSet)
 	{
 		if (Flammableunit != nullptr)
@@ -63,9 +87,7 @@ void AWeatherSystem::Tick(float DeltaTime)
 			FVector location = Flammableunit->GetComponentLocation();
 			const AActor* actor = Flammableunit->GetOwner();
 			FHitResult outHit;
-			m_Direction = FVector(0, 0, 1);
-			CastRay(actor, outHit, m_Direction, 114514.f, location);
-
+			CastRay(actor, outHit, -m_Rain_Direction, 114514.f, location);
 			if (outHit.Component.IsValid() && outHit.Component == RainColliderPlane)
 			{
 				FString cname = outHit.Component->GetName();
@@ -73,12 +95,7 @@ void AWeatherSystem::Tick(float DeltaTime)
 				UE_LOG(LogTemp, Display, TEXT("Actor is %s, Component is %s"), *aname, *cname);
 				Flammableunit->AddValue(-1000);
 			}
-		}
-		
-
-		
-		
-
+		}		
 	}
 
 	
