@@ -43,6 +43,10 @@ public:
 	virtual void SetUnitsMaterial() override;
 
 public:
+	UFUNCTION()
+		void LateTickComponent(float DeltaTime);
+
+public:
 	uint32 m_Count;
 	uint32 m_Count_height;
 	float last;

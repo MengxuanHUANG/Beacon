@@ -40,6 +40,11 @@ public:
 	virtual void SetUnitsMaterial() override;
 
 	virtual void AddToUpdateList(UUnitComponent* unit) override;
+
+public:
+	UFUNCTION()
+		void LateTickComponent(float DeltaTime);
+
 public:
 	uint32 m_Count;
 	

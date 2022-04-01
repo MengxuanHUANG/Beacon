@@ -5,6 +5,7 @@
 #include "UnitComponent.h"
 #include "BeaconLog.h"
 #include "UnitUpdater.h"
+#include "LateUpdateComponent.h"
 
 USphereUnitManagerComponent::USphereUnitManagerComponent()
 	:m_UpdateList(USphereUnitManagerComponent::CompareUnits)
@@ -19,6 +20,10 @@ void USphereUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	m_UnitUpdater = MakeShared<UnitUpdater>();
+
+	ULateUpdateComponent* comp = ULateUpdateComponent::CreateLateUpdataComponent(this);
+	comp->LateTickFunction.BindDynamic(this, &USphereUnitManagerComponent::LateTickComponent);
+	comp->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 // Called every frame
@@ -29,6 +34,14 @@ void USphereUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 	if (m_UnitUpdater.IsValid())
 	{
 		m_UnitUpdater->UpdateUnit(DeltaTime, m_UpdateList, T_BeaconFire, m_Units.Num());
+	}
+}
+
+void USphereUnitManagerComponent::LateTickComponent(float DeltaTime)
+{
+	if (m_UnitUpdater.IsValid())
+	{
+		m_UnitUpdater->LateUpdateUnit(DeltaTime, m_UpdateList, m_Units.Num());
 	}
 }
 

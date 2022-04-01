@@ -7,6 +7,7 @@
 #include "UnitComponent.h"
 #include "UnitUpdater.h"
 #include "BeaconLog.h"
+#include "LateUpdateComponent.h"
 
 UCapsuleUnitManagerComponent::UCapsuleUnitManagerComponent()
 	:m_UpdateList(UCapsuleUnitManagerComponent::CompareUnit)
@@ -21,6 +22,10 @@ void UCapsuleUnitManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	m_UnitUpdater = MakeShared<UnitUpdater>();
+
+	ULateUpdateComponent* comp = ULateUpdateComponent::CreateLateUpdataComponent(this);
+	comp->LateTickFunction.BindDynamic(this, &UCapsuleUnitManagerComponent::LateTickComponent);
+	comp->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 
@@ -31,6 +36,14 @@ void UCapsuleUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tic
 	if (m_UnitUpdater.IsValid())
 	{
 		m_UnitUpdater->UpdateUnit(DeltaTime, m_UpdateList, T_BeaconFire, m_Units.Num());
+	}
+}
+
+void UCapsuleUnitManagerComponent::LateTickComponent(float DeltaTime)
+{
+	if (m_UnitUpdater.IsValid())
+	{
+		m_UnitUpdater->LateUpdateUnit(DeltaTime, m_UpdateList, m_Units.Num());
 	}
 }
 
@@ -49,14 +62,10 @@ void UCapsuleUnitManagerComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
-
-
-
 UUnitComponent* UCapsuleUnitManagerComponent::GetUnit(FVector index)
 {
 	return m_Units[index];
 }
-
 
 void UCapsuleUnitManagerComponent::AddToUpdateList(UUnitComponent* unit)
 {
@@ -65,7 +74,6 @@ void UCapsuleUnitManagerComponent::AddToUpdateList(UUnitComponent* unit)
 		m_UpdateList.Push(unit);
 	}
 }
-
 
 void UCapsuleUnitManagerComponent::TriggerUnit_Implementation(FVector index, float initValue)
 {
