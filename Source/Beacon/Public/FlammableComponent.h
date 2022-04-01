@@ -7,7 +7,7 @@
 #include "Neighbor.h"
 #include "UnitManagerComponent.h"
 #include "BeaconFire.h"
-
+#include "CheckInterface.h"
 #include "FlammableComponent.generated.h"
 
 class UParticleSystemComponent;
@@ -35,7 +35,7 @@ public:
 };
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class BEACON_API UFlammableComponent : public UBuildableComponent
+class BEACON_API UFlammableComponent : public UBuildableComponent, public ICheckInterface
 {
 	GENERATED_BODY()
 
@@ -89,6 +89,10 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_UnitManager;
+
+	//Begin declaring ICheckInterface functions
+	bool BeaconCheck_Implementation(FString& Info, FString& Message) override;
+	//End declaring ICheckInterface functions
 
 protected:
 	//Begin declaring BuildableComponent functions

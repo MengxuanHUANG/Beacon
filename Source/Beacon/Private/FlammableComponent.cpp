@@ -114,6 +114,44 @@ void UFlammableComponent::BurnAll()
 	}
 }
 
+//Begin implementing ICheckInterface functions
+bool UFlammableComponent::BeaconCheck_Implementation(FString& Info, FString& Message)
+{
+	Info.Empty();
+	Message.Empty();
+
+	Info.Append("File: ");
+	Info.Append(__FILE__);
+	Info.Append("; Function: ");
+	Info.Append(__FUNCTION__);
+	Info.Append("; Line ");
+	Info.AppendInt(__LINE__);
+
+	FString errors;
+	if (T_Material == nullptr)
+	{
+		errors.Append("Error: BeaconMaterial is Reuqired!\n");
+	}
+	if (T_BeaconFire.Get() == nullptr)
+	{
+		errors.Append("Error: Beacon Fire is Reuqired!\n");
+	}
+
+	if (errors.IsEmpty())
+	{
+		FString name = GetOwner()->GetName();
+		Message.Append(name);
+		Message.Append(": FlammableComponent pass runtime check.");
+		return true;
+	}
+	else
+	{
+		Message.Append(errors);
+		return false;
+	}
+}
+//End implementing ICheckInterface functions
+
 //Begin implementing BuildableComponent functions
 bool UFlammableComponent::Build_Implement()
 {
