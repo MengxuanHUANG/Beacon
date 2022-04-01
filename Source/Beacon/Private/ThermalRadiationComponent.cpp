@@ -49,7 +49,7 @@ void UThermalRadiationComponent::TickComponent(float DeltaTime, ELevelTick TickT
 			if (!unit->IsTriggered())
 			{
 				float value = m_Material->GetThermalTransmitValue(distance);
-				unit->AddValue(value);
+				unit->AddValue(value* DeltaTime);
 			}
 		}
 	}
