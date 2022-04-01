@@ -60,6 +60,17 @@ void USphereUnitManagerComponent::OnUnregister()
 	Super::OnUnregister();
 }
 
+void USphereUnitManagerComponent::SetReceiveThermalRadiation(bool enable)
+{
+	for (auto unit : m_Units)
+	{
+		if (unit.Value)
+		{
+			unit.Value->SetReceiveThermalRadiation(enable);
+		}
+	}
+}
+
 void USphereUnitManagerComponent::SetParameter(uint32 x)
 {
 	m_Count = x;

@@ -126,6 +126,17 @@ void UCapsuleUnitManagerComponent::UnTriggerAllUnits_Implementation(float value)
 	}
 }
 
+void UCapsuleUnitManagerComponent::SetReceiveThermalRadiation(bool enable)
+{
+	for (auto unit : m_Units)
+	{
+		if (unit.Value)
+		{
+			unit.Value->SetReceiveThermalRadiation(enable);
+		}
+	}
+}
+
 void UCapsuleUnitManagerComponent::SetParameter(uint32 x)
 {
 	m_Count = x;

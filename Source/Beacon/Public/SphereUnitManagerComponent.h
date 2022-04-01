@@ -31,6 +31,8 @@ public:
 	virtual UUnitComponent* GetUnit(FVector index) override;
 	virtual void SetParameter(uint32 x) override;
 
+	virtual void SetReceiveThermalRadiation(bool enable) override;
+
 	virtual void TriggerUnit_Implementation(UUnitComponent* unit) override;
 	virtual void TriggerUnit_Implementation(FVector index, float initValue) override;
 	virtual void TriggerAllUnits_Implementation(float initValue) override;
