@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BuildableComponent.h"
+#include "CheckInterface.h"
 #include "FractureComponent.generated.h"
 
 class UGeometryCollectionComponent;
@@ -45,7 +46,7 @@ public:
  * 
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class BEACON_API UFractureComponent : public UBuildableComponent
+class BEACON_API UFractureComponent : public UBuildableComponent, public ICheckInterface
 {
 	GENERATED_BODY()
 public:
@@ -56,6 +57,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
+	//Begin declaring ICheckInterface functions
+	bool BeaconCheck_Implementation(FString& Info, FString& Message) override;
+	//End declaring ICheckInterface functions
+	// 
 	//Begin declaring BuildableComponent functions
 	virtual bool Build_Implement() override;
 	virtual	void Clear_Implement() override;

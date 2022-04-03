@@ -117,17 +117,16 @@ void UFlammableComponent::BurnAll()
 //Begin implementing ICheckInterface functions
 bool UFlammableComponent::BeaconCheck_Implementation(FString& Info, FString& Message)
 {
-	Info.Empty();
-	Message.Empty();
+	BEACON_CLEAR_FSTRING(Info);
+	BEACON_CLEAR_FSTRING(Message);
 
-	Info.Append("File: ");
-	Info.Append(__FILE__);
-	Info.Append("; Function: ");
-	Info.Append(__FUNCTION__);
-	Info.Append("; Line ");
-	Info.AppendInt(__LINE__);
+	BEACON_AUTO_FILL_INFO(Info);
 
 	FString errors;
+	if (!bIsBuilded)
+	{
+		errors.Append("Error: FlammableComponent has not been built! Please use BeaconEditor to build it!\n");
+	}
 	if (T_Material == nullptr)
 	{
 		errors.Append("Error: BeaconMaterial is Reuqired!\n");

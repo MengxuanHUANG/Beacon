@@ -177,6 +177,41 @@ void UFractureComponent::ClearCurrentDebris()
 	m_CurrentFragments.Empty();
 }
 
+bool UFractureComponent::BeaconCheck_Implementation(FString& Info, FString& Message)
+{
+	BEACON_CLEAR_FSTRING(Info);
+	BEACON_CLEAR_FSTRING(Message);
+
+	BEACON_AUTO_FILL_INFO(Info);
+
+	FString errors;
+	if (!bIsBuilded)
+	{
+		errors.Append("Error: FractureComponent has not been built! Please use BeaconEditor to build it!\n");
+	}
+	if (T_FractureMaterial == nullptr)
+	{
+		errors.Append("Error: FractureMaterial is Reuqired!\n");
+	}
+	if (GeometryCollectionComponent->RestCollection == nullptr)
+	{
+		errors.Append("Error: RestCollection in GeometryCollectionComponent must be set!\n");
+	}
+
+	if (errors.IsEmpty())
+	{
+		FString name = GetOwner()->GetName();
+		Message.Append(name);
+		Message.Append(": FractureComponent pass runtime check.");
+		return true;
+	}
+	else
+	{
+		Message.Append(errors);
+		return false;
+	}
+}
+
 //Begin implementing BuildableComponent functions
 bool UFractureComponent::Build_Implement()
 {

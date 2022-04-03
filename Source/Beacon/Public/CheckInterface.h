@@ -6,6 +6,17 @@
 #include "UObject/Interface.h"
 #include "CheckInterface.generated.h"
 
+#ifndef BEACON_CHECK_MACRO
+#define BEACON_CHECK_MACRO
+#define BEACON_CLEAR_FSTRING(str) str.Empty();
+#define BEACON_AUTO_FILL_INFO(info) info.Append("File: "); \
+		info.Append(__FILE__);\
+		info.Append("; Function: ");\
+		info.Append(__FUNCTION__);\
+		info.Append("; Line ");\
+		info.AppendInt(__LINE__);
+#endif
+
 // This class does not need to be modified.
 UINTERFACE(BlueprintType)
 class UCheckInterface : public UInterface

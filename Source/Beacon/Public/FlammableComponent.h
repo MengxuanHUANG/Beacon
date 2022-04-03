@@ -90,11 +90,11 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		UUnitManagerComponent* m_UnitManager;
 
+protected:
 	//Begin declaring ICheckInterface functions
 	bool BeaconCheck_Implementation(FString& Info, FString& Message) override;
 	//End declaring ICheckInterface functions
 
-protected:
 	//Begin declaring BuildableComponent functions
 	virtual bool Build_Implement() override;
 	virtual	void Clear_Implement() override;
