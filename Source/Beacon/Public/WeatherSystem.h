@@ -65,4 +65,10 @@ public:
 	UFUNCTION()
 		void CastRay(const AActor* actor, FHitResult& result, FVector direction, float length, FVector start_direction);
 
+protected:
+	bool m_WeatherActive;
+
+public:
+	UFUNCTION(BlueprintCallable)
+		void WeatherActive(bool ifactive);
 };

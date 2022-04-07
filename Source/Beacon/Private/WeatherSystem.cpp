@@ -9,6 +9,7 @@
 #include "Components/PrimitiveComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "RainSystem.h"
+#include "Components/ActorComponent.h"
 
 // Sets default values
 AWeatherSystem::AWeatherSystem()
@@ -56,9 +57,18 @@ void AWeatherSystem::OnEndOverlap(UPrimitiveComponent* HitComp,
 
 
 
+void AWeatherSystem::WeatherActive(bool WeatherActive)
+{
+	RainParticle->SetActive(WeatherActive, false);
+	m_WeatherActive = WeatherActive;
+}
 
 void AWeatherSystem::Tick(float DeltaTime)
 {
+	if (!m_WeatherActive)
+	{
+		return;
+	}
 	float x1;
 	x1 = T_RainSystem->m_Rain_Data.Rain_Direction.X;
 	float y2;
@@ -132,6 +142,7 @@ void AWeatherSystem::CastRay(const AActor* actor, FHitResult& result, FVector di
 void AWeatherSystem::BeginPlay()
 {
 	Super::BeginPlay();
+	WeatherActive(false);
 	RainColliderBox->OnComponentBeginOverlap.AddDynamic(this, &AWeatherSystem::OnBeginOverlap);
 	RainColliderBox->OnComponentEndOverlap.AddDynamic(this, &AWeatherSystem::OnEndOverlap);
 }
