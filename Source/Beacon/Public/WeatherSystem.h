@@ -7,6 +7,7 @@
 #include "WeatherSystem.generated.h"
 
 class UBoxComponent;
+class URainSystem;
 
 UCLASS()
 class BEACON_API AWeatherSystem : public AActor
@@ -26,10 +27,7 @@ public:
 		UParticleSystemComponent* RainParticle;
 
 	UPROPERTY(EditAnywhere)
-		FVector2D Rain_Direction;
-
-	UPROPERTY(EditAnywhere)
-		float Rain_speed;
+		URainSystem* T_RainSystem;
 
 
 	
@@ -61,6 +59,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	FVector m_Rain_Direction;
+	float speed_coefficient;
 
 public:
 	UFUNCTION()

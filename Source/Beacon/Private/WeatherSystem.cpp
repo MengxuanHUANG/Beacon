@@ -8,6 +8,7 @@
 #include "UnitComponent.h"
 #include "Components/PrimitiveComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "RainSystem.h"
 
 // Sets default values
 AWeatherSystem::AWeatherSystem()
@@ -59,27 +60,42 @@ void AWeatherSystem::OnEndOverlap(UPrimitiveComponent* HitComp,
 void AWeatherSystem::Tick(float DeltaTime)
 {
 	float x1;
-	x1 = Rain_Direction.X;
+	x1 = T_RainSystem->m_Rain_Data.Rain_Direction.X;
 	float y2;
-	y2 = Rain_Direction.Y;
-	BEACON_LOG(Warning, "X is: %f, Y is %f", Rain_Direction.X, Rain_Direction.Y);
+	y2 = T_RainSystem->m_Rain_Data.Rain_Direction.Y;
 	BEACON_LOG(Warning, "X is: %f, Y is %f", x1, y2);
+	float Rain_speed;
+	Rain_speed = T_RainSystem->Speed;
+	FName weather = T_RainSystem->m_Rain_Data.Weather;
+	if (weather == "snow")
+	{
+		speed_coefficient = 50;
+	}
+	else if (weather == "rain")
+	{
+		speed_coefficient = 100;
+	}
 	if (x1 == float(0) && y2 == float(0))
 	{
-		m_Rain_Direction = FVector(0, 0, -Rain_speed * 100);
+		m_Rain_Direction = FVector(0, 0, -Rain_speed * speed_coefficient);
+		BEACON_LOG(Warning, "X is: %f, Y is %f", m_Rain_Direction.X, m_Rain_Direction.Y);
 	}
 	else if (FMath::Abs(x1) > FMath::Abs(y2))
 	{
-		m_Rain_Direction = FVector(Rain_speed * 100 * Rain_Direction.X / FMath::Abs(x1),   Rain_speed * 100 * Rain_Direction.Y / FMath::Abs(x1), -Rain_speed * 100);
-
+		m_Rain_Direction = FVector(x1 * speed_coefficient / FMath::Abs(x1) * Rain_speed,  y2 * speed_coefficient /FMath::Abs(x1) * Rain_speed, -Rain_speed * 100);
+		BEACON_LOG(Warning, "X is: %f, Y is %f", m_Rain_Direction.X, m_Rain_Direction.Y);
 	}
 	else
 	{
-		m_Rain_Direction = FVector(Rain_speed * 100 * Rain_Direction.X / FMath::Abs(y2), float(Rain_speed * 100) * Rain_Direction.Y / FMath::Abs(y2), -Rain_speed * 100);
+		m_Rain_Direction = FVector( x1 * speed_coefficient / FMath::Abs(y2) * Rain_speed, y2 * speed_coefficient / FMath::Abs(y2) * Rain_speed, -Rain_speed * 100);
+		BEACON_LOG(Warning, "X is: %f, Y is %f", m_Rain_Direction.X, m_Rain_Direction.Y);
 	}
 	BEACON_LOG(Warning, "%s", *m_Rain_Direction.ToString());
 	Super::Tick(DeltaTime);
-	RainParticle->SetVectorParameter("Wind_power", m_Rain_Direction);
+	RainParticle->SetVectorParameter(T_RainSystem->m_Rain_Data.Weather, m_Rain_Direction);
+	//FVector tem;
+	//RainParticle->GetVectorParameter(T_RainSystem->m_Rain_Data.parameter, tem);
+	//BEACON_LOG(Warning, "%s", tem.ToString())
 	for (UUnitComponent* Flammableunit : FlammableUnitSet)
 	{
 		if (Flammableunit != nullptr)
@@ -93,7 +109,7 @@ void AWeatherSystem::Tick(float DeltaTime)
 				FString cname = outHit.Component->GetName();
 				FString aname = outHit.Actor->GetName();
 				UE_LOG(LogTemp, Display, TEXT("Actor is %s, Component is %s"), *aname, *cname);
-				Flammableunit->AddValue(-1000);
+				Flammableunit->AddValue(T_RainSystem->Thermal_reduce);
 			}
 		}		
 	}
