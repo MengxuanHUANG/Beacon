@@ -16,8 +16,13 @@ AWeatherSystem::AWeatherSystem()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bGenerateOverlapEventsDuringLevelStreaming = 1;
 
 	RainColliderBox = CreateDefaultSubobject<UBoxComponent>(FName("box"));
+	RainColliderBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	RainColliderBox->OnComponentBeginOverlap.AddDynamic(this, &AWeatherSystem::OnBeginOverlap);
+	RainColliderBox->OnComponentEndOverlap.AddDynamic(this, &AWeatherSystem::OnEndOverlap);
+
 	SetRootComponent(RainColliderBox);
 
 	RainColliderPlane = CreateDefaultSubobject<UBoxComponent>(FName("plane"));
@@ -65,6 +70,8 @@ void AWeatherSystem::WeatherActive(bool WeatherActive)
 
 void AWeatherSystem::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	if (!m_WeatherActive)
 	{
 		return;
@@ -101,7 +108,7 @@ void AWeatherSystem::Tick(float DeltaTime)
 		BEACON_LOG(Warning, "X is: %f, Y is %f", m_Rain_Direction.X, m_Rain_Direction.Y);
 	}
 	BEACON_LOG(Warning, "%s", *m_Rain_Direction.ToString());
-	Super::Tick(DeltaTime);
+	
 	RainParticle->SetVectorParameter(T_RainSystem->m_Rain_Data.Weather, m_Rain_Direction);
 	//FVector tem;
 	//RainParticle->GetVectorParameter(T_RainSystem->m_Rain_Data.parameter, tem);
@@ -119,7 +126,7 @@ void AWeatherSystem::Tick(float DeltaTime)
 				FString cname = outHit.Component->GetName();
 				FString aname = outHit.Actor->GetName();
 				UE_LOG(LogTemp, Display, TEXT("Actor is %s, Component is %s"), *aname, *cname);
-				Flammableunit->AddValue(T_RainSystem->Thermal_reduce);
+				Flammableunit->AddValue(T_RainSystem->Thermal_reduce * DeltaTime);
 			}
 		}		
 	}
@@ -143,7 +150,6 @@ void AWeatherSystem::BeginPlay()
 {
 	Super::BeginPlay();
 	WeatherActive(false);
-	RainColliderBox->OnComponentBeginOverlap.AddDynamic(this, &AWeatherSystem::OnBeginOverlap);
-	RainColliderBox->OnComponentEndOverlap.AddDynamic(this, &AWeatherSystem::OnEndOverlap);
+	
 }
 

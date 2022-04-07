@@ -38,7 +38,7 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 		if (GetThermalProxyNeedUpdate())
 		{
 			UpdateThermalData();
-
+			/*
 			FlushPersistentDebugLines(GetOwner()->GetWorld());
 
 			DrawDebugDirectionalArrow(
@@ -51,7 +51,7 @@ void UBoxUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 				-1.f,
 				0,
 				5.0f
-			);
+			);*/
 		}
 	}
 }

@@ -20,7 +20,7 @@
 #ifdef BEACON_DEBUG
 	//Whether to hide box for UnitComponent
 #define BEACON_DEBUG_BOX_VISIBLE true
-#define BEACON_HIDE_DEBUG_BOX_IN_GAME false
+#define BEACON_HIDE_DEBUG_BOX_IN_GAME true
 #endif
 
 UFlammableUnitComponent::UFlammableUnitComponent()
@@ -64,6 +64,10 @@ void UFlammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVector
 	DebugBox->OnComponentEndOverlap.AddDynamic(this, &UFlammableUnitComponent::OnEndOverlap);
 
 	//Set tag to BoxComponent
+	if (!(DebugBox->ComponentHasTag(BEACON_DEBUG_BOX)))
+	{
+		DebugBox->ComponentTags.Add(BEACON_DEBUG_BOX);
+	}
 	if (!(DebugBox->ComponentHasTag(BEACON_FLAMMABLE_UNIT_TAG)))
 	{
 		DebugBox->ComponentTags.Add(BEACON_FLAMMABLE_UNIT_TAG);

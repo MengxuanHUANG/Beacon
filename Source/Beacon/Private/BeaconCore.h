@@ -28,4 +28,5 @@
 #define BEACON_FLAMMABLE_TAG "Beacon_Flammable"
 #define BEACON_FLAMMABLE_UNIT_TAG "Beacon_FlammableUnit"
 #define BEACON_RECEIVE_THERMAL_RADIATION_TAG "Beacon_ReceiveThermalRadiation"
+#define BEACON_DEBUG_BOX "Beacon_DebugBox"
 #endif

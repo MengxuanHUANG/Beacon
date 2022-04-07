@@ -20,7 +20,7 @@
 #ifdef BEACON_DEBUG
 	//Whether to hide box for UnitComponent
 #define BEACON_DEBUG_BOX_VISIBLE true
-#define BEACON_HIDE_DEBUG_BOX_IN_GAME true
+#define BEACON_HIDE_DEBUG_BOX_IN_GAME false
 #endif
 
 void UNonflammableUnitComponent::BeginPlay()
@@ -43,16 +43,21 @@ void UNonflammableUnitComponent::Initialize(UUnitManagerComponent* manager, FVec
 	DebugBox->SetVisibility(BEACON_DEBUG_BOX_VISIBLE);
 	DebugBox->bHiddenInGame = BEACON_HIDE_DEBUG_BOX_IN_GAME;
 	DebugBox->SetBoxExtent(extent);
+	
+	if (!(DebugBox->ComponentHasTag(BEACON_DEBUG_BOX)))
+	{
+		DebugBox->ComponentTags.Add(BEACON_DEBUG_BOX);
+	}
 
 	//Disable all overlap event with this object
 	DebugBox->SetGenerateOverlapEvents(false);
 
-	DrawDebugBox(
+	/*DrawDebugBox(
 		GetWorld(),
 		GetComponentLocation(),
 		m_UnitExtent - 1,
 		FColor::Blue,
-		true);
+		true);*/
 
 	//burning parameters
 	m_TotalBurningTime = 0.f;
