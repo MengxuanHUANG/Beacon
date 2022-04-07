@@ -7,7 +7,10 @@ void BeaconThermalProxy::SetThermalProxyNeedUpdate(bool needUpdate)
 {
 	if (needUpdate)
 	{
-		ThermalData = MakeShared<BeaconThermalData>();
+		if (!ThermalData.IsValid())
+		{
+			ThermalData = MakeShared<BeaconThermalData>();
+		}
 	}
 	else if (ThermalData.IsValid())
 	{

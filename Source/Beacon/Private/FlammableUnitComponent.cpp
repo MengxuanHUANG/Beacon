@@ -159,6 +159,9 @@ void UFlammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 {
 	if (!CheckFlag(EUnitFlag::Triggered))
 	{
+
+		Value = Value > m_Material->Flash_Point ? Value: m_Material->Flash_Point;
+
 		m_BeaconFire = NewObject<UBeaconFire>(this, beaconFire);
 		m_BeaconFire->RegisterComponent();
 

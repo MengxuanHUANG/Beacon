@@ -38,6 +38,8 @@ private:
 	UFUNCTION()
 		void OnFractured(bool needUpdate);
 
+	UFUNCTION()
+		void LateTickComponent(float DeltaTime);
 public:
 	UPROPERTY(VisibleAnywhere)
 		UFractureComponent* m_FractureComponent;

@@ -9,6 +9,7 @@
 #include "FractureMaterial.h"
 #include "BeaconMaterial.h"
 #include "UnitUpdater.h"
+#include "LateUpdateComponent.h"
 
 UDebrisUnitManagerComponent::UDebrisUnitManagerComponent()
 {
@@ -24,6 +25,10 @@ UDebrisUnitManagerComponent::~UDebrisUnitManagerComponent()
 void UDebrisUnitManagerComponent::BeginPlay() 
 {
 	Super::BeginPlay();
+
+	ULateUpdateComponent* comp = ULateUpdateComponent::CreateLateUpdataComponent(this);
+	comp->LateTickFunction.BindDynamic(this, &UDebrisUnitManagerComponent::LateTickComponent);
+	comp->AttachToComponent(this, FAttachmentTransformRules::KeepRelativeTransform);
 }
 
 void UDebrisUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -90,8 +95,6 @@ void UDebrisUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 				unit->Value = m_UnitMaterials[level]->DefaultThermal;
 				unit->Trigger(m_FractureMaterial->FragmentLevels[level].T_BeaconFire);
 
-				unit->Update(DeltaTime);
-
 				m_FlammableUnits.Add(index, unit);
 			}
 			else
@@ -99,20 +102,27 @@ void UDebrisUnitManagerComponent::TickComponent(float DeltaTime, ELevelTick Tick
 				needRemove.Add(FFragment(index));
 			}
 		}
-		//END Update flammableUnits information
-
-		//BEGIN Update flammableUnits
 		UpdateFlammableUnits(DeltaTime);
-		//END Update flammableUnits
+
+		//END Update flammableUnits information
+	}
+}
+
+
+void UDebrisUnitManagerComponent::LateTickComponent(float DeltaTime)
+{
+	for (auto pair : m_FlammableUnits)
+	{
+		UFlammableUnitComponent* unit = pair.Value;
+		unit->Update(DeltaTime);
 	}
 }
 
 void UDebrisUnitManagerComponent::UpdateFlammableUnits(float deltaTime)
 {
-	for (auto pair: m_FlammableUnits)
+	for (auto pair : m_FlammableUnits)
 	{
 		UFlammableUnitComponent* unit = pair.Value;
-		unit->Update(deltaTime);
 
 		//traverse all temp neighbors of a unit 
 		TArray<TSharedPtr<UnitConnection>> tempConnections;

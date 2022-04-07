@@ -12,6 +12,7 @@
 #include "BeaconLog.h"
 #include "DebrisUnitManagerComponent.h"
 #include "FractureMaterial.h"
+#include "Field/FieldSystemActor.h"
 
 UFractureComponent::UFractureComponent()
 	:bIsBreak(false), bNeedUpdate(false)
@@ -50,6 +51,10 @@ void UFractureComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	}
 	else if(!bIsBreak)
 	{
+		if (m_ThermalData.IsValid() && m_ThermalData->Thermal_Value >= m_BreakThermal)
+		{
+			Break();
+		}
 		bIsBreak = CheckBreak();
 		if (bIsBreak)
 		{
@@ -231,6 +236,13 @@ void UFractureComponent::Clear_Implement()
 	this->ClearCurrentDebris();
 }
 //End implementing BuildableComponent functions
+
+void UFractureComponent::Break_Implementation()
+{
+	FVector location = GetComponentLocation();
+	
+	AFieldSystemActor* breakField = GetWorld()->SpawnActor<AFieldSystemActor>(T_BreakField, location, FRotator::ZeroRotator);
+}
 
 bool UFractureComponent::CheckBreak()
 {

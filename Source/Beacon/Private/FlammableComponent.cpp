@@ -270,9 +270,8 @@ void UFlammableComponent::Clear_Implement()
 
 UFractureComponent* UFlammableComponent::GetFractureComponent() const
 {
-	USceneComponent* parent = GetAttachParent();
-	USceneComponent* fracture = parent->GetAttachParent();
-	return Cast<UFractureComponent>(fracture);
+	UActorComponent* fracture = GetOwner()->GetComponentByClass(UFractureComponent::StaticClass());
+	return (fracture ? Cast<UFractureComponent>(fracture) : nullptr);
 }
 
 void UFlammableComponent::ConfigObjectTemplate(ObjectTemplate objTemplate)
@@ -291,7 +290,6 @@ void UFlammableComponent::ConfigObjectTemplate(ObjectTemplate objTemplate)
 		UFractureComponent* fractureComp = GetFractureComponent();
 		if (fractureComp)
 		{
-			BEACON_LOG(Error, "Must have FractureComponent to support break effect");
 			fractureComp->OnFracturedEvent.AddDynamic(this, &UFlammableComponent::OnFractured);
 			m_UnitManager->SetThermalProxyNeedUpdate(true);
 			fractureComp->BindBeaconThermalData(m_UnitManager->GetBeaconThermalData());

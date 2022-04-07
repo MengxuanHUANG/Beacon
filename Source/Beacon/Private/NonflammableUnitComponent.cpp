@@ -132,6 +132,7 @@ void UNonflammableUnitComponent::SetNeighbor(FVector direction, UUnitComponent* 
 
 void UNonflammableUnitComponent::Trigger()
 {
+	Value = Value > m_Material->Flash_Point ? Value : m_Material->Flash_Point;
 	SetFlag(EUnitFlag::Triggered | EUnitFlag::NeedUpdate);
 }
 

@@ -43,7 +43,8 @@ public class Beacon : ModuleRules
 				"UMG",
 				"LevelEditor",
 				"EditorStyle",
-				"UnrealEd"
+				"UnrealEd",
+				"FieldSystemEngine"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
