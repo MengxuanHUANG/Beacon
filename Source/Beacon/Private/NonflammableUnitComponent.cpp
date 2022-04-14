@@ -148,6 +148,7 @@ void UNonflammableUnitComponent::Trigger(TSubclassOf<UBeaconFire>& beaconFire)
 
 void UNonflammableUnitComponent::UnTrigger()
 {
+	Value = GetMaterial()->Flash_Point - 0.01f;
 	SetFlag(EUnitFlag::Triggered, false);
 }
 

@@ -132,7 +132,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 			//check whether to end burning
 			if (Value < material->Flash_Point || (material->Has_Max_BurningTime && m_TotalBurningTime >= m_MaxBurningTime))
 			{
-				m_BeaconFire->EndBurning();
+				m_BeaconFire->EndFlame();
 				m_BurningEventCount = 0;
 				SetFlag(EUnitFlag::Triggered, false);
 			}
@@ -152,6 +152,7 @@ void UFlammableUnitComponent::Update(float deltaTime)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;
+			m_BeaconFire->EndBurning();
 			SetFlag(EUnitFlag::NeedUpdate, false);
 		}
 	}
@@ -197,10 +198,12 @@ void UFlammableUnitComponent::UnTrigger()
 {
 	if (CheckFlag(EUnitFlag::Triggered))
 	{
+		Value = GetMaterial()->Flash_Point - 0.01f;
+
 		if (m_BeaconFire)
 		{
 			m_BurningEventCount = 0;
-			m_BeaconFire->EndBurning();
+			m_BeaconFire->EndFlame();
 		}
 		SetFlag(EUnitFlag::Triggered, false);
 	}

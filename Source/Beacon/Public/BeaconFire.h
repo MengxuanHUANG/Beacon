@@ -22,6 +22,9 @@ public:
 		void StartBurning();
 
 	UFUNCTION(BlueprintNativeEvent)
+		void EndFlame();
+
+	UFUNCTION(BlueprintNativeEvent)
 		void EndBurning();
 
 protected:

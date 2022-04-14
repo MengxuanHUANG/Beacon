@@ -15,6 +15,10 @@ void UBeaconFire::StartBurning_Implementation()
 {
 }
 
+void UBeaconFire::EndFlame_Implementation()
+{
+}
+
 void UBeaconFire::EndBurning_Implementation()
 {
 }
