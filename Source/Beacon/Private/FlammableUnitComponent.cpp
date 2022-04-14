@@ -108,28 +108,32 @@ void UFlammableUnitComponent::Update(float deltaTime)
 		{
 			//increase burning time
 			m_TotalBurningTime += deltaTime;
-
-			//call burning events
-			if (m_BurningEventCount < material->BurningEvents.Num())
-			{
-				FPair& event = material->BurningEvents[m_BurningEventCount];
-				if (m_TotalBurningTime > event.Time)
-				{
-					m_BeaconFire->CallBurningEvent(event.FunctionName);
-					m_BurningEventCount++;
-				}
-			}
-
+			
 			//increase thermal energy
 			if (Value < material->MAX_Thermal)
 			{
 				Value += deltaTime * material->GenThermalPerSecond;
 			}
 
+			//set flame strenth
+			m_BeaconFire->SetFlameStrength(Value);
+
+			//call burning events
+			if (m_BurningEventCount < material->BurningEvents.Num())
+			{
+				FPair& event = material->BurningEvents[m_BurningEventCount];
+				if (Value > event.Value)
+				{
+					m_BeaconFire->CallBurningEvent(event.FunctionName);
+					m_BurningEventCount++;
+				}
+			}
+
 			//check whether to end burning
 			if (Value < material->Flash_Point || (material->Has_Max_BurningTime && m_TotalBurningTime >= m_MaxBurningTime))
 			{
 				m_BeaconFire->EndBurning();
+				m_BurningEventCount = 0;
 				SetFlag(EUnitFlag::Triggered, false);
 			}
 		}
@@ -195,6 +199,7 @@ void UFlammableUnitComponent::UnTrigger()
 	{
 		if (m_BeaconFire)
 		{
+			m_BurningEventCount = 0;
 			m_BeaconFire->EndBurning();
 		}
 		SetFlag(EUnitFlag::Triggered, false);

@@ -18,7 +18,7 @@ struct FPair
 	GENERATED_BODY()
 	
 	UPROPERTY(EditAnywhere)
-		float Time;
+		float Value;
 	
 	UPROPERTY(EditAnywhere)
 		FString FunctionName;

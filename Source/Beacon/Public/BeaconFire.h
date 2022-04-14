@@ -28,7 +28,16 @@ protected:
 	UPROPERTY(BlueprintAssignable, Category = "Beacon Burning Events")
 		FBeaconBurningEvents_DynamicMulticast F_BurningEvents;
 
+	UPROPERTY(BlueprintReadWrite)
+		float m_FlameStrength;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Beacon Functions")
 		void CallBurningEvent(FString eventName);
+
+	UFUNCTION(BlueprintCallable, Category = "Beacon Functions")
+		float GetFlameStrength() const { return  m_FlameStrength; }
+
+	UFUNCTION(BlueprintCallable, Category = "Beacon Functions")
+		void SetFlameStrength(float strength) { m_FlameStrength = strength; }
 };
