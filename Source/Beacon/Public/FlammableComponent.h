@@ -34,7 +34,7 @@ public:
 		uint32 Z;
 };
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent), BlueprintType)
 class BEACON_API UFlammableComponent : public UBuildableComponent, public ICheckInterface
 {
 	GENERATED_BODY()

@@ -40,16 +40,19 @@ void UThermalRadiationComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 	if (bIsEnabled)
 	{
-		UpdateLocation();
-		FVector location = GetComponentLocation();
-
-		for (UUnitComponent* unit : m_Units)
+		if (ThermalData.IsValid() && ThermalData->bIsBurning)
 		{
-			float distance = (unit->GetComponentLocation() - location).Size();
-			if (!unit->IsTriggered())
+			UpdateLocation();
+			FVector location = GetComponentLocation();
+
+			for (UUnitComponent* unit : m_Units)
 			{
-				float value = m_Material->GetThermalTransmitValue(distance);
-				unit->AddValue(value* DeltaTime);
+				float distance = (unit->GetComponentLocation() - location).Size();
+				if (!unit->IsTriggered())
+				{
+					float value = m_Material->GetThermalTransmitValue(distance);
+					unit->AddValue(value * DeltaTime);
+				}
 			}
 		}
 	}
