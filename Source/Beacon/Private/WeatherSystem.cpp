@@ -142,6 +142,10 @@ void AWeatherSystem::CastRay(const AActor* actor, FHitResult& result, FVector di
 	FCollisionQueryParams param;
 	param.AddIgnoredComponent(RainColliderBox);
 	param.AddIgnoredActor(actor);
+	for (const AActor* ignoredActor : m_IgnoredActors)
+	{
+		param.AddIgnoredActor(ignoredActor);
+	}
 	GetWorld()->LineTraceSingleByChannel(result, start_location, start_location + direction * length, ECC_Visibility, param);
 }
 

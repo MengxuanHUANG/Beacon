@@ -110,7 +110,7 @@ void UFlammableComponent::BurnAll()
 	if (m_UnitManager)
 	{
 		m_UnitManager->SetBeaconFire(T_BeaconFire);
-		m_UnitManager->TriggerAllUnits(100);
+		m_UnitManager->TriggerAllUnits(T_Material->Flash_Point);
 	}
 }
 

@@ -29,7 +29,8 @@ public:
 	UPROPERTY(EditAnywhere)
 		URainSystem* T_RainSystem;
 
-
+	UPROPERTY(EditAnywhere)
+		TArray<AActor*> m_IgnoredActors;
 	
 
 public:
