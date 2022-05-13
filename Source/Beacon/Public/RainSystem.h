@@ -19,7 +19,7 @@ struct FDataVector
 		FName Weather;
 
 	UPROPERTY(EditAnywhere)
-		FVector2D Rain_Direction;
+		FVector2D Weather_Direction;
 };
 
 UCLASS()
@@ -29,7 +29,7 @@ class BEACON_API URainSystem : public UDataAsset
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FDataVector m_Rain_Data;
+		FDataVector m_Weather_Data;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float Speed;

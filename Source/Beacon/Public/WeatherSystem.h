@@ -27,7 +27,7 @@ public:
 		UParticleSystemComponent* RainParticle;
 
 	UPROPERTY(EditAnywhere)
-		URainSystem* T_RainSystem;
+		URainSystem* T_WeatherSystem;
 
 	UPROPERTY(EditAnywhere)
 		TArray<AActor*> m_IgnoredActors;
