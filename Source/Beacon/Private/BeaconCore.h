@@ -12,7 +12,8 @@
 		#define BEACON_DEBUG
 		#define BEACON_ASSERT(Statement) check(Statement);
 	#endif
-
+#else
+#define BEACON_ASSERT(Statement)
 #endif
 
 #ifdef BEACON_TAGS

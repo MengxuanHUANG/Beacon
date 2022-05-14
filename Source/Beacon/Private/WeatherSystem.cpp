@@ -77,13 +77,13 @@ void AWeatherSystem::Tick(float DeltaTime)
 		return;
 	}
 	float x1;
-	x1 = T_WeatherSystem->m_Weather_Data.Weather_Direction.X;
+	x1 = T_RainSystem->m_Rain_Data.Rain_Direction.X;
 	float y2;
-	y2 = T_WeatherSystem->m_Weather_Data.Weather_Direction.Y;
+	y2 = T_RainSystem->m_Rain_Data.Rain_Direction.Y;
 	BEACON_LOG(Warning, "X is: %f, Y is %f", x1, y2);
 	float Rain_speed;
-	Rain_speed = T_WeatherSystem->Speed;
-	FName weather = T_WeatherSystem->m_Weather_Data.Weather;
+	Rain_speed = T_RainSystem->Speed;
+	FName weather = T_RainSystem->m_Rain_Data.Weather;
 	if (weather == "snow")
 	{
 		speed_coefficient = 50;
@@ -109,7 +109,10 @@ void AWeatherSystem::Tick(float DeltaTime)
 	}
 	BEACON_LOG(Warning, "%s", *m_Rain_Direction.ToString());
 	
-	RainParticle->SetVectorParameter(T_WeatherSystem->m_Weather_Data.Weather, m_Rain_Direction);
+	RainParticle->SetVectorParameter(T_RainSystem->m_Rain_Data.Weather, m_Rain_Direction);
+	//FVector tem;
+	//RainParticle->GetVectorParameter(T_RainSystem->m_Rain_Data.parameter, tem);
+	//BEACON_LOG(Warning, "%s", tem.ToString())
 	for (UUnitComponent* Flammableunit : FlammableUnitSet)
 	{
 		if (Flammableunit != nullptr)
@@ -117,13 +120,13 @@ void AWeatherSystem::Tick(float DeltaTime)
 			FVector location = Flammableunit->GetComponentLocation();
 			const AActor* actor = Flammableunit->GetOwner();
 			FHitResult outHit;
-			CastRay(actor, outHit, -m_Rain_Direction, 100000.f, location);
+			CastRay(actor, outHit, -m_Rain_Direction, 114514.f, location);
 			if (outHit.Component.IsValid() && outHit.Component == RainColliderPlane)
 			{
 				FString cname = outHit.Component->GetName();
 				FString aname = outHit.Actor->GetName();
 				UE_LOG(LogTemp, Display, TEXT("Actor is %s, Component is %s"), *aname, *cname);
-				Flammableunit->AddValue(T_WeatherSystem->Thermal_reduce * DeltaTime);
+				Flammableunit->AddValue(T_RainSystem->Thermal_reduce * DeltaTime);
 			}
 		}		
 	}

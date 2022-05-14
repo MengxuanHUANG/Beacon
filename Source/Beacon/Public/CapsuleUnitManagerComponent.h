@@ -123,7 +123,9 @@ public:
 
 						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
 						capsuleUnitManager->m_Units.Add(FVector(x,y,z),unit);
+#ifdef BEACON_DEBUG
 						unit->Debug_Index = FVector(x, y, z);
+#endif
 						++count_t_new;
 					}
 				}
@@ -170,7 +172,9 @@ public:
 
 						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
 						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
+#ifdef BEACON_DEBUG
 						unit->Debug_Index = FVector(x, y, z);
+#endif
 						++count_t_new;
 
 					}
@@ -218,7 +222,9 @@ public:
 
 						BEACON_LOG(Display, "Coordinate is %d %d %d", x, y, z);
 						capsuleUnitManager->m_Units.Add(FVector(x, y, z), unit);
+#ifdef BEACON_DEBUG
 						unit->Debug_Index = FVector(x, y, z);
+#endif
 						++count_t_new;
 
 					}

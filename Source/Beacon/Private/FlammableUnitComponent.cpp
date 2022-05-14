@@ -17,11 +17,9 @@
 #include "Misc/App.h"
 
 //BEACON Macro
-#ifdef BEACON_DEBUG
-	//Whether to hide box for UnitComponent
+//Whether to hide box for UnitComponent
 #define BEACON_DEBUG_BOX_VISIBLE true
 #define BEACON_HIDE_DEBUG_BOX_IN_GAME true
-#endif
 
 UFlammableUnitComponent::UFlammableUnitComponent()
 {
@@ -104,6 +102,10 @@ void UFlammableUnitComponent::Update(float deltaTime)
 
 	if (CheckFlag(EUnitFlag::NeedUpdate))
 	{
+		//reduce thermal energy
+		float loss = deltaTime * material->LoseThermalPerSecond;
+		Value -= loss;
+
 		if (CheckFlag(EUnitFlag::Triggered))
 		{
 			//increase burning time
@@ -132,8 +134,11 @@ void UFlammableUnitComponent::Update(float deltaTime)
 			//check whether to end burning
 			if (Value < material->Flash_Point || (material->Has_Max_BurningTime && m_TotalBurningTime >= m_MaxBurningTime))
 			{
-				m_BeaconFire->EndFlame();
-				m_BurningEventCount = 0;
+				if (m_BeaconFire)
+				{
+					m_BurningEventCount = 0;
+					m_BeaconFire->EndFlame();
+				}
 				SetFlag(EUnitFlag::Triggered, false);
 			}
 		}
@@ -142,17 +147,15 @@ void UFlammableUnitComponent::Update(float deltaTime)
 			Trigger();
 		}
 
-		if (Value >= material->DefaultThermal)
-		{
-			//reduce thermal energy
-			float loss = deltaTime * material->LoseThermalPerSecond;
-			Value -= loss;
-		}
-		else
+		if (Value <= material->DefaultThermal)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;
-			m_BeaconFire->EndBurning();
+			if (m_BeaconFire)
+			{
+				m_BurningEventCount = 0;
+				m_BeaconFire->EndFlame();
+			}
 			SetFlag(EUnitFlag::NeedUpdate, false);
 		}
 	}

@@ -5,8 +5,10 @@
 
 #include "BuildableComponent.h"
 
-#include "BeaconEditorCommands.h"
+#ifdef BEACON_DEBUG
 #include "LevelEditor.h"
+#endif
+
 #include "Kismet/GameplayStatics.h"
 
 #define LOCTEXT_NAMESPACE "FBeaconModule"
@@ -53,6 +55,8 @@ void FBeaconModule::ShutdownModule()
 
 void FBeaconModule::Build()
 {
+#ifdef BEACON_DEBUG
+
 	if (GEngine)
 	{
 		TArray<AActor*> actors;
@@ -70,9 +74,12 @@ void FBeaconModule::Build()
 			}
 		}
 	}
+
+#endif // BEACON_DEBUG
 }
 void FBeaconModule::Clear()
 {
+#ifdef BEACON_DEBUG
 	if (GEngine)
 	{
 		TArray<AActor*> actors;
@@ -90,9 +97,11 @@ void FBeaconModule::Clear()
 			}
 		}
 	}
+#endif // BEACON_DEBUG
 }
 void FBeaconModule::Rebuild()
 {
+#ifdef BEACON_DEBUG
 	if (GEngine)
 	{
 		TArray<AActor*> actors;
@@ -110,13 +119,11 @@ void FBeaconModule::Rebuild()
 			}
 		}
 	}
+#endif // BEACON_DEBUG
 }
 
 void FBeaconModule::AddToolbarButton(FToolBarBuilder& Builder)
 {
-	Builder.AddToolBarButton(BeaconEditorCommands::Get().m_ClearCommand);
-	Builder.AddToolBarButton(BeaconEditorCommands::Get().m_BuildCommand);
-	Builder.AddToolBarButton(BeaconEditorCommands::Get().m_RebuildCommand);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -17,11 +17,9 @@
 #include "Misc/App.h"
 
 //BEACON Macro
-#ifdef BEACON_DEBUG
-	//Whether to hide box for UnitComponent
+//Whether to hide box for UnitComponent
 #define BEACON_DEBUG_BOX_VISIBLE true
 #define BEACON_HIDE_DEBUG_BOX_IN_GAME true
-#endif
 
 void UNonflammableUnitComponent::BeginPlay()
 {
@@ -89,6 +87,10 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 
 	if (CheckFlag(EUnitFlag::NeedUpdate))
 	{
+		//reduce thermal energy
+		float loss = deltaTime * material->LoseThermalPerSecond;
+		Value -= loss;
+
 		if (CheckFlag(EUnitFlag::Triggered))
 		{
 			//increase burning time
@@ -110,13 +112,7 @@ void UNonflammableUnitComponent::Update(float deltaTime)
 			SetFlag(EUnitFlag::Triggered);
 		}
 
-		if (Value > material->DefaultThermal)
-		{
-			//reduce thermal energy
-			float loss = deltaTime * material->LoseThermalPerSecond;
-			Value -= loss;
-		}
-		else
+		if (Value <= material->DefaultThermal)
 		{
 			//Stop update unit if its value smaller than default value
 			Value = material->DefaultThermal;

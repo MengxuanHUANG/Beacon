@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Curves/CurveFloat.h"
 #include "BeaconMaterial.generated.h"
 
 /**
  * 
  */
-
-class UCurveFloat;
 
 USTRUCT(BlueprintType)
 struct FPair
@@ -92,6 +91,5 @@ public:
 	UFUNCTION()
 		ObjectTemplate GetObjectTemplate() const;
 
-	UFUNCTION()
-		FORCEINLINE float GetTemperature(uint32 thermal) const;
+	inline float GetTemperature(uint32 thermal) const { return Temperature_Curve->GetFloatValue(thermal); }
 };
